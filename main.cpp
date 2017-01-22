@@ -55,7 +55,12 @@ int main(int argc, char* argv[])
 //    g->reorder_random();
 //    g->reorder_color(3);
     vector<uint> res_p;
-    uint res = rds(new defective_clique(1), g, res_p);
+    auto v = new defective_clique(1);
+    uint res = rds(v, g, res_p);
+    if(v->check_solution(g, res_p))
+      printf("CORRECT!\n");
+    else
+      printf("NOT CORRECT GFMO!!!!\n");
     g->restore_order(res_p);
     sort(res_p.begin(), res_p.end());
     printf("---------------------------------\nSolution:\n");

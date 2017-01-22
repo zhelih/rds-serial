@@ -108,6 +108,16 @@ class defective_clique: public verifier
     return new_t;
   }
   void free_aux(void* aux) { t_aux* i = static_cast<t_aux*>(aux); delete i; }
+
+  bool check_solution(graph* g, const std::vector<uint>& res)
+  {
+    uint edges = 0;
+    for(uint i = 0; i < res.size(); ++i)
+      for(uint j = i+1; j < res.size(); ++j)
+        if(g->is_edge(res[i],res[j]))
+          edges++;
+    return edges >= (res.size()*(res.size()-1)/2 - s);
+  }
 };
 
 
