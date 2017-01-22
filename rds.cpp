@@ -1,4 +1,5 @@
 #include "rds.h"
+#include <stdio.h>
 #include <vector>
 #include <algorithm>
 #include <ctime>
