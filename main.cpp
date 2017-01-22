@@ -50,12 +50,12 @@ int main(int argc, char* argv[])
 
   } else {
     graph * g = from_dimacs(argv[1]);
-    g -> reorder_degree();
-    g -> reorder_rev(); // revert the order
+//    g -> reorder_degree();
+  //g -> reorder_rev(); // revert the order
 //    g->reorder_random();
 //    g->reorder_color(3);
     vector<uint> res_p;
-    uint res = rds(new defective_clique(2), g, res_p);
+    uint res = rds(new defective_clique(1), g, res_p);
     g->restore_order(res_p);
     sort(res_p.begin(), res_p.end());
     printf("---------------------------------\nSolution:\n");

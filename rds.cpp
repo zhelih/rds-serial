@@ -1,8 +1,8 @@
 #include "rds.h"
-#include <stdio.h>
 #include <vector>
 #include <algorithm>
 #include <ctime>
+#include <cstdio>
 
 #ifndef max
 #define max(a,b) (((a)>(b))?(a):(b))
@@ -22,7 +22,7 @@ void print_cont(const vector<uint>& c)
   printf("\n");
 }
 
-uint find_max(vector<uint>& c, vector<uint>& p, const uint* mu, verifier *v, graph* g, vector<uint>& res)
+uint find_max(vector<uint>& c, vector<uint>& p, const uint* mu, verifier *v, graph* g, vector<uint>& res, void* prev_aux)
 {
 //  printf("debug: running find_max with c.size = %lu, p.size = %lu\n", c.size(), p.size());
   if(c.size() == 0)
@@ -53,10 +53,11 @@ uint find_max(vector<uint>& c, vector<uint>& p, const uint* mu, verifier *v, gra
     if(mu[i] + p.size() < lb)
       return lb;
     c.erase(it);
-//    vector<uint> p_new(p); // copy, avoid
+//    NB: exploit that we adding only 1 vertex to p
+//    thus verifier can prepare some info using prev calculations
+    void* aux = v->prepare_aux(g, p, i, c, prev_aux);
     p.push_back(i);
     vector<uint> c_new;
-    void* aux = v->prepare_aux(g, p);
     for(auto it2 = c.begin(); it2 != c.end(); ++ it2)
     {
       if(*it2 != i && v->check(g, p, *it2, aux))
@@ -64,13 +65,13 @@ uint find_max(vector<uint>& c, vector<uint>& p, const uint* mu, verifier *v, gra
         c_new.push_back(*it2);
       }
     }
-    if(aux != 0)
-      v->free_aux(g, p, aux);
 /*    if(c_new.size() == 0) {
       if(p.size() > lb)
         lb = p.size();
     } else */
-    lb = find_max(c_new, p, mu, v, g, res);
+    lb = find_max(c_new, p, mu, v, g, res, aux);
+    if(aux != 0)
+      v->free_aux(aux);
     p.pop_back();
   }
   return lb;
@@ -98,10 +99,13 @@ uint rds(verifier* v, graph* g, vector<uint>& res)
         c.push_back(j);
       }
     }
-    vector<uint> p; p.push_back(i);
-    printf("i = %u, c.size = %lu, p.size = %lu\n", i, c.size(), p.size());
-    mu[i] = find_max(c, p, mu, v, g, res);
-    printf("find_max done, mu[%d] = %d\n", i, mu[i]);
+    vector<uint> p;
+    p.push_back(i);
+    void* aux = v->init_aux(g, i, c);
+    printf("i = %u, c.size = %lu, ", i, c.size());
+    mu[i] = find_max(c, p, mu, v, g, res, aux);
+    printf("mu[%d] = %d\n", i, mu[i]);
+    v->free_aux(aux);
   }
   printf("RDS done\n");
   uint fres = mu[0];
