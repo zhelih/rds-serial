@@ -49,7 +49,7 @@ uint find_max(vector<uint>& c, vector<uint>& p, const uint* mu, verifier *v, gra
       return lb;
     //TODO replace find_min here to constant storing
     //auto it = min_element(c.begin(), c.end()); // FIXME O(n) time
-    auto it = c.begin();
+    auto it = c.end()-1;
 /*    uint ind = it-c.begin();
     printf("ind = %u\n", ind);*/
     uint i = *it;
@@ -102,6 +102,7 @@ uint rds(verifier* v, graph* g, vector<uint>& res)
         c.push_back(j);
       }
     }
+    reverse(c.begin(), c.end()); // for efficient deletion of min element
     vector<uint> p;
     p.push_back(i);
     void* aux = v->init_aux(g, i, c);
