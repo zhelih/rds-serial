@@ -105,9 +105,11 @@ uint rds(verifier* v, graph* g, vector<uint>& res)
     vector<uint> p;
     p.push_back(i);
     void* aux = v->init_aux(g, i, c);
-    printf("i = %u, c.size = %lu, ", i, c.size());
+    if(i % 25 == 0)
+      printf("i = %u, c.size = %lu, ", i, c.size());
     mu[i] = find_max(c, p, mu, v, g, res, aux);
-    printf("mu[%d] = %d\n", i, mu[i]);
+    if(i % 25 == 0)
+      printf("mu[%d] = %d\n", i, mu[i]);
     v->free_aux(aux);
   }
   printf("RDS done\n");

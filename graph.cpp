@@ -20,14 +20,16 @@ graph* from_dimacs(const char* fname)
 {
   FILE* f = fopen(fname, "r");
   if(!f)
-    throw (string("Cannot open file ") + fname);
+  {
+    fprintf(stderr, "Cannot open file %s\n", fname);
+    return 0;
+  }
 
   char buf[1024]; int nr_nodes = 0, nr_edges = 0;
 
   // search for "n nodes edges"
   while(NULL != fgets(buf, sizeof(buf), f))
   {
-//    fprintf(stderr, "%s\n", buf);
     if(buf[0] == 'p')
     {
       sscanf(buf, "p edge %d %d", &nr_nodes, &nr_edges);
@@ -38,10 +40,11 @@ graph* from_dimacs(const char* fname)
   if(nr_nodes == 0 && nr_edges == 0)
   {
     fclose(f);
-    throw (string("Cannot found dimacs metadata in ") + fname);
+    fprintf(stderr, "Cannot found dimacs metadata in %s\n", fname);
+    return 0;
   }
 
-  fprintf(stderr, "Found metadata in %s : (%d, %d)\n", fname, nr_nodes, nr_edges);
+//  fprintf(stderr, "Found metadata in %s : (%d, %d)\n", fname, nr_nodes, nr_edges);
 
   graph* g = new graph(nr_nodes);
 
@@ -61,9 +64,7 @@ graph* from_dimacs(const char* fname)
     }
   }
 
-#ifndef NDEBUG
-  fprintf(stderr, "read %d edges\n", nr_edges);
-#endif
+  fprintf(stderr, "graph: %d nodes, %d edges\n", nr_nodes, nr_edges);
 
   fclose(f);
   return g;

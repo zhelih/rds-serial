@@ -24,6 +24,9 @@ class verifier
     virtual void free_aux(void* aux) {}
     // optional checker
     virtual bool check_solution(graph* g, const std::vector<uint>& res) const { return true; }
+
+    verifier() {}
+    virtual ~verifier() {}
 };
 
 class clique: public verifier
