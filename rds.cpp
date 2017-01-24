@@ -34,9 +34,9 @@ uint find_max(vector<uint>& c, vector<uint>& p, const uint* mu, verifier *v, gra
       for(auto it = p.begin(); it != p.end(); ++it)
       {
         printf("%u ", *it);
-        res = p; //copy
       }
       printf("\n");*/
+      res = p; //copy
       return p.size();
     }
     else
