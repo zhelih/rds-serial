@@ -3,6 +3,9 @@
 #include <algorithm>
 #include <ctime>
 #include <cstdio>
+#include <atomic>
+
+#include <csignal> // Display best result for SIGINT before exit
 
 #ifndef max
 #define max(a,b) (((a)>(b))?(a):(b))
@@ -14,12 +17,21 @@ typedef unsigned int uint;
 
 static uint lb;
 
+atomic_uint lb_a;
+
 // for debug
 void print_cont(const vector<uint>& c)
 {
   for(auto it = c.begin(); it != c.end(); ++it)
     printf("%u ", *it);
   printf("\n");
+}
+
+void print_lb_atomic(int signal)
+{
+  printf("\nReceived SIGINT\n");
+  printf("Best lower bound found: %u\n", lb_a.load());
+  exit(0);
 }
 
 uint find_max(vector<uint>& c, vector<uint>& p, const uint* mu, verifier *v, graph* g, vector<uint>& res, void* aux)
@@ -72,6 +84,7 @@ uint find_max(vector<uint>& c, vector<uint>& p, const uint* mu, verifier *v, gra
         lb = p.size();
     } else */
     lb = find_max(c_new, p, mu, v, g, res, aux);
+    lb_a = lb;
     p.pop_back();
 //    if(aux != 0)
       v->undo_aux(g, p, i, c, aux);
@@ -85,6 +98,7 @@ uint rds(verifier* v, graph* g, vector<uint>& res)
   uint n = g->nr_nodes;
   // order V
   lb = 0; // best solution size found so far
+  lb_a = 0;
   uint *mu = new uint[n];
 
   for(int i = n-1; i >= 0; --i)
@@ -105,11 +119,9 @@ uint rds(verifier* v, graph* g, vector<uint>& res)
     vector<uint> p;
     p.push_back(i);
     void* aux = v->init_aux(g, i, c);
-    if(i % 25 == 0)
-      printf("i = %u, c.size = %lu, ", i, c.size());
+    printf("i = %u, c.size = %lu, ", i, c.size());
     mu[i] = find_max(c, p, mu, v, g, res, aux);
-    if(i % 25 == 0)
-      printf("mu[%d] = %d\n", i, mu[i]);
+    printf("mu[%d] = %d\n", i, mu[i]);
     v->free_aux(aux);
   }
   printf("RDS done\n");

@@ -8,5 +8,6 @@
 typedef unsigned int uint;
 
 uint rds(verifier* v, graph*g, std::vector<uint>& res);
+void print_lb_atomic(int signal);
 
 #endif
