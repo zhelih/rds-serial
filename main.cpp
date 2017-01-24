@@ -11,6 +11,8 @@ using namespace std;
 void show_usage(const char* argv)
 {
   printf("Usage: %s [options] <dimacs input file>\nAvailable options:\n", argv);
+  printf("\t-t\tTime limit in seconds (optional)\n");
+  printf("\t-h|-?\tdisplay this help\n");
   printf("Maximum Solvers:\n\t-c\tClique\n\t-s\tStable set\n\t-d n\tn-defective clique\n");
   printf("\t-iuc\tIndependent Union of Cliques\n");
   printf("Vertex ordering:\n");
@@ -19,7 +21,6 @@ void show_usage(const char* argv)
   printf("\t-vr\trandom ordering\n");
   printf("\t-vc n\tn-color ordering\n");
   printf("\t-vrev\treverse ordering\n");
-  printf("-h|-?\tdisplay this help\n");
 }
 
 void pr_()
@@ -42,6 +43,7 @@ int main(int argc, char* argv[])
       return 1;
     }
     verifier* v = 0;
+    uint time_lim = 0;
     for(int i = 1; i < argc-1; ++i)
     {
       // so ugly, but switch refuses to compare strings
@@ -55,13 +57,15 @@ int main(int argc, char* argv[])
       else if (string(argv[i]) == "-vr") { g->reorder_random(); }
       else if (string(argv[i]) == "-vc") { g->reorder_color(atoi(argv[i+1])); i++; }
       else if (string(argv[i]) == "-vrev") { g->reorder_rev(); }
+
+      else if (string(argv[i]) == "-t") { time_lim = atoi(argv[i+1]); i++; }
       else {
           fprintf(stderr, "Wrong parameter: %s\n", argv[i]);
           if(v) delete v; delete g; return 1;
       }
     }
     vector<uint> res_p;
-    uint res = rds(v, g, res_p);
+    uint res = rds(v, g, res_p, time_lim);
     printf("Solution verification: ");
     if(v->check_solution(g, res_p))
       printf("CORRECT\n");

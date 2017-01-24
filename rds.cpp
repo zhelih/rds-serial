@@ -92,7 +92,7 @@ uint find_max(vector<uint>& c, vector<uint>& p, const uint* mu, verifier *v, gra
   return lb;
 }
 
-uint rds(verifier* v, graph* g, vector<uint>& res)
+uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
 {
   clock_t start = clock();
   uint n = g->nr_nodes;
@@ -101,7 +101,8 @@ uint rds(verifier* v, graph* g, vector<uint>& res)
   lb_a = 0;
   uint *mu = new uint[n];
 
-  for(int i = n-1; i >= 0; --i)
+  int i;
+  for(i = n-1; i >= 0; --i)
   {
     // form candidate set
     // take vertices from v \in {i+1, n} for which pair (i,v) satisfies \Pi
@@ -123,9 +124,11 @@ uint rds(verifier* v, graph* g, vector<uint>& res)
     mu[i] = find_max(c, p, mu, v, g, res, aux);
     printf("mu[%d] = %d\n", i, mu[i]);
     v->free_aux(aux);
+    if(time_lim > 0 && (clock()-start)/CLOCKS_PER_SEC >= time_lim)
+      break;
   }
   printf("RDS done\n");
-  uint fres = mu[0];
+  uint fres = mu[i+1]; // last
   delete [] mu;
   clock_t end = clock();
   printf("rds: time elapsed = %lf secs\n", (double)(end-start)/CLOCKS_PER_SEC);
