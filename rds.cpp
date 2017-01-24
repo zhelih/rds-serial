@@ -30,13 +30,13 @@ uint find_max(vector<uint>& c, vector<uint>& p, const uint* mu, verifier *v, gra
 //    return max(p.size(), lb);
     if(p.size() > lb)
     {
-      printf("Updating new lb solution to:\n");
+/*      printf("Updating new lb solution to:\n");
       for(auto it = p.begin(); it != p.end(); ++it)
       {
         printf("%u ", *it);
         res = p; //copy
       }
-      printf("\n");
+      printf("\n");*/
       return p.size();
     }
     else
@@ -48,7 +48,10 @@ uint find_max(vector<uint>& c, vector<uint>& p, const uint* mu, verifier *v, gra
     if(c.size() + p.size() < lb) // Prune 1
       return lb;
     //TODO replace find_min here to constant storing
-    auto it = min_element(c.begin(), c.end()); // FIXME O(n) time
+    //auto it = min_element(c.begin(), c.end()); // FIXME O(n) time
+    auto it = c.begin();
+/*    uint ind = it-c.begin();
+    printf("ind = %u\n", ind);*/
     uint i = *it;
     if(mu[i] + p.size() < lb)
       return lb;
