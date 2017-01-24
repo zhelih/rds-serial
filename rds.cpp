@@ -22,7 +22,7 @@ void print_cont(const vector<uint>& c)
   printf("\n");
 }
 
-uint find_max(vector<uint>& c, vector<uint>& p, const uint* mu, verifier *v, graph* g, vector<uint>& res, void* prev_aux)
+uint find_max(vector<uint>& c, vector<uint>& p, const uint* mu, verifier *v, graph* g, vector<uint>& res, void* aux)
 {
 //  printf("debug: running find_max with c.size = %lu, p.size = %lu\n", c.size(), p.size());
   if(c.size() == 0)
@@ -55,10 +55,10 @@ uint find_max(vector<uint>& c, vector<uint>& p, const uint* mu, verifier *v, gra
     c.erase(it);
 //    NB: exploit that we adding only 1 vertex to p
 //    thus verifier can prepare some info using prev calculations
-    void* aux = v->prepare_aux(g, p, i, c, prev_aux);
+    v->prepare_aux(g, p, i, c, aux);
     p.push_back(i);
     vector<uint> c_new;
-    for(auto it2 = c.begin(); it2 != c.end(); ++ it2)
+    for(auto it2 = c.begin(); it2 != c.end(); ++it2)
     {
       if(*it2 != i && v->check(g, p, *it2, aux))
       {
@@ -70,9 +70,9 @@ uint find_max(vector<uint>& c, vector<uint>& p, const uint* mu, verifier *v, gra
         lb = p.size();
     } else */
     lb = find_max(c_new, p, mu, v, g, res, aux);
-    if(aux != 0)
-      v->free_aux(aux);
     p.pop_back();
+//    if(aux != 0)
+      v->undo_aux(g, p, i, c, aux);
   }
   return lb;
 }

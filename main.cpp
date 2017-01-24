@@ -56,6 +56,7 @@ int main(int argc, char* argv[])
 //    g->reorder_color(3);
     vector<uint> res_p;
     auto v = new defective_clique(1);
+//    auto v = new iuc();
     uint res = rds(v, g, res_p);
     if(v->check_solution(g, res_p))
       printf("CORRECT!\n");
