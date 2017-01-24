@@ -21,9 +21,15 @@ void show_usage(const char* argv)
   printf("-h|-?\tdisplay this help\n");
 }
 
+void pr_()
+{
+  printf("------------------------------------------------\n");
+}
+
 int main(int argc, char* argv[])
 {
-  printf("Russian-Doll-Search\nCopyright Eugene Lykhovyd, 2017\n");
+  printf("Russian-Doll-Search\nCopyright Eugene Lykhovyd, 2017.\n");
+  pr_();
   if(argc < 2 || string(argv[1]) == "-h" || string(argv[1]) == "-?") {
     show_usage(argv[0]);
   } else {
@@ -61,7 +67,8 @@ int main(int argc, char* argv[])
       printf("INCORRECT\n");
     g->restore_order(res_p);
     sort(res_p.begin(), res_p.end());
-    printf("---------------------------------\nSolution:\n");
+    pr_();
+    printf("Solution:\n");
     for(uint i = 0; i < res_p.size(); ++i)
       printf("%u ", res_p[i]+1);
     printf("\nRDS returned res = %d\n", res);
