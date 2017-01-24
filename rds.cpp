@@ -49,13 +49,12 @@ uint find_max(vector<uint>& c, vector<uint>& p, const uint* mu, verifier *v, gra
       return lb;
     //TODO replace find_min here to constant storing
     //auto it = min_element(c.begin(), c.end()); // FIXME O(n) time
-    auto it = c.end()-1;
 /*    uint ind = it-c.begin();
     printf("ind = %u\n", ind);*/
-    uint i = *it;
+    uint i = c[c.size()-1];
     if(mu[i] + p.size() < lb)
       return lb;
-    c.erase(it);
+    c.pop_back();
 //    NB: exploit that we adding only 1 vertex to p
 //    thus verifier can prepare some info using prev calculations
     v->prepare_aux(g, p, i, c, aux);
