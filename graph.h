@@ -11,7 +11,7 @@ class graph
   private:
   uint** adj;
   uint mask[CHUNK_SIZE];
-  std::vector<int> mapka;
+  std::vector<uint> mapka;
   protected:
   void reorder_custom(const std::vector<uint>& order); // order[i] = new pos of i in [0;n)
   public:

@@ -1,0 +1,13 @@
+c Test file for Vertex ordering
+c clique : 4
+c IUC : 4
+c Stable set : 3
+p edge 6 8
+e 1 2
+e 2 3
+e 2 4
+e 2 5
+e 3 4
+e 3 5
+e 4 5
+e 5 6

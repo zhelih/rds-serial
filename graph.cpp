@@ -120,9 +120,12 @@ void graph::reorder_custom(const vector<uint>& order)
   // recomputing the whole adjacency matrix
   // slow but who cares? done only ones
   vector<vector<uint> > adj_old(nr_nodes);
-  vector<uint> rev_mapka(nr_nodes);
+  vector<uint> mapka_old(mapka);
   for(uint i = 0; i < nr_nodes; ++i)
+  {
     adj_old[i].resize(nr_nodes/CHUNK_SIZE+1);
+    mapka[i] = order[mapka_old[i]]; // update mapka
+  }
   for(uint i = 0; i < nr_nodes; ++i)
     for(uint j = 0; j < nr_nodes/CHUNK_SIZE+1; ++j)
     {
@@ -137,19 +140,18 @@ void graph::reorder_custom(const vector<uint>& order)
       fprintf(stderr, "Wrong custom order input : node out of bounds!\n");
       exit(1);
     }
-    mapka[i] = node; // update mapka
-    rev_mapka[node] = i; //rev mapka, local use only
   }
   for(uint i = 0; i < nr_nodes; ++i)
   {
     for(uint j = 0; j < nr_nodes; ++j)
     {
       // copy adj
-      if(adj_old[rev_mapka[i]][rev_mapka[j]/CHUNK_SIZE]&mask[rev_mapka[j]%CHUNK_SIZE]) // if is_edge
-        add_edge(i, j);
+      if(adj_old[i][j/CHUNK_SIZE]&mask[j%CHUNK_SIZE]) // if is_edge
+        add_edge(order[i], order[j]);
     }
   }
 }
+
 void graph::reorder_degree() // degree order from large to small
 {
   vector<pair<uint,uint> > degrees(nr_nodes); // pair degree, node number
@@ -272,14 +274,18 @@ void graph::reorder_weight() {} // weight from large to small
 
 void graph::restore_order(vector<uint>& v)
 {
+  vector<uint> rev_mapka(nr_nodes);
+  vector<uint> v_copy(v);
+  for(uint i = 0; i < nr_nodes; ++i)
+    rev_mapka[mapka[i]] = i;
   for(uint i = 0; i < v.size(); ++i)
-    v[i] = mapka[v[i]];
+    v[i] = rev_mapka[v_copy[i]];
 }
 
 void graph::print_mapka() const
 {
   printf("mapka:\n");
   for(uint i = 0; i < nr_nodes; ++i)
-    printf("%d ", mapka[i]);
+    printf("%u ", mapka[i]);
   printf("\n");
 }
