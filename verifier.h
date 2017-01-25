@@ -72,4 +72,23 @@ class defective_clique: public verifier
   void free_aux(void* aux);
 };
 
+class plex: public verifier
+{
+  private:
+  uint s;
+  public:
+
+  struct t_aux { std::vector<uint> nncnt; std::vector<uint> sat; uint nr_sat; };
+
+  plex(uint s_) : s(s_) { if(s == 0) s = 1; } // s > 0
+  bool check_pair(graph* g, uint i, uint j) const;
+  bool check(graph* g, const std::vector<uint>& p, uint n, void* aux) const;
+  bool check_solution(graph* g, const std::vector<uint>& res) const;
+
+  void* init_aux(graph* g, uint i, const std::vector<uint>& c);
+  void prepare_aux(graph*g, const std::vector<uint>& p, uint i, const std::vector<uint>& c, void* prev_aux);
+  void undo_aux(graph* g, const std::vector<uint>& p, uint i, const std::vector<uint>& c, void* aux);
+  void free_aux(void* aux);
+};
+
 #endif

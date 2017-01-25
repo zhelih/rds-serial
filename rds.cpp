@@ -87,7 +87,7 @@ uint find_max(vector<uint>& c, vector<uint>& p, const uint* mu, verifier *v, gra
     lb_a = lb;
     p.pop_back();
 //    if(aux != 0)
-      v->undo_aux(g, p, i, c, aux);
+    v->undo_aux(g, p, i, c, aux);
   }
   return lb;
 }

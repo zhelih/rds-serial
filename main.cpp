@@ -13,8 +13,8 @@ void show_usage(const char* argv)
   printf("Usage: %s [options] <dimacs input file>\nAvailable options:\n", argv);
   printf("\t-t\tTime limit in seconds (optional)\n");
   printf("\t-h|-?\tdisplay this help\n");
-  printf("Maximum Solvers:\n\t-c\tClique\n\t-s\tStable set\n\t-d n\tn-defective clique\n");
-  printf("\t-iuc\tIndependent Union of Cliques\n");
+  printf("Maximum Solvers:\n\t-c\tClique\n\t-s\tStable set\n\t-d s\ts-defective clique\n");
+  printf("\t-p s\ts-plex\n\t-iuc\tIndependent Union of Cliques\n");
   printf("Vertex ordering:\n");
   printf("\t-vd\tdegree from large to small\n");
   printf("\t-vd2\t2-neighborhood from large to small\n");
@@ -49,6 +49,7 @@ int main(int argc, char* argv[])
       // so ugly, but switch refuses to compare strings
       if(string(argv[i]) == "-c") { if(v) delete v; v = new clique(); }
       else if (string(argv[i]) == "-s") { if(v) delete v; v = new stable(); }
+      else if (string(argv[i]) == "-p") { if(v) delete v; v = new plex(atoi(argv[i+1])); i++; }
       else if (string(argv[i]) == "-d") { if(v) delete v; v = new defective_clique(atoi(argv[i+1])); i++; }
       else if (string(argv[i]) == "-iuc") { if(v) delete v; v = new iuc(); }
 
