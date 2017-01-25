@@ -65,6 +65,11 @@ int main(int argc, char* argv[])
           if(v) delete v; delete g; return 1;
       }
     }
+    if(!v)
+    {
+      fprintf(stderr, "No task specified\n");
+      return 1;
+    }
     vector<uint> res_p;
     uint res = rds(v, g, res_p, time_lim);
     printf("Solution verification: ");
