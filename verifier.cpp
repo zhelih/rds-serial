@@ -132,7 +132,7 @@ bool plex::check_solution(graph* g, const std::vector<uint>& res) const
   for(uint i = 1; i < res.size(); ++i)
     if(m_degree > degrees[i])
       m_degree = degrees[i];
-  printf("min_degree = %u\n", m_degree);
+  fprintf(stderr, "min_degree = %u\n", m_degree);
   return m_degree >= (res.size() - s);
 }
 
