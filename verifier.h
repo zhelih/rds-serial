@@ -76,9 +76,12 @@ class plex: public verifier
 {
   private:
   uint s;
+
+  uint level;
+  std::vector<std::vector<uint> > nncnt; std::vector<uint> sat; uint nr_sat;
   public:
 
-  struct t_aux { std::vector<uint> nncnt; std::vector<uint> sat; uint nr_sat; };
+//  struct t_aux { std::vector<uint> nncnt; std::vector<uint> sat; uint nr_sat; };
 
   plex(uint s_) : s(s_) { if(s == 0) s = 1; } // s > 0
   bool check_pair(graph* g, uint i, uint j) const;
