@@ -9,7 +9,7 @@ typedef unsigned int uint;
 class graph
 {
   private:
-  uint** adj;
+  std::vector<std::vector<bool> >  adj;
   uint mask[CHUNK_SIZE];
   std::vector<uint> mapka;
   protected:
@@ -19,7 +19,7 @@ class graph
   graph(uint n);
   ~graph();
   void add_edge(uint i, uint j);
-  bool is_edge(uint i, uint j);
+  inline bool is_edge(uint i, uint j) {return adj[i][j];} 
   // note: reordering might take a bit of time
   // do before RDS
   void reorder_degree(); // degree order from large to small

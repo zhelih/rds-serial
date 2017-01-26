@@ -79,35 +79,37 @@ graph::graph(uint n)
 
   mapka.resize(n); // used to restore order
   // create adj matrix
-  adj = new uint*[n];
+  //adj = new uint*[n];
+  adj.resize(n);
   for(uint i = 0; i < n; ++i)
   {
-    adj[i] = new uint[n/CHUNK_SIZE+1];
+    //adj[i] = new uint[n];
+    adj[i].resize(n);
     mapka[i] = i;
   }
   for(uint i = 0; i < n; ++i)
-    for(uint j = 0; j < n/CHUNK_SIZE+1; ++j)
-      adj[i][j] = 0;
+    for(uint j = 0; j < n; ++j)
+      adj[i][j] = false;
   nr_nodes = n;
 }
 
 graph::~graph()
 {
-  for(uint i = 0; i < nr_nodes; ++i)
+/*  for(uint i = 0; i < nr_nodes; ++i)
     delete [] adj[i];
-  delete [] adj;
+  delete [] adj;*/
 }
 
 void graph::add_edge(uint i, uint j)
 {
-  adj[i][j/CHUNK_SIZE] |= mask[j%CHUNK_SIZE];
-  adj[j][i/CHUNK_SIZE] |= mask[i%CHUNK_SIZE];
+  adj[i][j] = true;
+  adj[j][i] = true;
 }
 
-bool graph::is_edge(uint i, uint j)
+/*inline bool graph::is_edge(uint i, uint j)
 {
   return adj[i][j/CHUNK_SIZE]&mask[j%CHUNK_SIZE];
-}
+}*/
 
 /* Reorders start here */
 void graph::reorder_none() {} // don't reorder anything
