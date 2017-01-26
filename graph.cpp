@@ -89,7 +89,7 @@ graph::graph(uint n)
   }
   for(uint i = 0; i < n; ++i)
     for(uint j = 0; j < n; ++j)
-      adj[i][j] = false;
+      adj[i][j] = 0;
   nr_nodes = n;
 }
 

@@ -9,7 +9,7 @@ typedef unsigned int uint;
 class graph
 {
   private:
-  std::vector<std::vector<bool> >  adj;
+  std::vector<std::vector<int> >  adj;
   uint mask[CHUNK_SIZE];
   std::vector<uint> mapka;
   protected:
