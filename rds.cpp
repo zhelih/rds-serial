@@ -50,10 +50,10 @@ uint find_max(vector<vector <uint> >& c, vector<uint>& p, const uint* mu, verifi
 
   while(c[level].size() > 0)
   {
-    if(c[level].size() + p.size() < lb) // Prune 1
+    if(c[level].size() + p.size() <= lb) // Prune 1
       return lb;
     uint i = c[level][c[level].size()-1];
-    if(mu[i] + p.size() < lb) // Prune 2
+    if(mu[i] + p.size() <= lb) // Prune 2
       return lb;
     c[level].pop_back();
 //    NB: exploit that we adding only 1 vertex to p
