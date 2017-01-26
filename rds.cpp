@@ -34,7 +34,7 @@ void print_lb_atomic(int signal)
   exit(0);
 }
 
-uint find_max(vector<vector <uint> >& c, vector<uint>& p, const uint* mu, verifier *v, graph* g, vector<uint>& res, void* aux, int level)
+uint find_max(vector<vector <uint> >& c, vector<uint>& p, const uint* mu, verifier *v, graph* g, vector<uint>& res, int level)
 {
 //  printf("debug: running find_max with c.size = %lu, p.size = %lu\n", c.size(), p.size());
   if(c[level].size() == 0)
@@ -58,12 +58,12 @@ uint find_max(vector<vector <uint> >& c, vector<uint>& p, const uint* mu, verifi
     c[level].pop_back();
 //    NB: exploit that we adding only 1 vertex to p
 //    thus verifier can prepare some info using prev calculations
-    v->prepare_aux(g, p, i, c[level], aux);
+    v->prepare_aux(g, p, i, c[level]);
     p.push_back(i);
     c[level+1].resize(0);
     for(uint it2 = 0; it2 < c[level].size(); ++it2)
     {
-      if(c[level][it2] != i && v->check(g, p, c[level][it2], aux))
+      if(c[level][it2] != i && v->check(g, p, c[level][it2]))
       {
         c[level+1].push_back(c[level][it2]);
       }
@@ -72,11 +72,11 @@ uint find_max(vector<vector <uint> >& c, vector<uint>& p, const uint* mu, verifi
       if(p.size() > lb)
         lb = p.size();
     } else */
-    lb = find_max(c, p, mu, v, g, res, aux, level+1);
+    lb = find_max(c, p, mu, v, g, res, level+1);
     lb_a = lb;
     p.pop_back();
 //    if(aux != 0)
-    v->undo_aux(g, p, i, c[level], aux);
+    v->undo_aux(g, p, i, c[level]);
   }
   return lb;
 }
@@ -114,11 +114,11 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
     reverse(c[0].begin(), c[0].end()); // for efficient deletion of min element
     vector<uint> p;
     p.push_back(i);
-    void* aux = v->init_aux(g, i, c[0]);
+    v->init_aux(g, i, c[0]);
     printf("i = %u, c.size = %lu, ", i, c[0].size());
-    mu[i] = find_max(c, p, mu, v, g, res, aux, 0);
+    mu[i] = find_max(c, p, mu, v, g, res, 0);
     printf("mu[%d] = %d\n", i, mu[i]);
-    v->free_aux(aux);
+    v->free_aux();
     if(time_lim > 0 && (clock()-start)/CLOCKS_PER_SEC >= time_lim)
       break;
   }

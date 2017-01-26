@@ -2,7 +2,7 @@
 
 // clique
 bool clique::check_pair(graph* g, uint i, uint j) const { return g->is_edge(i,j); }
-bool clique::check(graph* g, const std::vector<uint>& p, uint n, void* _aux) const
+bool clique::check(graph* g, const std::vector<uint>& p, uint n) const
 {
   for(auto it = p.begin(); it != p.end(); ++it)
     if(!g->is_edge(*it, n))
@@ -20,7 +20,7 @@ bool clique::check_solution(graph* g, const std::vector<uint>& res) const
 
 // stable
 bool stable::check_pair(graph* g, uint i, uint j) const { return !g->is_edge(i,j); }
-bool stable::check(graph* g, const std::vector<uint>& p, uint n, void* _aux) const
+bool stable::check(graph* g, const std::vector<uint>& p, uint n) const
 {
   for(auto it = p.begin(); it != p.end(); ++it)
     if(g->is_edge(*it, n))
@@ -38,7 +38,7 @@ bool stable::check_solution(graph* g, const std::vector<uint>& res) const
 
 // iuc
 bool iuc::check_pair(graph* g, uint i, uint j) const { return true; }
-bool iuc::check(graph* g, const std::vector<uint>& p, uint n, void* _aux) const
+bool iuc::check(graph* g, const std::vector<uint>& p, uint n) const
 {
   for(auto it = p.begin(); it != p.end(); ++it)
     for(auto it2 = next(it); it2 != p.end(); ++it2)
@@ -62,11 +62,11 @@ bool iuc::check_solution(graph* g, const std::vector<uint>& res) const {
 
 //s-defective clique
 bool defective_clique::check_pair(graph* g, uint i, uint j) const { return (s>0)||(g->is_edge(i,j)); }
-bool defective_clique::check(graph* g, const std::vector<uint>& p, uint n, void* aux) const
+bool defective_clique::check(graph* g, const std::vector<uint>& p, uint n) const
 {
   return nnv + nncnt[level][n] <= s;
 }
-void* defective_clique::init_aux(graph* g, uint i, const std::vector<uint>& c)
+void defective_clique::init_aux(graph* g, uint i, const std::vector<uint>& c)
 {
   level = 0;
   nnv = 0;
@@ -79,9 +79,8 @@ void* defective_clique::init_aux(graph* g, uint i, const std::vector<uint>& c)
 
   for(uint it = 0; it < c.size(); ++it)
     nncnt[0][c[it]]=!g->is_edge(c[it], i);
-  return 0;
 }
-void defective_clique::prepare_aux(graph* g, const std::vector<uint>& p, uint j, const std::vector<uint>& c, void* aux)
+void defective_clique::prepare_aux(graph* g, const std::vector<uint>& p, uint j, const std::vector<uint>& c)
 {
   nnv += nncnt[level][j];
   level++;
@@ -93,12 +92,12 @@ void defective_clique::prepare_aux(graph* g, const std::vector<uint>& p, uint j,
   }
   nncnt[level][j]=nncnt[level-1][j];
 }
-void defective_clique::undo_aux(graph* g, const std::vector<uint>& p, uint j, const std::vector<uint>& c, void* aux)
+void defective_clique::undo_aux(graph* g, const std::vector<uint>& p, uint j, const std::vector<uint>& c)
 {
   level--;
   nnv -= nncnt[level][j];
 }
-void defective_clique::free_aux(void* aux) { level = 0; }
+void defective_clique::free_aux() { level = 0; }
 bool defective_clique::check_solution(graph* g, const std::vector<uint>& res) const
 {
   uint edges = 0;
@@ -134,7 +133,7 @@ bool plex::check_solution(graph* g, const std::vector<uint>& res) const
   return m_degree >= (res.size() - s);
 }
 
-bool plex::check(graph* g, const std::vector<uint>& p, uint n, void* aux) const
+bool plex::check(graph* g, const std::vector<uint>& p, uint n) const
 {
   if(nncnt[level][n] >= s) // degree check
     return false;
@@ -143,7 +142,7 @@ bool plex::check(graph* g, const std::vector<uint>& p, uint n, void* aux) const
       return false;
   return true;
 }
-void* plex::init_aux(graph* g, uint i, const std::vector<uint>& c)
+void plex::init_aux(graph* g, uint i, const std::vector<uint>& c)
 {
   level = 0;
   nncnt.resize(g->nr_nodes);
@@ -156,9 +155,8 @@ void* plex::init_aux(graph* g, uint i, const std::vector<uint>& c)
       nncnt[l][it] = 0;
   for(uint it = 0; it < c.size(); ++it)
     nncnt[0][c[it]]=!g->is_edge(c[it], i);
-  return 0;
 }
-void plex::prepare_aux(graph*g, const std::vector<uint>& p, uint j, const std::vector<uint>& c, void* aux)
+void plex::prepare_aux(graph*g, const std::vector<uint>& p, uint j, const std::vector<uint>& c)
 {
   nr_sat = 0;
   level++;
@@ -191,8 +189,8 @@ void plex::prepare_aux(graph*g, const std::vector<uint>& p, uint j, const std::v
     nr_sat++;
   }
 }
-void plex::undo_aux(graph* g, const std::vector<uint>& p, uint j, const std::vector<uint>& c, void* aux)
+void plex::undo_aux(graph* g, const std::vector<uint>& p, uint j, const std::vector<uint>& c)
 {
   level--;
 }
-void plex::free_aux(void* aux) { level = 0; }
+void plex::free_aux() { level = 0; }

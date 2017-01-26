@@ -11,16 +11,16 @@ class verifier
 {
   public:
     virtual bool check_pair(graph* g, uint i, uint j) const = 0;
-    virtual bool check(graph* g, const std::vector<uint>& p, uint n, void* aux) const = 0;
+    virtual bool check(graph* g, const std::vector<uint>& p, uint n) const = 0;
 
     // return aux info for singleton P = { i } and C
-    virtual void* init_aux(graph* g, uint i, const std::vector<uint>& c) { return 0; }
+    virtual void init_aux(graph* g, uint i, const std::vector<uint>& c) { }
     // return aux info for P u {i}
     // knowing aux for P as prev_aux
-    virtual void prepare_aux(graph*g, const std::vector<uint>& p, uint i, const std::vector<uint>& c, void* prev_aux) { }
-    virtual void undo_aux(graph* g, const std::vector<uint>& p, uint i, const std::vector<uint>& c, void* aux) {}
+    virtual void prepare_aux(graph*g, const std::vector<uint>& p, uint i, const std::vector<uint>& c) { }
+    virtual void undo_aux(graph* g, const std::vector<uint>& p, uint i, const std::vector<uint>& c) {}
     // free aux info
-    virtual void free_aux(void* aux) {}
+    virtual void free_aux() {}
 
     // optional checker
     virtual bool check_solution(graph* g, const std::vector<uint>& res) const { return true; }
@@ -33,7 +33,7 @@ class clique: public verifier
 {
   public:
   bool check_pair(graph* g, uint i, uint j) const;
-  bool check(graph* g, const std::vector<uint>& p, uint n, void* aux) const;
+  bool check(graph* g, const std::vector<uint>& p, uint n) const;
   bool check_solution(graph* g, const std::vector<uint>& res) const;
 };
 
@@ -41,7 +41,7 @@ class stable: public verifier
 {
   public:
   bool check_pair(graph* g, uint i, uint j) const;
-  bool check(graph* g, const std::vector<uint>& p, uint n, void* aux) const;
+  bool check(graph* g, const std::vector<uint>& p, uint n) const;
   bool check_solution(graph* g, const std::vector<uint>& res) const;
 };
 
@@ -49,7 +49,7 @@ class iuc: public verifier
 {
   public:
   bool check_pair(graph* g, uint i, uint j) const;
-  bool check(graph* g, const std::vector<uint>& p, uint n, void* aux) const;
+  bool check(graph* g, const std::vector<uint>& p, uint n) const;
   bool check_solution(graph* g, const std::vector<uint>& res) const;
 };
 
@@ -65,13 +65,13 @@ class defective_clique: public verifier
 
   defective_clique(uint s_) : s(s_) { }
   bool check_pair(graph* g, uint i, uint j) const;
-  bool check(graph* g, const std::vector<uint>& p, uint n, void* aux) const;
+  bool check(graph* g, const std::vector<uint>& p, uint n) const;
   bool check_solution(graph* g, const std::vector<uint>& res) const;
 
-  void* init_aux(graph* g, uint i, const std::vector<uint>& c);
-  void prepare_aux(graph*g, const std::vector<uint>& p, uint i, const std::vector<uint>& c, void* prev_aux);
-  void undo_aux(graph* g, const std::vector<uint>& p, uint i, const std::vector<uint>& c, void* aux);
-  void free_aux(void* aux);
+  void init_aux(graph* g, uint i, const std::vector<uint>& c);
+  void prepare_aux(graph*g, const std::vector<uint>& p, uint i, const std::vector<uint>& c);
+  void undo_aux(graph* g, const std::vector<uint>& p, uint i, const std::vector<uint>& c);
+  void free_aux();
 };
 
 class plex: public verifier
@@ -87,13 +87,13 @@ class plex: public verifier
 
   plex(uint s_) : s(s_) { if(s == 0) s = 1; } // s > 0
   bool check_pair(graph* g, uint i, uint j) const;
-  bool check(graph* g, const std::vector<uint>& p, uint n, void* aux) const;
+  bool check(graph* g, const std::vector<uint>& p, uint n) const;
   bool check_solution(graph* g, const std::vector<uint>& res) const;
 
-  void* init_aux(graph* g, uint i, const std::vector<uint>& c);
-  void prepare_aux(graph*g, const std::vector<uint>& p, uint i, const std::vector<uint>& c, void* prev_aux);
-  void undo_aux(graph* g, const std::vector<uint>& p, uint i, const std::vector<uint>& c, void* aux);
-  void free_aux(void* aux);
+  void init_aux(graph* g, uint i, const std::vector<uint>& c);
+  void prepare_aux(graph*g, const std::vector<uint>& p, uint i, const std::vector<uint>& c);
+  void undo_aux(graph* g, const std::vector<uint>& p, uint i, const std::vector<uint>& c);
+  void free_aux();
 };
 
 #endif
