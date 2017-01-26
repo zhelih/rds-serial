@@ -57,9 +57,11 @@ class defective_clique: public verifier
 {
   private:
   uint s;
-  public:
+  uint level;
+  uint nnv;
+  std::vector<std::vector<uint> > nncnt;
 
-  struct t_aux { uint nnv; std::vector<uint> nncnt; };
+  public:
 
   defective_clique(uint s_) : s(s_) { }
   bool check_pair(graph* g, uint i, uint j) const;

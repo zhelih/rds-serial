@@ -64,43 +64,41 @@ bool iuc::check_solution(graph* g, const std::vector<uint>& res) const {
 bool defective_clique::check_pair(graph* g, uint i, uint j) const { return (s>0)||(g->is_edge(i,j)); }
 bool defective_clique::check(graph* g, const std::vector<uint>& p, uint n, void* aux) const
 {
-  t_aux* a = (static_cast<t_aux*>(aux));
-  return a->nnv + a->nncnt[n] <= s;
+  return nnv + nncnt[level][n] <= s;
 }
 void* defective_clique::init_aux(graph* g, uint i, const std::vector<uint>& c)
 {
-  t_aux *aux = new t_aux();
-  aux->nnv=0;
-  aux->nncnt.resize(g->nr_nodes);
+  level = 0;
+  nnv = 0;
+  nncnt.resize(g->nr_nodes);
+  for(uint it = 0; it < g->nr_nodes; ++it)
+    nncnt[it].resize(g->nr_nodes);
+  for(uint it = 0; it < g->nr_nodes; ++it)
+    for(uint it2 = 0; it2 < g->nr_nodes; ++it2)
+      nncnt[it][it2] = 0;
+
   for(uint it = 0; it < c.size(); ++it)
-  {
-    aux->nncnt[c[it]]=!g->is_edge(c[it], i);
-  }
-  return aux;
+    nncnt[0][c[it]]=!g->is_edge(c[it], i);
+  return 0;
 }
 void defective_clique::prepare_aux(graph* g, const std::vector<uint>& p, uint j, const std::vector<uint>& c, void* aux)
 {
-  t_aux* a = static_cast<t_aux*>(aux);
-
-  a->nnv += a->nncnt[j];
+  nnv += nncnt[level][j];
+  level++;
   for(uint i = 0; i < c.size(); ++i)
   {
+    nncnt[level][c[i]] = nncnt[level-1][c[i]];
     if(!g->is_edge(c[i],j))
-      a->nncnt[c[i]]++;
+      nncnt[level][c[i]]++;
   }
+  nncnt[level][j]=nncnt[level-1][j];
 }
 void defective_clique::undo_aux(graph* g, const std::vector<uint>& p, uint j, const std::vector<uint>& c, void* aux)
 {
-  t_aux* a = static_cast<t_aux*>(aux);
-
-  for(uint i = 0; i < c.size(); ++i)
-  {
-    if(!g->is_edge(c[i],j))
-      a->nncnt[c[i]]--;
-  }
-  a->nnv -= a->nncnt[j];
+  level--;
+  nnv -= nncnt[level][j];
 }
-void defective_clique::free_aux(void* aux) { t_aux* i = static_cast<t_aux*>(aux); delete i; }
+void defective_clique::free_aux(void* aux) { level = 0; }
 bool defective_clique::check_solution(graph* g, const std::vector<uint>& res) const
 {
   uint edges = 0;
