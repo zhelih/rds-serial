@@ -4,6 +4,7 @@
 #include <ctime>
 #include <cstdio>
 #include <atomic>
+#include <chrono>
 
 #include <csignal> // Display best result for SIGINT before exit
 
@@ -34,9 +35,14 @@ void print_lb_atomic(int signal)
   exit(0);
 }
 
-uint find_max(vector<vector <uint> >& c, vector<uint>& p, const uint* mu, verifier *v, graph* g, vector<uint>& res, int level)
+static uint iter = 0;
+static bool should_exit = false;
+
+uint find_max(vector<vector <uint> >& c, vector<uint>& p, const uint* mu, verifier *v, graph* g, vector<uint>& res, int level, const chrono::time_point<chrono::steady_clock> start, const uint time_lim)
 {
 //  printf("debug: running find_max with c.size = %lu, p.size = %lu\n", c.size(), p.size());
+  if(should_exit)
+    return lb;
   if(c[level].size() == 0)
   {
     if(p.size() > lb)
@@ -50,6 +56,17 @@ uint find_max(vector<vector <uint> >& c, vector<uint>& p, const uint* mu, verifi
 
   while(c[level].size() > 0)
   {
+    iter++;
+    if(iter % 1000 == 0 && time_lim > 0)
+    {
+      chrono::duration<double> d = chrono::steady_clock::now() - start;
+      if(d.count() >= (double)time_lim)
+      {
+        should_exit = true;
+        return lb;
+      }
+    }
+
     if(c[level].size() + p.size() <= lb) // Prune 1
       return lb;
     uint i = c[level][c[level].size()-1];
@@ -72,7 +89,7 @@ uint find_max(vector<vector <uint> >& c, vector<uint>& p, const uint* mu, verifi
       if(p.size() > lb)
         lb = p.size();
     } else */
-    lb = find_max(c, p, mu, v, g, res, level+1);
+    lb = find_max(c, p, mu, v, g, res, level+1, start, time_lim);
     lb_a = lb;
     p.pop_back();
 //    if(aux != 0)
@@ -83,7 +100,8 @@ uint find_max(vector<vector <uint> >& c, vector<uint>& p, const uint* mu, verifi
 
 uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
 {
-  clock_t start = clock();
+  chrono::time_point<chrono::steady_clock> start = chrono::steady_clock::now(); // C++11 only
+  should_exit = false;
   uint n = g->nr_nodes;
   // order V
   lb = 0; // best solution size found so far
@@ -116,16 +134,20 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
     p.push_back(i);
     v->init_aux(g, i, c[0]);
     printf("i = %u, c.size = %lu, ", i, c[0].size());
-    mu[i] = find_max(c, p, mu, v, g, res, 0);
+    mu[i] = find_max(c, p, mu, v, g, res, 0, start, time_lim);
     printf("mu[%d] = %d\n", i, mu[i]);
     v->free_aux();
-    if(time_lim > 0 && (clock()-start)/CLOCKS_PER_SEC >= time_lim)
-      break;
+    if(time_lim > 0)
+    {
+      chrono::duration<double> d = chrono::steady_clock::now() - start;
+      if((uint)(d.count()) >= time_lim)
+        break;
+    }
   }
   printf("RDS done\n");
   uint fres = mu[i+1]; // last
   delete [] mu;
-  clock_t end = clock();
-  printf("rds: time elapsed = %lf secs\n", (double)(end-start)/CLOCKS_PER_SEC);
+  chrono::duration<double> d = chrono::steady_clock::now() - start;
+  printf("rds: time elapsed = %.8lf secs\n", d.count());
   return fres;
 }
