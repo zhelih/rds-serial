@@ -20,6 +20,7 @@ void show_usage(const char* argv)
   printf("\t-vd2\t2-neighborhood from large to small\n");
   printf("\t-vr\trandom ordering\n");
   printf("\t-vc n\tn-color ordering\n");
+  printf("\t-vw\tweight from large to small\n");
   printf("\t-vrev\treverse ordering\n");
 }
 
@@ -56,6 +57,7 @@ int main(int argc, char* argv[])
       else if (string(argv[i]) == "-vd") { g->reorder_degree(); }
       else if (string(argv[i]) == "-vd2") { g->reorder_2nb(); }
       else if (string(argv[i]) == "-vr") { g->reorder_random(); }
+      else if (string(argv[i]) == "-vw") { g->reorder_weight(); }
       else if (string(argv[i]) == "-vc") { g->reorder_color(atoi(argv[i+1])); i++; }
       else if (string(argv[i]) == "-vrev") { g->reorder_rev(); }
 
