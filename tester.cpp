@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
           sscanf(buf, "RDS returned res = %u", &res);
       }
       pclose(f);
-      printf("%s & %u & %u & %.2f & %u & %f\n", graph_file->c_str(), nr_n, nr_e, dens(nr_n, nr_e), res, time_el);
+      printf("%s & %u & %u & %.2f & %u & %.2f \\\\\n", graph_file->c_str(), nr_n, nr_e, dens(nr_n, nr_e), res, time_el);
       fflush(stdout);
     }
   }
