@@ -11,7 +11,7 @@ class verifier
 {
   public:
     virtual bool check_pair(graph* g, uint i, uint j) const = 0;
-    virtual bool check(graph* g, const std::vector<uint>& p, uint n) const = 0;
+    virtual bool check(graph* g, const std::vector<uint>& p, uint n) = 0;
 
     // return aux info for singleton P = { i } and C
     virtual void init_aux(graph* g, uint i, const std::vector<uint>& c) { }
@@ -33,7 +33,7 @@ class clique: public verifier
 {
   public:
   bool check_pair(graph* g, uint i, uint j) const;
-  bool check(graph* g, const std::vector<uint>& p, uint n) const;
+  bool check(graph* g, const std::vector<uint>& p, uint n);
   bool check_solution(graph* g, const std::vector<uint>& res) const;
 };
 
@@ -41,7 +41,7 @@ class stable: public verifier
 {
   public:
   bool check_pair(graph* g, uint i, uint j) const;
-  bool check(graph* g, const std::vector<uint>& p, uint n) const;
+  bool check(graph* g, const std::vector<uint>& p, uint n);
   bool check_solution(graph* g, const std::vector<uint>& res) const;
 };
 
@@ -49,7 +49,7 @@ class iuc: public verifier
 {
   public:
   bool check_pair(graph* g, uint i, uint j) const;
-  bool check(graph* g, const std::vector<uint>& p, uint n) const;
+  bool check(graph* g, const std::vector<uint>& p, uint n);
   bool check_solution(graph* g, const std::vector<uint>& res) const;
 };
 
@@ -65,7 +65,7 @@ class defective_clique: public verifier
 
   defective_clique(uint s_) : s(s_) { }
   bool check_pair(graph* g, uint i, uint j) const;
-  bool check(graph* g, const std::vector<uint>& p, uint n) const;
+  bool check(graph* g, const std::vector<uint>& p, uint n);
   bool check_solution(graph* g, const std::vector<uint>& res) const;
 
   void init_aux(graph* g, uint i, const std::vector<uint>& c);
@@ -87,7 +87,7 @@ class plex: public verifier
 
   plex(uint s_) : s(s_) { if(s == 0) s = 1; } // s > 0
   bool check_pair(graph* g, uint i, uint j) const;
-  bool check(graph* g, const std::vector<uint>& p, uint n) const;
+  bool check(graph* g, const std::vector<uint>& p, uint n);
   bool check_solution(graph* g, const std::vector<uint>& res) const;
 
   void init_aux(graph* g, uint i, const std::vector<uint>& c);
@@ -99,11 +99,17 @@ class plex: public verifier
 class forest: public verifier
 {
   private:
+  std::vector<uint> color;
+  std::vector<uint> parent;
+  std::vector<uint> s;
+  uint stack_size;
   public:
-
   bool check_pair(graph* g, uint i, uint j) const;
-  bool check(graph* g, const std::vector<uint>& p, uint n) const;
+  bool check(graph* g, const std::vector<uint>& p, uint n);
   bool check_solution(graph* g, const std::vector<uint>& res) const;
+
+  void init_aux(graph* g, uint i, const std::vector<uint>& c);
+  void prepare_aux(graph*g, const std::vector<uint>& p, uint i, const std::vector<uint>& c);
 };
 
 #endif
