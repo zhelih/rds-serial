@@ -96,4 +96,14 @@ class plex: public verifier
   void free_aux();
 };
 
+class forest: public verifier
+{
+  private:
+  public:
+
+  bool check_pair(graph* g, uint i, uint j) const;
+  bool check(graph* g, const std::vector<uint>& p, uint n) const;
+  bool check_solution(graph* g, const std::vector<uint>& res) const;
+};
+
 #endif

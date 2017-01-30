@@ -194,3 +194,7 @@ void plex::undo_aux(graph* g, const std::vector<uint>& p, uint j, const std::vec
   level--;
 }
 void plex::free_aux() { level = 0; }
+
+//maximum forest subgraph
+
+
