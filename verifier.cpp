@@ -1,8 +1,11 @@
 #include "verifier.h"
 
+#include <vector>
+#include <stack>
+
 // clique
 bool clique::check_pair(graph* g, uint i, uint j) const { return g->is_edge(i,j); }
-bool clique::check(graph* g, const std::vector<uint>& p, uint n) const
+bool clique::check(graph* g, const std::vector<uint>& p, uint n)
 {
   for(auto it = p.begin(); it != p.end(); ++it)
     if(!g->is_edge(*it, n))
@@ -20,7 +23,7 @@ bool clique::check_solution(graph* g, const std::vector<uint>& res) const
 
 // stable
 bool stable::check_pair(graph* g, uint i, uint j) const { return !g->is_edge(i,j); }
-bool stable::check(graph* g, const std::vector<uint>& p, uint n) const
+bool stable::check(graph* g, const std::vector<uint>& p, uint n)
 {
   for(auto it = p.begin(); it != p.end(); ++it)
     if(g->is_edge(*it, n))
@@ -38,7 +41,7 @@ bool stable::check_solution(graph* g, const std::vector<uint>& res) const
 
 // iuc
 bool iuc::check_pair(graph* g, uint i, uint j) const { return true; }
-bool iuc::check(graph* g, const std::vector<uint>& p, uint n) const
+bool iuc::check(graph* g, const std::vector<uint>& p, uint n)
 {
   for(auto it = p.begin(); it != p.end(); ++it)
     for(auto it2 = next(it); it2 != p.end(); ++it2)
@@ -62,7 +65,7 @@ bool iuc::check_solution(graph* g, const std::vector<uint>& res) const {
 
 //s-defective clique
 bool defective_clique::check_pair(graph* g, uint i, uint j) const { return (s>0)||(g->is_edge(i,j)); }
-bool defective_clique::check(graph* g, const std::vector<uint>& p, uint n) const
+bool defective_clique::check(graph* g, const std::vector<uint>& p, uint n)
 {
   return nnv + nncnt[level][n] <= s;
 }
@@ -133,7 +136,7 @@ bool plex::check_solution(graph* g, const std::vector<uint>& res) const
   return m_degree >= (res.size() - s);
 }
 
-bool plex::check(graph* g, const std::vector<uint>& p, uint n) const
+bool plex::check(graph* g, const std::vector<uint>& p, uint n)
 {
   if(nncnt[level][n] >= s) // degree check
     return false;
@@ -196,5 +199,77 @@ void plex::undo_aux(graph* g, const std::vector<uint>& p, uint j, const std::vec
 void plex::free_aux() { level = 0; }
 
 //maximum forest subgraph
+bool forest::check_pair(graph* g, uint i, uint j) const { return true; }
+bool forest::check(graph* g, const std::vector<uint>& p, uint n)
+{
+/*  printf("check call for %u, P =", n+1);
+  for(uint i = 0; i < p.size(); ++i)
+    printf(" %u", p[i]+1);
+  printf("\n");*/
+  for(uint i = 0; i < p.size(); ++i)
+    color[p[i]] = 0;
+  std::stack<std::pair<uint,uint> > s;
+  s.push(std::make_pair(n, n));
+  while(!s.empty())
+  {
+    std::pair<uint,uint> v = s.top(); s.pop();
+    color[v.first] = 1;
+    for(uint i = 0; i < p.size(); ++i)
+    {
+      if(p[i] != v.second && g->is_edge(v.first, p[i]))
+      {
+        if(color[p[i]] == 1)
+        {
+//          printf("return false for %u\n", n+1);
+          return false;
+        } else
+          s.push(std::make_pair(p[i],v.first));
+      }
+    }
+  }
+//  printf("return true\n");
+  return true;
+}
+bool forest::check_solution(graph* g, const std::vector<uint>& res) const
+{
+  std::stack<std::pair<uint,uint> > s;
+  std::vector<uint> color(g->nr_nodes);
+  for(uint i = 0; i < g->nr_nodes; ++i)
+    color[i] = 0;
+  for(uint j = 0; j < res.size(); ++j)
+    if(color[res[j]] == 0) // undiscovered
+    {
+      // start BFS from j
+      s.push(std::make_pair(res[j], res[j]));
+      while(!s.empty())
+      {
+        std::pair<uint,uint> v = s.top(); s.pop();
+        color[v.first] = 1;
+        for(uint i = 0; i < res.size(); ++i)
+        {
+          if(res[i] != v.second && g->is_edge(v.first, res[i]))
+          {
+            if(color[res[i]] == 1)
+              return false;
+            else
+              s.push(std::make_pair(res[i],v.first));
+          }
+        }
+      }
+    }
+  return true;
+}
 
+void forest::init_aux(graph* g, uint i, const std::vector<uint>& c)
+{
+  color.resize(g->nr_nodes);
+}
 
+void forest::prepare_aux(graph*g, const std::vector<uint>& p, uint i, const std::vector<uint>& c)
+{
+/*  printf("Adding %u to P\n", i);
+  printf("P =");
+  for(uint i = 0; i < p.size(); ++i)
+    printf(" %u", p[i]);
+  printf("\n");*/
+}

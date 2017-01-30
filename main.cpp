@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
       else if (string(argv[i]) == "-s") { if(v) delete v; v = new stable(); }
       else if (string(argv[i]) == "-p") { if(v) delete v; v = new plex(atoi(argv[i+1])); i++; }
       else if (string(argv[i]) == "-d") { if(v) delete v; v = new defective_clique(atoi(argv[i+1])); i++; }
-      else if (string(argv[i]) == "-d") { if(v) delete v; v = new forest(atoi(argv[i+1])); i++; }
+      else if (string(argv[i]) == "-f") { if(v) delete v; v = new forest(); i++; }
       else if (string(argv[i]) == "-iuc") { if(v) delete v; v = new iuc(); }
 
       else if (string(argv[i]) == "-vd") { g->reorder_degree(); }
