@@ -20,6 +20,7 @@ class graph
   ~graph();
   void add_edge(uint i, uint j);
   inline bool is_edge(uint i, uint j) {return adj[i][j];} 
+  inline uint weight(uint i) { return 1; }
   // note: reordering might take a bit of time
   // do before RDS
   void reorder_degree(); // degree order from large to small

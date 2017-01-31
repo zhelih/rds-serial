@@ -272,8 +272,17 @@ void graph::reorder_color(uint s) // See S. Trukhanov et al.
   reorder_custom(order);
 }
 
-// TODO
-void graph::reorder_weight() {} // weight from large to small
+void graph::reorder_weight() // weight from large to small
+{
+  vector<pair<uint,uint> > wt;
+  vector<uint> order(nr_nodes);
+  for(uint i = 0; i < nr_nodes; ++i)
+    wt.push_back(make_pair(weight(i), i));
+  sort(wt.begin(), wt.end(), [](auto &left, auto &right) { return left.first > right.first; });
+  for(uint i = 0; i < nr_nodes; ++i)
+    order[i] = wt[i].second;
+  reorder_custom(order);
+}
 
 void graph::restore_order(vector<uint>& v)
 {
