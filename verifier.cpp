@@ -302,12 +302,6 @@ bool bipartite::check(graph* g, const std::vector<uint>& p, uint n)
   return true;
 }
 
-bool bipartite::check_solution(graph* g, const std::vector<uint>& res) const
-{
-  return true;
-}
-
-
 void bipartite::init_aux(graph* g, uint i, const std::vector<uint>& c)
 {
   s.resize(g->nr_nodes);
