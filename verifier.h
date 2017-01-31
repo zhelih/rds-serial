@@ -111,4 +111,18 @@ class forest: public verifier
   void init_aux(graph* g, uint i, const std::vector<uint>& c);
 };
 
+class bipartite: public verifier
+{
+  private:
+  std::vector<uint> color;
+  std::vector<uint> s;
+  uint stack_size;
+  public:
+  bool check_pair(graph* g, uint i, uint j) const;
+  bool check(graph* g, const std::vector<uint>& p, uint n);
+  bool check_solution(graph* g, const std::vector<uint>& res) const;
+
+  void init_aux(graph* g, uint i, const std::vector<uint>& c);
+};
+
 #endif

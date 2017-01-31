@@ -14,7 +14,7 @@ void show_usage(const char* argv)
   printf("\t-t\tTime limit in seconds (optional)\n");
   printf("\t-h|-?\tdisplay this help\n");
   printf("Maximum Solvers:\n\t-c\tClique\n\t-s\tStable set\n\t-d s\ts-defective clique\n");
-  printf("\t-p s\ts-plex\n\t-iuc\tIndependent Union of Cliques\n\t-f\tForest\n");
+  printf("\t-p s\ts-plex\n\t-iuc\tIndependent Union of Cliques\n\t-f\tForest\n\t-b\tBipartite\n");
   printf("Vertex ordering:\n");
   printf("\t-vd\tdegree from large to small\n");
   printf("\t-vd2\t2-neighborhood from large to small\n");
@@ -53,6 +53,7 @@ int main(int argc, char* argv[])
       else if (string(argv[i]) == "-p") { if(v) delete v; v = new plex(atoi(argv[i+1])); i++; }
       else if (string(argv[i]) == "-d") { if(v) delete v; v = new defective_clique(atoi(argv[i+1])); i++; }
       else if (string(argv[i]) == "-f") { if(v) delete v; v = new forest(); i++; }
+      else if (string(argv[i]) == "-b") { if(v) delete v; v = new bipartite(); i++; }
       else if (string(argv[i]) == "-iuc") { if(v) delete v; v = new iuc(); }
 
       else if (string(argv[i]) == "-vd") { g->reorder_degree(); }

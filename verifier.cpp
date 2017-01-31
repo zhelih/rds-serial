@@ -266,3 +266,50 @@ void forest::init_aux(graph* g, uint i, const std::vector<uint>& c)
   parent.resize(g->nr_nodes);
   s.resize(g->nr_nodes);
 }
+
+//bipartite
+bool bipartite::check_pair(graph* g, uint i, uint j) const { return true; }
+bool bipartite::check(graph* g, const std::vector<uint>& p, uint n)
+{
+  for(uint i = 0; i < p.size(); ++i)
+    color[p[i]] = 2;
+  stack_size = 0;
+  s[stack_size] = n; stack_size++;
+  color[n] = 1;
+  while(stack_size > 0)
+  {
+    stack_size--;
+    uint v = s[stack_size];
+//    color[v] = flag + 1; flag = !flag;
+    for(uint i = 0; i < p.size(); ++i)
+    {
+      if(g->is_edge(p[i], n))
+        if(color[p[i]] == color[n])
+          return false;
+      if(g->is_edge(p[i], v))
+      {
+        if(color[p[i]] == color[v])
+          return false;
+        if(color[p[i]] == 2)
+        {
+          color[p[i]] = !color[v];
+          s[stack_size] = p[i];
+          stack_size++;
+        }
+      }
+    }
+  }
+  return true;
+}
+
+bool bipartite::check_solution(graph* g, const std::vector<uint>& res) const
+{
+  return true;
+}
+
+
+void bipartite::init_aux(graph* g, uint i, const std::vector<uint>& c)
+{
+  s.resize(g->nr_nodes);
+  color.resize(g->nr_nodes);
+}
