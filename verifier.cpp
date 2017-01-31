@@ -208,22 +208,28 @@ bool forest::check(graph* g, const std::vector<uint>& p, uint n)
   printf("\n");*/
   for(uint i = 0; i < p.size(); ++i)
     color[p[i]] = 0;
-  std::stack<std::pair<uint,uint> > s;
-  s.push(std::make_pair(n, n));
-  while(!s.empty())
+  stack_size = 0;
+  s[stack_size] = n; stack_size++;
+  parent[n] = n;
+  while(stack_size != 0)
   {
-    std::pair<uint,uint> v = s.top(); s.pop();
-    color[v.first] = 1;
+    stack_size--;
+    uint v = s[stack_size];
+    color[v] = 1;
+    if(n != parent[v] && g->is_edge(v, n))
+      return false;
     for(uint i = 0; i < p.size(); ++i)
     {
-      if(p[i] != v.second && g->is_edge(v.first, p[i]))
+      if(p[i] != parent[v] && g->is_edge(v, p[i]))
       {
         if(color[p[i]] == 1)
         {
 //          printf("return false for %u\n", n+1);
           return false;
-        } else
-          s.push(std::make_pair(p[i],v.first));
+        } else {
+          s[stack_size] = p[i]; ++stack_size;
+          parent[p[i]] = v;
+        }
       }
     }
   }
@@ -263,6 +269,8 @@ bool forest::check_solution(graph* g, const std::vector<uint>& res) const
 void forest::init_aux(graph* g, uint i, const std::vector<uint>& c)
 {
   color.resize(g->nr_nodes);
+  parent.resize(g->nr_nodes);
+  s.resize(g->nr_nodes);
 }
 
 void forest::prepare_aux(graph*g, const std::vector<uint>& p, uint i, const std::vector<uint>& c)

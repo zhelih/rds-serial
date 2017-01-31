@@ -87,6 +87,12 @@ int main(int argc, char* argv[])
     for(uint i = 0; i < res_p.size(); ++i)
       printf("%u ", res_p[i]+1);
     printf("\nRDS returned res = %d\n", res);
+
+    printf("Graph:\n");
+    for(uint i = 0; i < res_p.size(); ++i)
+      for(uint j = i+1; j < res_p.size(); ++j)
+        if(g->is_edge(res_p[i], res_p[j]))
+          printf("e %u %u\n", res_p[i]+1, res_p[j]+1);
     delete g;
   }
 

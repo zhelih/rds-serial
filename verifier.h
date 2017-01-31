@@ -100,6 +100,9 @@ class forest: public verifier
 {
   private:
   std::vector<uint> color;
+  std::vector<uint> parent;
+  std::vector<uint> s;
+  uint stack_size;
   public:
   bool check_pair(graph* g, uint i, uint j) const;
   bool check(graph* g, const std::vector<uint>& p, uint n);
