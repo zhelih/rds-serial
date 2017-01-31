@@ -202,10 +202,6 @@ void plex::free_aux() { level = 0; }
 bool forest::check_pair(graph* g, uint i, uint j) const { return true; }
 bool forest::check(graph* g, const std::vector<uint>& p, uint n)
 {
-/*  printf("check call for %u, P =", n+1);
-  for(uint i = 0; i < p.size(); ++i)
-    printf(" %u", p[i]+1);
-  printf("\n");*/
   for(uint i = 0; i < p.size(); ++i)
     color[p[i]] = 0;
   stack_size = 0;
@@ -224,7 +220,6 @@ bool forest::check(graph* g, const std::vector<uint>& p, uint n)
       {
         if(color[p[i]] == 1)
         {
-//          printf("return false for %u\n", n+1);
           return false;
         } else {
           s[stack_size] = p[i]; ++stack_size;
@@ -233,7 +228,6 @@ bool forest::check(graph* g, const std::vector<uint>& p, uint n)
       }
     }
   }
-//  printf("return true\n");
   return true;
 }
 bool forest::check_solution(graph* g, const std::vector<uint>& res) const
@@ -271,13 +265,4 @@ void forest::init_aux(graph* g, uint i, const std::vector<uint>& c)
   color.resize(g->nr_nodes);
   parent.resize(g->nr_nodes);
   s.resize(g->nr_nodes);
-}
-
-void forest::prepare_aux(graph*g, const std::vector<uint>& p, uint i, const std::vector<uint>& c)
-{
-/*  printf("Adding %u to P\n", i);
-  printf("P =");
-  for(uint i = 0; i < p.size(); ++i)
-    printf(" %u", p[i]);
-  printf("\n");*/
 }

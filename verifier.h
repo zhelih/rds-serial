@@ -109,7 +109,6 @@ class forest: public verifier
   bool check_solution(graph* g, const std::vector<uint>& res) const;
 
   void init_aux(graph* g, uint i, const std::vector<uint>& c);
-  void prepare_aux(graph*g, const std::vector<uint>& p, uint i, const std::vector<uint>& c);
 };
 
 #endif
