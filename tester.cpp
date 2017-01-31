@@ -43,6 +43,8 @@ int main(int argc, char* argv[])
   modes.push_back("-p 3");
   modes.push_back("-p 4");
   modes.push_back("-iuc");
+  modes.push_back("-b");
+  modes.push_back("-f");
   for(auto mode = modes.begin(); mode != modes.end(); ++mode)
   {
     printf("Mode %s\n", mode->c_str());
