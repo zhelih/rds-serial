@@ -1,6 +1,6 @@
 Russian Doll Search for Computing Maximum Vertex Weight Hereditary Structures in Graphs
 
-Copyright Eugene Lykhovyd, 2017. See LICENCE for more details.
+Copyright Eugene Lykhovyd, 2017. See LICENSE for more details.
 
 A graph property is hereditary on induced subgraphs if it holds for all vertex-induced subgraphs of
 a graph satisfying this property. Given a fixed nontrivial, hereditary graph property and a
