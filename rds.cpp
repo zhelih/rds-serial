@@ -38,6 +38,9 @@ void print_lb_atomic(int signal)
 static uint iter = 0;
 static bool should_exit = false;
 
+static uint nr_prune1 = 0;
+static uint nr_prune2 = 0;
+
 uint find_max(vector<vector <uint> >& c, vector<uint>& weight_c, vector<uint>& p, uint& weight_p, const uint* mu, verifier *v, graph* g, vector<uint>& res, int level, const chrono::time_point<chrono::steady_clock> start, const uint time_lim)
 {
   if(should_exit)
@@ -67,10 +70,16 @@ uint find_max(vector<vector <uint> >& c, vector<uint>& weight_c, vector<uint>& p
     }
 
     if(weight_c[level] + weight_p <= lb) // Prune 1
+    {
+      nr_prune1++;
       return lb;
+    }
     uint i = c[level][c[level].size()-1];
     if(mu[i] + weight_p <= lb) // Prune 2
+    {
+      nr_prune2++;
       return lb;
+    }
     c[level].pop_back(); weight_c[level] -= g->weight(i);
 //    NB: exploit that we adding only 1 vertex to p
 //    thus verifier can prepare some info using prev calculations
@@ -146,5 +155,6 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
   delete [] mu;
   chrono::duration<double> d = chrono::steady_clock::now() - start;
   printf("rds: time elapsed = %.8lf secs\n", d.count());
+  printf("rds: nr_prune1 = %u, nr_prune2 = %u\n", nr_prune1, nr_prune2);
   return fres;
 }
