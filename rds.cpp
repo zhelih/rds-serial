@@ -102,9 +102,11 @@ uint find_max(vector<vector <uint> >& c, vector<uint>& weight_c, vector<uint>& p
   return lb;
 }
 
-uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
+uint rds(verifier* v_unused, graph* g, vector<uint>& res, uint time_lim)
 {
   chrono::time_point<chrono::steady_clock> start = chrono::steady_clock::now(); // C++11 only
+  verifier *v1 = new clique();
+  verifier *v2 = new defective_clique(1);
   should_exit = false;
   uint n = g->nr_nodes;
   // order V
@@ -113,8 +115,7 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
   uint *mu = new uint[n];
 
   int i;
-  for(i = n-1; i >= 0; --i)
-  {
+  auto f = [&g, &start, &n, &mu, &time_lim, &res](int i, verifier* v) {
     // form candidate set
     // take vertices from v \in {i+1, n} for which pair (i,v) satisfies \Pi
     // first iteration c is empty, that must set bound to 1
@@ -147,14 +148,24 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
     {
       chrono::duration<double> d = chrono::steady_clock::now() - start;
       if((uint)(d.count()) >= time_lim)
-        break;
+        return;
     }
+  };
+  for(i = n-1; i >= 0; --i)
+  {
+    f(i, v1);
   }
-  printf("RDS done\n");
-  uint fres = mu[i+1]; // last
+  for(i = 0; i < n; ++i)
+    mu[i] += 1;
+//  lb+=1;
+  f(0, v2);
+
+  printf("RDS clique done\n");
+  uint fres = mu[0]; // last
   delete [] mu;
   chrono::duration<double> d = chrono::steady_clock::now() - start;
   printf("rds: time elapsed = %.8lf secs\n", d.count());
   printf("rds: nr_prune1 = %u, nr_prune2 = %u\n", nr_prune1, nr_prune2);
+  delete v1; delete v2;
   return fres;
 }
