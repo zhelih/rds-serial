@@ -2,6 +2,7 @@
 #include <string>
 #include <algorithm>
 #include <csignal>
+#include <cstdlib>
 #include "rds.h"
 #include "graph.h"
 #include "verifier.h"

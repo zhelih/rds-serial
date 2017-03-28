@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <atomic>
 #include <chrono>
+#include <cstdlib>
 
 #include <csignal> // Display best result for SIGINT before exit
 

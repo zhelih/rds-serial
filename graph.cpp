@@ -118,7 +118,7 @@ void graph::reorder_custom(const vector<uint>& order)
   if(order.size() != nr_nodes)
   {
     fprintf(stderr, "Wrong custom order input : size!\n");
-    exit(1);
+    return;
   }
   // recomputing the whole adjacency matrix
   // slow but who cares? done only ones
@@ -141,7 +141,7 @@ void graph::reorder_custom(const vector<uint>& order)
     if(node >= nr_nodes)
     {
       fprintf(stderr, "Wrong custom order input : node out of bounds!\n");
-      exit(1);
+      return;
     }
   }
   for(uint i = 0; i < nr_nodes; ++i)
