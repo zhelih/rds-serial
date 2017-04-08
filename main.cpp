@@ -14,6 +14,7 @@ void show_usage(const char* argv)
   printf("Usage: %s [options] <dimacs input file>\nAvailable options:\n", argv);
   printf("\t-t\tTime limit in seconds (optional)\n");
   printf("\t-h|-?\tdisplay this help\n");
+  printf("\t-weights <weights file>\n");
   printf("Maximum Solvers:\n\t-c\tClique\n\t-s\tStable set\n\t-d s\ts-defective clique\n");
   printf("\t-p s\ts-plex\n\t-iuc\tIndependent Union of Cliques\n\t-f\tForest\n\t-b\tBipartite\n");
   printf("Vertex ordering:\n");
@@ -65,6 +66,7 @@ int main(int argc, char* argv[])
       else if (string(argv[i]) == "-vrev") { g->reorder_rev(); }
 
       else if (string(argv[i]) == "-t") { time_lim = atoi(argv[i+1]); i++; }
+      else if (string(argv[i]) == "-weights") { g->read_weights(argv[i+1]); i++; }
       else {
           fprintf(stderr, "Wrong parameter: %s\n", argv[i]);
           if(v) delete v; delete g; return 1;

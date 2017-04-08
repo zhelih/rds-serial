@@ -12,6 +12,7 @@ class graph
   std::vector<std::vector<int> >  adj;
   uint mask[CHUNK_SIZE];
   std::vector<uint> mapka;
+  std::vector<uint> weights;
   protected:
   void reorder_custom(const std::vector<uint>& order); // order[i] = new pos of i in [0;n)
   public:
@@ -20,7 +21,8 @@ class graph
   ~graph();
   void add_edge(uint i, uint j);
   inline bool is_edge(uint i, uint j) {return adj[i][j];} 
-  inline uint weight(uint i) { return 1; }
+  inline uint weight(uint i) { return weights[i]; }
+  //void set_weight(uint i, uint w) { weights[i] = w; }
   // note: reordering might take a bit of time
   // do before RDS
   void reorder_degree(); // degree order from large to small
@@ -31,6 +33,8 @@ class graph
   void reorder_none(); // don't reorder anything
   void reorder_rev(); // revert the order of vertices (usually used to change from small to large)
   void restore_order(std::vector<uint>& v);
+
+  void read_weights(const char* filename);
 
   //debug
   void print_mapka() const;

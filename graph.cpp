@@ -91,6 +91,10 @@ graph::graph(uint n)
     for(uint j = 0; j < n; ++j)
       adj[i][j] = 0;
   nr_nodes = n;
+
+  weights.resize(n);
+  for(uint i = 0; i < n; ++i)
+    weights[i] = 1;
 }
 
 graph::~graph()
@@ -300,4 +304,19 @@ void graph::print_mapka() const
   for(uint i = 0; i < nr_nodes; ++i)
     printf("%u ", mapka[i]);
   printf("\n");
+}
+
+void graph::read_weights(const char* filename)
+{
+  printf("Reading weights from %s.\nNB!!! Currently vertex ordering is not supported for weights!\n", filename);
+  FILE *f;
+  f = fopen(filename, "r");
+  if(!f)
+  {
+    fprintf(stderr, "Cannot open %s\n", filename);
+    exit(1);
+  }
+  for(uint i = 0; i < nr_nodes; ++i)
+    fscanf(f, "%u ", &weights[i]);
+  fclose(f);
 }
