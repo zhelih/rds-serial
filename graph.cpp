@@ -321,3 +321,13 @@ void graph::read_weights(const char* filename)
     fscanf(f, "%u ", &weights[i]);
   fclose(f);
 }
+
+graph* graph::complement() const
+{
+  graph* g = new graph(nr_nodes);
+  for(unsigned int i = 0; i < nr_nodes; ++i)
+    for(unsigned int j = i+1; j < nr_nodes; ++j)
+      if(!adj[i][j])
+        g->add_edge(i,j);
+  return g;
+}

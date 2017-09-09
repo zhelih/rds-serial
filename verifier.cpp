@@ -307,3 +307,69 @@ void bipartite::init_aux(graph* g, uint i, const std::vector<uint>& c)
   s.resize(g->nr_nodes);
   color.resize(g->nr_nodes);
 }
+
+// pair is always a 1-wide
+bool swide::check_pair(graph* g, uint i, uint j) const { return true; }
+bool swide::check(graph* g, const std::vector<uint>& p, uint n)
+{
+  uint nr_ends = 0;
+  for(uint i = 0; nr_ends < 3 && i < p.size(); ++i)
+    if(g->is_edge(p[i], n))
+    {
+      if(!is_end[p[i]])
+        return false;
+      else
+        nr_ends++;
+    }
+  return (nr_ends < 3);
+}
+
+void swide::init_aux(graph* g, uint n, const std::vector<uint>& c)
+{
+  is_end.resize(g->nr_nodes);
+  for(uint i = 0; i < g->nr_nodes; ++i)
+    is_end[i] = 0;
+  is_end[n] = 1;
+}
+
+void swide::prepare_aux(graph*g, const std::vector<uint>& p, uint n, const std::vector<uint>& c)
+{
+  uint nr_ends = 0;
+  uint v_end[2];
+  for(uint i = 0; nr_ends < 3 && i < p.size(); ++i)
+  {
+    if(g->is_edge(p[i], n) && is_end[p[i]])
+    {
+        v_end[nr_ends] = p[i];
+        nr_ends++;
+    }
+    if(nr_ends == 2)
+      break;
+  }
+//  assert(nr_ends < 3);
+  if(nr_ends == 1) // only change ends if 1
+  {
+    is_end[v_end[0]] = 0;
+    is_end[n] = 1;
+  }
+  if(nr_ends == 2)
+  {
+    is_end[v_end[0]] = 0; is_end[v_end[1]] = 0;
+  }
+}
+
+void swide::undo_aux(graph* g, const std::vector<uint>& p, uint n, const std::vector<uint>& c)
+{
+  uint nr_ends = 0;
+  is_end[n] = 0;
+  for(uint i = 0; i < p.size(); ++i)
+  {
+    if(g->is_edge(p[i], n))
+    {
+      is_end[p[i]] = 1;
+      nr_ends++;
+    }
+    if(nr_ends == 2)
+      break;
+  }
+}

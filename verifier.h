@@ -124,4 +124,21 @@ class bipartite: public verifier
   void init_aux(graph* g, uint i, const std::vector<uint>& c);
 };
 
+class swide: public verifier
+{
+  private:
+  uint s;
+  std::vector<uint> is_end; // vector<bool> slower?
+  public:
+  swide(uint s_) : s(s_) {}
+  bool check_pair(graph* g, uint i, uint j) const;
+  bool check(graph* g, const std::vector<uint>& p, uint n);
+
+  void init_aux(graph* g, uint i, const std::vector<uint>& c);
+  void prepare_aux(graph*g, const std::vector<uint>& p, uint i, const std::vector<uint>& c);
+  void undo_aux(graph* g, const std::vector<uint>& p, uint i, const std::vector<uint>& c);
+    // free aux info
+  void free_aux() {}
+};
+
 #endif

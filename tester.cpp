@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
   }
   files.close();
   vector<string> modes; 
-  modes.push_back("-c");
+/*  modes.push_back("-c");
   modes.push_back("-s");
   modes.push_back("-d 1");
   modes.push_back("-d 2");
@@ -42,16 +42,17 @@ int main(int argc, char* argv[])
   modes.push_back("-p 2");
   modes.push_back("-p 3");
   modes.push_back("-p 4");
-  modes.push_back("-iuc");
-  modes.push_back("-b");
-  modes.push_back("-f");
+*/  //modes.push_back("-iuc");
+  modes.push_back("-w 1");
+//  modes.push_back("-b");
+//  modes.push_back("-f");
   for(auto mode = modes.begin(); mode != modes.end(); ++mode)
   {
     printf("Mode %s\n", mode->c_str());
     for(auto graph_file = s.begin(); graph_file != s.end(); ++graph_file)
     {
       char buf[256];
-      snprintf(buf, sizeof(buf), "./rds -t 600 %s %s/%s", mode->c_str(), argv[1], graph_file->c_str());
+      snprintf(buf, sizeof(buf), "./rds -t 36000 %s %s/%s", mode->c_str(), argv[1], graph_file->c_str());
       fprintf(stderr, "Running %s\n", buf);
       FILE* f = popen(buf, "r");
       float time_el = 0.;

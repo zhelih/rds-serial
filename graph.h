@@ -34,6 +34,8 @@ class graph
   void reorder_rev(); // revert the order of vertices (usually used to change from small to large)
   void restore_order(std::vector<uint>& v);
 
+  graph* complement() const;
+
   void read_weights(const char* filename);
 
   //debug
