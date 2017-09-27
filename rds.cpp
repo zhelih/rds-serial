@@ -140,9 +140,9 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
     vector<uint> p; uint weight_p = 0;
     p.push_back(i); weight_p += g->weight(i);
     v->init_aux(g, i, c[0]);
-    printf("i = %u, c.size = %lu, ", i, c[0].size());
+    fprintf(stderr, "i = %u, c.size = %lu, ", i, c[0].size());
     mu[i] = find_max(c, weight_c, p, weight_p, mu, v, g, res, 0, start, time_lim);
-    printf("mu[%d] = %d\n", i, mu[i]);
+    fprintf(stderr, "mu[%d] = %d\n", i, mu[i]);
     v->free_aux();
     if(time_lim > 0)
     {
