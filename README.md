@@ -11,7 +11,7 @@ used to find maximum vertex weight structures for any hereditary property, as lo
 provide an efficient feasibility verification procedure for a subgraph obtained from a feasible
 subgraph by adding a new vertex.
 
-See http://people.tamu.edu/~lykhovyd/rds.pdf for more details.
+See http://lykovyd.com/files/public/rds.pdf for more details.
 
 [![Build
 Status](https://travis-ci.org/zhelih/rds-serial.svg?branch=master)](https://travis-ci.org/zhelih/rds-serial)
