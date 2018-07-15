@@ -172,7 +172,7 @@ void graph::reorder_degree() // degree order from large to small
         degrees[i].first++;
   }
   // sort from large to small based on degree
-  sort(degrees.begin(), degrees.end(), [](pair<uint,uint> &left, pair<uint,uint> &right) { return left.first > right.first; });
+  sort(degrees.begin(), degrees.end(), [](const pair<uint,uint> &left, const pair<uint,uint> &right) { return left.first > right.first; });
   vector<uint> order(nr_nodes);
   for(uint i = 0; i < nr_nodes; ++i)
     order[i] = degrees[i].second;
@@ -216,7 +216,7 @@ void graph::reorder_2nb() // order based on the size of 2-neigborhood, from larg
   vector<pair<uint, uint> > degrees(nr_nodes); // 2nbs degree
   for(uint i = 0; i < nr_nodes; ++i)
     degrees[i] = make_pair(nbs.size(), i);
-  sort(degrees.begin(), degrees.end(), [](pair<uint,uint> &left, pair<uint,uint> &right) { return left.first > right.first; });
+  sort(degrees.begin(), degrees.end(), [](const pair<uint,uint> &left, const pair<uint,uint> &right) { return left.first > right.first; });
   vector<uint> order(nr_nodes);
   for(uint i = 0; i < nr_nodes; ++i)
     order[i] = degrees[i].second;
@@ -283,7 +283,7 @@ void graph::reorder_weight() // weight from large to small
   vector<uint> order(nr_nodes);
   for(uint i = 0; i < nr_nodes; ++i)
     wt.push_back(make_pair(weight(i), i));
-  sort(wt.begin(), wt.end(), [](pair<uint,uint> &left, pair<uint,uint> &right) { return left.first > right.first; });
+  sort(wt.begin(), wt.end(), [](const pair<uint,uint> &left, const pair<uint,uint> &right) { return left.first > right.first; });
   for(uint i = 0; i < nr_nodes; ++i)
     order[i] = wt[i].second;
   reorder_custom(order);
