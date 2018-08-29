@@ -5,6 +5,9 @@ To compile the program run
 
 make
 
+or to compile with OpenMP
+
+make WITH_OPENMP=1
 
 To run the program and see input arguments run
 
