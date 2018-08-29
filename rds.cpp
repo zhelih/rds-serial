@@ -42,10 +42,19 @@ static bool should_exit = false;
 static uint nr_prune1 = 0;
 static uint nr_prune2 = 0;
 
+static uint av_c_size = 0;
+static uint nr_c_size = 0;
+
+
 uint find_max(vector<vector <uint> >& c, vector<uint>& weight_c, vector<uint>& p, uint& weight_p, const uint* mu, verifier *v, graph* g, vector<uint>& res, int level, const chrono::time_point<chrono::steady_clock> start, const uint time_lim)
 {
   if(should_exit)
     return lb;
+  if(level == 0)
+  {
+    av_c_size += c[level].size();
+    nr_c_size ++;
+  }
   if(c[level].size() == 0)
   {
     if(weight_p > lb)
@@ -147,7 +156,7 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
     if(time_lim > 0)
     {
       chrono::duration<double> d = chrono::steady_clock::now() - start;
-      if((uint)(d.count()) >= time_lim)
+      if(static_cast<uint>(d.count()) >= time_lim)
         break;
     }
   }
@@ -157,5 +166,7 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
   chrono::duration<double> d = chrono::steady_clock::now() - start;
   printf("rds: time elapsed = %.8lf secs\n", d.count());
   printf("rds: nr_prune1 = %u, nr_prune2 = %u\n", nr_prune1, nr_prune2);
+  printf("rds: average C size at level 0 : %.5lf\n", av_c_size / (double)nr_c_size);
   return fres;
 }
+
