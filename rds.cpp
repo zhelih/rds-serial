@@ -66,7 +66,7 @@ uint find_max(vector<vector <uint> >& c, vector<uint>& weight_c, vector<uint>& p
       return lb;
   }
 
-  while(c[level].size() > 0)
+  for(uint c_i = 0; c_i < c[level].size(); ++c_i)
   {
     iter++;
     if(iter % 1000 == 0 && time_lim > 0)
@@ -84,19 +84,19 @@ uint find_max(vector<vector <uint> >& c, vector<uint>& weight_c, vector<uint>& p
       nr_prune1++;
       return lb;
     }
-    uint i = c[level][c[level].size()-1];
+    uint i = c[level][c_i];
     if(mu[i] + weight_p <= lb) // Prune 2
     {
       nr_prune2++;
       return lb;
     }
-    c[level].pop_back(); weight_c[level] -= g->weight(i);
+    weight_c[level] -= g->weight(i);
 //    NB: exploit that we adding only 1 vertex to p
 //    thus verifier can prepare some info using prev calculations
     v->prepare_aux(g, p, i, c[level]);
     p.push_back(i); weight_p += g->weight(i);
     c[level+1].resize(0); weight_c[level+1] = 0;
-    for(uint it2 = 0; it2 < c[level].size(); ++it2)
+    for(uint it2 = c_i; it2 < c[level].size(); ++it2)
     {
       if(c[level][it2] != i && v->check(g, p, c[level][it2]))
       {
@@ -128,13 +128,11 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
     // form candidate set
     // take vertices from v \in {i+1, n} for which pair (i,v) satisfies \Pi
     // first iteration c is empty, that must set bound to 1
-    vector<vector<uint> > c; vector<uint> weight_c(g->nr_nodes);
-    c.resize(g->nr_nodes);
+    vector<vector<uint> > c(g->nr_nodes); vector<uint> weight_c(g->nr_nodes, 0);
     for(uint j = 0; j < g->nr_nodes; ++j)
     {
       c[j].reserve(g->nr_nodes);
       c[j].resize(0);
-      weight_c[j] = 0;
     }
     for(uint j = i+1; j < n; ++j)
     {
@@ -145,7 +143,6 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
         weight_c[0] += g->weight(j);
       }
     }
-    reverse(c[0].begin(), c[0].end()); // for efficient deletion of min element
     vector<uint> p; uint weight_p = 0;
     p.push_back(i); weight_p += g->weight(i);
     v->init_aux(g, i, c[0]);
