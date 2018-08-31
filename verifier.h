@@ -27,6 +27,10 @@ class verifier
 
     verifier() {}
     virtual ~verifier() {} // do not remove
+
+    // virtual copy constructor
+    // careful not to use default copy constructor if using raw pointers
+    virtual verifier* clone() const = 0;
 };
 
 class clique: public verifier
@@ -35,6 +39,7 @@ class clique: public verifier
   bool check_pair(graph* g, uint i, uint j) const;
   bool check(graph* g, const std::vector<uint>& p, uint n);
   bool check_solution(graph* g, const std::vector<uint>& res) const;
+  verifier* clone() const;
 };
 
 class stable: public verifier
@@ -43,6 +48,7 @@ class stable: public verifier
   bool check_pair(graph* g, uint i, uint j) const;
   bool check(graph* g, const std::vector<uint>& p, uint n);
   bool check_solution(graph* g, const std::vector<uint>& res) const;
+  verifier* clone() const;
 };
 
 class iuc: public verifier
@@ -51,6 +57,7 @@ class iuc: public verifier
   bool check_pair(graph* g, uint i, uint j) const;
   bool check(graph* g, const std::vector<uint>& p, uint n);
   bool check_solution(graph* g, const std::vector<uint>& res) const;
+  verifier* clone() const;
 };
 
 class defective_clique: public verifier
@@ -72,6 +79,8 @@ class defective_clique: public verifier
   void prepare_aux(graph*g, const std::vector<uint>& p, uint i, const std::vector<uint>& c);
   void undo_aux(graph* g, const std::vector<uint>& p, uint i, const std::vector<uint>& c);
   void free_aux();
+
+  verifier* clone() const;
 };
 
 class plex: public verifier
@@ -94,6 +103,8 @@ class plex: public verifier
   void prepare_aux(graph*g, const std::vector<uint>& p, uint i, const std::vector<uint>& c);
   void undo_aux(graph* g, const std::vector<uint>& p, uint i, const std::vector<uint>& c);
   void free_aux();
+
+  verifier* clone() const;
 };
 
 class forest: public verifier
@@ -109,6 +120,8 @@ class forest: public verifier
   bool check_solution(graph* g, const std::vector<uint>& res) const;
 
   void init_aux(graph* g, uint i, const std::vector<uint>& c);
+
+  verifier* clone() const;
 };
 
 class bipartite: public verifier
@@ -122,6 +135,8 @@ class bipartite: public verifier
   bool check(graph* g, const std::vector<uint>& p, uint n);
 
   void init_aux(graph* g, uint i, const std::vector<uint>& c);
+
+  verifier* clone() const;
 };
 
 class swide: public verifier
@@ -139,6 +154,8 @@ class swide: public verifier
   void undo_aux(graph* g, const std::vector<uint>& p, uint i, const std::vector<uint>& c);
     // free aux info
   void free_aux() {}
+
+  verifier* clone() const;
 };
 
 #endif
