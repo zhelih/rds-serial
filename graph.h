@@ -9,9 +9,8 @@ typedef unsigned int uint;
 class graph
 {
   private:
-  std::vector<std::vector<int> >  adj;
-  uint mask[CHUNK_SIZE];
-  std::vector<uint> mapka;
+  std::vector<std::vector<uint> >  adj;
+  std::vector<uint> current_order;
   std::vector<uint> weights;
   protected:
   void reorder_custom(const std::vector<uint>& order); // order[i] = new pos of i in [0;n)
@@ -33,13 +32,12 @@ class graph
   void reorder_none(); // don't reorder anything
   void reorder_rev(); // revert the order of vertices (usually used to change from small to large)
   void restore_order(std::vector<uint>& v);
+  
+  std::vector<uint> reverse_order(const std::vector<uint>& order) const;
 
   graph* complement() const;
 
   void read_weights(const char* filename);
-
-  //debug
-  void print_mapka() const;
 };
 
 graph* from_dimacs(const char* fname); // don't forget to delete

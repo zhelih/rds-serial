@@ -73,12 +73,14 @@ graph* from_dimacs(const char* fname)
 
 graph::graph(uint n)
 {
+/*
   // compute bit mask
   mask[0] = 1;
   for(uint i = 1; i < CHUNK_SIZE; ++i)
     mask[i] = mask[i-1] << 1;
 
   mapka.resize(n); // used to restore order
+*/
   // create adj matrix
   //adj = new uint*[n];
   adj.resize(n);
@@ -86,16 +88,21 @@ graph::graph(uint n)
   {
     //adj[i] = new uint[n];
     adj[i].resize(n);
-    mapka[i] = i;
+//    mapka[i] = i;
   }
   for(uint i = 0; i < n; ++i)
     for(uint j = 0; j < n; ++j)
-      adj[i][j] = 0;
+      adj[i][j] = false;
   nr_nodes = n;
 
   weights.resize(n);
   for(uint i = 0; i < n; ++i)
     weights[i] = 1;
+
+  current_order.resize(n);
+  for (uint i = 0; i < n; ++i) {
+    current_order[i] = i;
+  }
 }
 
 graph::~graph()
@@ -118,8 +125,43 @@ void graph::add_edge(uint i, uint j)
 
 /* Reorders start here */
 void graph::reorder_none() {} // don't reorder anything
+
+std::vector<uint> graph::reverse_order(const std::vector<uint>& order) const
+{
+  std::vector<uint> order_reverse(order.size());
+  for (uint p = 0; p < nr_nodes; ++p)
+  {
+    order_reverse[order[p]] = p;
+  }
+  return order_reverse;
+}
+
 void graph::reorder_custom(const vector<uint>& order)
 {
+  std::vector<uint> order_reverse = this->reverse_order(order);
+
+  bool adj_new[nr_nodes][nr_nodes];
+  for (uint v = 0; v < nr_nodes; ++v)
+    for (uint u = 0; u < nr_nodes; ++u)
+      adj_new[order_reverse[v]][order_reverse[u]] = this->adj[v][u];
+
+  for (uint v = 0; v < nr_nodes; ++v)
+    for (uint u = 0; u < nr_nodes; ++u)
+      this->adj[v][u] = adj_new[v][u];
+
+  std::vector<uint> weights_new(nr_nodes);
+  for (uint v = 0; v < nr_nodes; ++v)
+    weights_new[order_reverse[v]] = this->weights[v];
+  this->weights = weights_new;
+
+  std::vector<uint> new_order(nr_nodes);
+  for (uint i = 0; i < nr_nodes; ++i)
+    new_order[i] = this->current_order[order[i]];
+  this->current_order = new_order;
+}
+
+/*void graph::reorder_custom(const vector<uint>& order)
+{ 
   if(order.size() != nr_nodes)
   {
     fprintf(stderr, "Wrong custom order input : size!\n");
@@ -135,7 +177,7 @@ void graph::reorder_custom(const vector<uint>& order)
     mapka[i] = order[mapka_old[i]]; // update mapka
   }
   for(uint i = 0; i < nr_nodes; ++i)
-    for(uint j = 0; j < nr_nodes/CHUNK_SIZE+1; ++j)
+    for(uint j = 0; j < nr_nodes/CHUN	K_SIZE+1; ++j)
     {
       adj_old[i][j] = adj[i][j]; // copy
       adj[i][j] = 0; // nullify
@@ -159,6 +201,7 @@ void graph::reorder_custom(const vector<uint>& order)
     }
   }
 }
+*/
 
 void graph::reorder_degree() // degree order from large to small
 {
@@ -291,20 +334,10 @@ void graph::reorder_weight() // weight from large to small
 
 void graph::restore_order(vector<uint>& v)
 {
-  vector<uint> rev_mapka(nr_nodes);
-  vector<uint> v_copy(v);
-  for(uint i = 0; i < nr_nodes; ++i)
-    rev_mapka[mapka[i]] = i;
-  for(uint i = 0; i < v.size(); ++i)
-    v[i] = rev_mapka[v_copy[i]];
-}
-
-void graph::print_mapka() const
-{
-  printf("mapka:\n");
-  for(uint i = 0; i < nr_nodes; ++i)
-    printf("%u ", mapka[i]);
-  printf("\n");
+  for (auto&& i: v)
+  {
+    i = current_order[i];
+  }
 }
 
 void graph::read_weights(const char* filename)
