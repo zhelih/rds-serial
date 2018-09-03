@@ -38,7 +38,7 @@ void print_lb_atomic(int signal)
 atomic_uint iter (0);
 atomic_bool should_exit (false);
 
-uint find_max(vector<vector <uint> >& c, vector<uint>& weight_c, vector<uint>& p, uint& weight_p, const atomic_uint* mu, verifier *v, graph* g, vector<uint>& res, int level, const chrono::time_point<chrono::steady_clock> start, const uint time_lim)
+uint find_max(vector<vector <uint> >& c, vector<uint>& weight_c, vector<uint>& p, uint weight_p, const atomic_uint* mu, verifier *v, graph* g, vector<uint>& res, int level, const chrono::time_point<chrono::steady_clock> start, const uint time_lim)
 {
   if(should_exit)
     return lb;
@@ -48,6 +48,11 @@ uint find_max(vector<vector <uint> >& c, vector<uint>& weight_c, vector<uint>& p
     {
       //TODO atomic copy
 //      res = p; //copy
+      printf("Found better solution, size %d\n", weight_p);
+//      #pragma omp critical (lbupdate)
+//      {
+        lb.store(max(lb.load(), weight_p));
+//      }
       return weight_p;
     }
     else
@@ -90,7 +95,15 @@ uint find_max(vector<vector <uint> >& c, vector<uint>& weight_c, vector<uint>& p
         weight_c[level+1] += g->weight(c[level][it2]);
       }
     }
-    lb = find_max(c, weight_c, p, weight_p, mu, v, g, res, level+1, start, time_lim);
+    /*
+    auto result = find_max(c, weight_c, p, weight_p, mu, v, g, res, level+1, start, time_lim);
+    #pragma omp critical (lbupdate)
+    {
+      lb.store(max(result, lb.load()));
+    }
+//    lb.store(max(find_max(c, weight_c, p, weight_p, mu, v, g, res, level+1, start, time_lim), lb.load()), memory_order_seq_cst);
+//    */
+    find_max(c, weight_c, p, weight_p, mu, v, g, res, level+1, start, time_lim);
     p.pop_back(); weight_p -= g->weight(i);
     v->undo_aux(g, p, i, c[level]);
   }
@@ -137,11 +150,11 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
     {
       if(weight_p > lb)
       {
-        mu[i] = weight_p;
+        mu[i].store(weight_p, memory_order_seq_cst);
         res = p;
       }
       else
-        mu[i] = lb.load();
+        mu[i].store(lb.load(), memory_order_seq_cst);
     } else {
     #pragma omp parallel
     {
@@ -165,13 +178,13 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
             weight_c_[0] -= g->weight(c_i - j - 1);
         if(weight_c_[0] + weight_p_ <= lb) // Prune 1
         {
-          mu_i = lb;
+          mu_i = lb.load();
           break;
         }
         uint i_ = c_[0][c_i];
         if(mu[i_].load() + weight_p_ <= lb) // Prune 2
         {
-          mu_i = lb;
+          mu_i = lb.load();
           break;
         } else {
           v_->prepare_aux(g, p_, i_, c_[0]);
@@ -179,19 +192,27 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
           c_[1].resize(0); weight_c_[1] = 0;
           for(uint it2 = c_i; it2 < c_[0].size(); ++it2)
           {
-            if(c_[0][it2] != i_ && v->check(g, p_, c_[0][it2])) //TODO only swap check?
+            if(c_[0][it2] != i_ && v_->check(g, p_, c_[0][it2])) //TODO only swap check?
             {
               c_[1].push_back(c_[0][it2]);
               weight_c_[1] += g->weight(c_[0][it2]);
             }
           }
-          lb = max(find_max(c_, weight_c_, p_, weight_p_, mu, v_, g, res, 1, start, time_lim), lb.load());
+          /*
+          uint ures = find_max(c_, weight_c_, p_, weight_p_, mu, v_, g, res, 1, start, time_lim);
+          printf("Thread %d : changing LB: prev %d, new %d\n", thread_i, lb.load(), ures);
+          #pragma omp critical (lbupdate)
+          {
+            lb.store(max(ures,lb.load()), memory_order_seq_cst);
+          }
+          */
+          find_max(c_, weight_c_, p_, weight_p_, mu, v_, g, res, 1, start, time_lim);
           p_.pop_back(); weight_p_ -= g->weight(i_);
           v_->undo_aux(g, p_, i_, c_[0]);
         }
       }
-      mu_i = lb;
-      mu[i] = max(mu_i, mu[i].load());
+      mu_i = lb.load();
+      mu[i].store(max(mu_i, mu[i].load()), memory_order_seq_cst);
       v_->free_aux();
       if(time_lim > 0)
       {
