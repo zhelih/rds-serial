@@ -38,7 +38,7 @@ void print_lb_atomic(int signal)
 atomic_uint iter (0);
 atomic_bool should_exit (false);
 
-void find_max(vector<vector <uint> >& c, vector<uint>& weight_c, vector<uint>& p, uint weight_p, const atomic_uint* mu, verifier *v, graph* g, vector<uint>& res, int level, const chrono::time_point<chrono::steady_clock> start, const uint time_lim)
+void find_max(vector<vector <uint> >& c, vector<uint>& weight_c, vector<uint>& p, uint weight_p, const uint* mu, verifier *v, graph* g, vector<uint>& res, int level, const chrono::time_point<chrono::steady_clock> start, const uint time_lim)
 {
   if(should_exit)
     return;
@@ -75,7 +75,7 @@ void find_max(vector<vector <uint> >& c, vector<uint>& weight_c, vector<uint>& p
       return;
     }
     uint i = c[level][c_i];
-    if(mu[i].load() + weight_p <= lb) // Prune 2
+    if(mu[i] + weight_p <= lb) // Prune 2
     {
       return;
     }
@@ -107,7 +107,7 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
   uint n = g->nr_nodes;
   // order V
   lb = 0; // best solution size found so far
-  atomic_uint* mu = new atomic_uint[n];
+  uint* mu = new uint[n];
   for(uint i = 0; i < n; ++i)
     mu[i] = 0;
 
@@ -140,11 +140,11 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
     {
       if(weight_p > lb)
       {
-        mu[i].store(weight_p, memory_order_seq_cst);
+        mu[i] = weight_p;
         res = p;
       }
       else
-        mu[i].store(lb.load(), memory_order_seq_cst);
+        mu[i] = lb.load();
     } else {
     #pragma omp parallel
     {
@@ -172,7 +172,7 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
           break;
         }
         uint i_ = c_[0][c_i];
-        if(mu[i_].load() + weight_p_ <= lb) // Prune 2
+        if(mu[i_] + weight_p_ <= lb) // Prune 2
         {
           mu_i = lb.load();
           break;
@@ -194,7 +194,10 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
         }
       }
       mu_i = lb.load();
-      mu[i].store(max(mu_i, mu[i].load()), memory_order_seq_cst);
+      #pragma omp critical
+      {
+        mu[i] = max(mu_i, mu[i]);
+      }
       v_->free_aux();
       if(time_lim > 0)
       {
@@ -205,10 +208,10 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
       delete v_;
     } // pragma omp parallel
     }
-    fprintf(stderr, "mu[%d] = %d\n", i, mu[i].load());
+    fprintf(stderr, "mu[%d] = %d\n", i, mu[i]);
   }
   printf("RDS done\n");
-  uint fres = mu[i+1].load(); // last
+  uint fres = mu[i+1]; // last
   delete [] mu;
   chrono::duration<double> d = chrono::steady_clock::now() - start;
   printf("rds: time elapsed = %.8lf secs\n", d.count());
