@@ -1,7 +1,6 @@
 language: cpp
 compiler:
   - gcc
-  - clang-4.0
 os:
   - linux
   - osx
