@@ -1,8 +1,8 @@
 language: cpp
 compiler:
   - gcc
+  - clang
 os:
   - linux
-  - osx
 script:
   - make
