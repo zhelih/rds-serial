@@ -38,25 +38,23 @@ void print_lb_atomic(int signal)
 atomic_uint iter (0);
 atomic_bool should_exit (false);
 
-uint find_max(vector<vector <uint> >& c, vector<uint>& weight_c, vector<uint>& p, uint weight_p, const atomic_uint* mu, verifier *v, graph* g, vector<uint>& res, int level, const chrono::time_point<chrono::steady_clock> start, const uint time_lim)
+void find_max(vector<vector <uint> >& c, vector<uint>& weight_c, vector<uint>& p, uint weight_p, const atomic_uint* mu, verifier *v, graph* g, vector<uint>& res, int level, const chrono::time_point<chrono::steady_clock> start, const uint time_lim)
 {
   if(should_exit)
-    return lb;
+    return;
   if(c[level].size() == 0)
   {
     if(weight_p > lb)
     {
-      //TODO atomic copy
-//      res = p; //copy
-      printf("Found better solution, size %d\n", weight_p);
-//      #pragma omp critical (lbupdate)
-//      {
-        lb.store(max(lb.load(), weight_p));
-//      }
-      return weight_p;
+      #pragma omp critical (lbupdate)
+      {
+      res = p; //copy
+      lb.store(max(lb.load(), weight_p));
+      }
+      return;
     }
     else
-      return lb;
+      return;
   }
 
   for(uint c_i = 0; c_i < c[level].size(); ++c_i)
@@ -68,18 +66,18 @@ uint find_max(vector<vector <uint> >& c, vector<uint>& weight_c, vector<uint>& p
       if(d.count() >= (double)time_lim)
       {
         should_exit = true;
-        return lb;
+        return;
       }
     }
 
     if(weight_c[level] + weight_p <= lb) // Prune 1
     {
-      return lb;
+      return;
     }
     uint i = c[level][c_i];
     if(mu[i].load() + weight_p <= lb) // Prune 2
     {
-      return lb;
+      return;
     }
     weight_c[level] -= g->weight(i);
 //    NB: exploit that we adding only 1 vertex to p
@@ -95,19 +93,11 @@ uint find_max(vector<vector <uint> >& c, vector<uint>& weight_c, vector<uint>& p
         weight_c[level+1] += g->weight(c[level][it2]);
       }
     }
-    /*
-    auto result = find_max(c, weight_c, p, weight_p, mu, v, g, res, level+1, start, time_lim);
-    #pragma omp critical (lbupdate)
-    {
-      lb.store(max(result, lb.load()));
-    }
-//    lb.store(max(find_max(c, weight_c, p, weight_p, mu, v, g, res, level+1, start, time_lim), lb.load()), memory_order_seq_cst);
-//    */
     find_max(c, weight_c, p, weight_p, mu, v, g, res, level+1, start, time_lim);
     p.pop_back(); weight_p -= g->weight(i);
     v->undo_aux(g, p, i, c[level]);
   }
-  return lb;
+  return;
 }
 
 uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
@@ -198,14 +188,6 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
               weight_c_[1] += g->weight(c_[0][it2]);
             }
           }
-          /*
-          uint ures = find_max(c_, weight_c_, p_, weight_p_, mu, v_, g, res, 1, start, time_lim);
-          printf("Thread %d : changing LB: prev %d, new %d\n", thread_i, lb.load(), ures);
-          #pragma omp critical (lbupdate)
-          {
-            lb.store(max(ures,lb.load()), memory_order_seq_cst);
-          }
-          */
           find_max(c_, weight_c_, p_, weight_p_, mu, v_, g, res, 1, start, time_lim);
           p_.pop_back(); weight_p_ -= g->weight(i_);
           v_->undo_aux(g, p_, i_, c_[0]);
@@ -221,7 +203,6 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
           should_exit = true;
       }
       delete v_;
-//      printf("Thread %d : mu_i is %d\n", thread_i, mu_i);
     } // pragma omp parallel
     }
     fprintf(stderr, "mu[%d] = %d\n", i, mu[i].load());
