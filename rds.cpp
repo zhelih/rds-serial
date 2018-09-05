@@ -198,7 +198,6 @@ uint rds(Verifier* v, graph* g, vector<uint>& res, uint time_lim)
       {
         mu[i] = max(mu_i, mu[i]);
       }
-      v_->free_aux();
       if(time_lim > 0)
       {
         chrono::duration<double> d = chrono::steady_clock::now() - start;

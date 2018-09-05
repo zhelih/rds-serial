@@ -14,7 +14,7 @@
 class Verifier
 {
   public:
-    virtual ~Verifier() { }
+    virtual ~Verifier() { free_aux(); }
 
     virtual bool check_pair(graph* g, uint i, uint j) const = 0;
     virtual bool check(graph* g, const std::vector<uint>& p, uint n) const = 0;
