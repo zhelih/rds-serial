@@ -8,5 +8,10 @@
 #include "clique.hpp"
 #include "stable.hpp"
 #include "iuc.hpp"
+#include "sdefective.hpp"
+#include "splex.hpp"
+#include "forest.hpp"
+#include "bipartite.hpp"
+#include "swide.hpp"
 
 #endif
