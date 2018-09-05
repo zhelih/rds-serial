@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "graph.h"
-#include "verifier.h"
+#include "verifiers/verifier.hpp"
 
 typedef unsigned int uint;
 
@@ -49,7 +49,7 @@ struct VertexSet {
 // time limit in seconds
 // output: maximum subgraph size in g satisfying v
 // res contains the solution, use graph::restore_order to get original nodes
-uint rds(verifier* v, graph*g, std::vector<uint>& res, uint time_lim = 0);
+uint rds(Verifier* v, graph*g, std::vector<uint>& res, uint time_lim = 0);
 
 void print_lb_atomic(int signal);
 
