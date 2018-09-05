@@ -287,7 +287,7 @@ void graph::reorder_color(uint s) // See S. Trukhanov et al.
       return;
     }
     vector<uint> c;
-    uint min_c = -1;
+    uint min_c = nr_nodes+1;
     for(uint j = 0; j < nr_nodes; ++j)
       if(is_edge(u,j) && colnum[j] < s-1)
       {
