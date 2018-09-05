@@ -86,20 +86,20 @@ void find_max(vector<vertex_set>& c, vertex_set& p, const uint* mu, verifier *v,
     curC.weight -= g->weight(i);
 //    NB: exploit that we adding only 1 vertex to p
 //    thus verifier can prepare some info using prev calculations
-    v->prepare_aux(g, p, i, curC);
+    v->prepare_aux(p, i, curC);
     p.add_vertex(i, g->weight(i));
     nextC.clear();
     for(uint it2 = c_i; it2 < curC.size(); ++it2)
     {
       auto&& u = curC[it2];
-      if(u != i && v->check(g, p, u))
+      if(u != i && v->check(p, u))
       {
         nextC.add_vertex(u, g->weight(u));
       }
     }
     find_max(c, p, mu, v, g, res, level+1, start, time_lim);
     p.pop_vertex(g->weight(i));
-    v->undo_aux(g, p, i, curC);
+    v->undo_aux(p, i, curC);
   }
   return;
 }
@@ -127,7 +127,7 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
     auto& curC = c[0];
     
     for(uint j = i+1; j < n; ++j)
-      if(v->check_pair(g, i, j))
+      if(v->check_pair(i, j))
         curC.add_vertex(j, g->weight(j));
 
     vertex_set p;
@@ -148,7 +148,7 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
     {
       // clone for separate threads
       auto v_ = v->clone();
-      v_->init_aux(g, i, curC);
+      v_->init_aux(i, curC);
       vector<vertex_set> c_(c);
       vertex_set p_(p);
 
@@ -178,19 +178,19 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
           mu_i = lb.load();
           break;
         } else {
-          v_->prepare_aux(g, p_, i_, curC_);
+          v_->prepare_aux(p_, i_, curC_);
           p_.add_vertex(i_, g->weight(i_));
           auto& nextC_ = c_[1];
           nextC_.clear();
           for(uint it2 = c_i; it2 < curC_.size(); ++it2)
           {
             uint u = curC_[it2];
-            if(u != i_ && v_->check(g, p_, u)) //TODO only swap check?
+            if(u != i_ && v_->check(p_, u)) //TODO only swap check?
               nextC_.add_vertex(u, g->weight(u));
           }
           find_max(c_, p_, mu, v_, g, res, 1, start, time_lim);
           p_.pop_vertex(g->weight(i_));
-          v_->undo_aux(g, p_, i_, curC_);
+          v_->undo_aux(p_, i_, curC_);
         }
       }
       mu_i = lb.load();

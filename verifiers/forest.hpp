@@ -8,11 +8,11 @@ class Forest: public RegisterVerifier<Forest> {
     mutable std::vector<uint> color, parent, s;
 
   public:
-    bool check_pair(graph* g, uint i, uint j) const {
+    bool check_pair(uint i, uint j) const {
       return true;
     }
 
-    bool check(graph* g, const std::vector<uint>& p, uint n) const {
+    bool check(const std::vector<uint>& p, uint n) const {
       for(auto& v: p)
         color[v] = 0;
       uint stack_size = 0;
@@ -40,7 +40,7 @@ class Forest: public RegisterVerifier<Forest> {
       return true;
     }
 
-    bool check_solution(graph* g, const std::vector<uint>& res) const {
+    bool check_solution(const std::vector<uint>& res) const {
       std::stack<std::pair<uint,uint> > s;
       std::vector<uint> color(g->nr_nodes);
       for(uint i = 0; i < g->nr_nodes; ++i)
@@ -66,7 +66,7 @@ class Forest: public RegisterVerifier<Forest> {
       return true;
     }
 
-    void init_aux(graph *g, uint i, const std::vector<uint>& c) {
+    void init_aux(uint i, const std::vector<uint>& c) {
       color.resize(g->nr_nodes);
       parent.resize(g->nr_nodes);
       s.resize(g->nr_nodes);

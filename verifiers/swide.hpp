@@ -9,11 +9,11 @@ class SWide: public RegisterVerifier<SWide> {
     std::vector<uint> is_end;
 
   public:
-    bool check_pair(graph* g, uint i, uint j) const {
+    bool check_pair(uint i, uint j) const {
       return true;
     }
 
-    bool check(graph* g, const std::vector<uint>& p, uint n) const {
+    bool check(const std::vector<uint>& p, uint n) const {
       uint nr_ends = 0;
       for(uint i = 0; nr_ends < 3 && i < p.size(); ++i)
         if (g->is_edge(p[i], n)) {
@@ -25,16 +25,16 @@ class SWide: public RegisterVerifier<SWide> {
       return (nr_ends < 3);
     }
 
-    bool check_solution(graph* g, const std::vector<uint>& res) const {
+    bool check_solution(const std::vector<uint>& res) const {
       return true;
     }
 
-    void init_aux(graph *g, uint i, const std::vector<uint>& c) {
+    void init_aux(uint i, const std::vector<uint>& c) {
       is_end.resize(g->nr_nodes, 0);
       is_end[i] = 1;
     }
 
-    void prepare_aux(graph* g, const std::vector<uint>& p, uint n, const std::vector<uint>& c)
+    void prepare_aux(const std::vector<uint>& p, uint n, const std::vector<uint>& c)
     {
       uint nr_ends = 0;
       uint v_end[2];
@@ -57,7 +57,7 @@ class SWide: public RegisterVerifier<SWide> {
       }
     }
 
-    void undo_aux(graph* g, const std::vector<uint>& p, uint n, const std::vector<uint>& c)
+    void undo_aux(const std::vector<uint>& p, uint n, const std::vector<uint>& c)
     {
       uint nr_ends = 0;
       is_end[n] = 0;

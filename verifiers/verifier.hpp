@@ -2,11 +2,7 @@
 #define _VERIFIER_NEW_H
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
 #include <map>
-#include <iostream>
 #include <string>
 #include <functional>
 #include "../graph.h"
@@ -16,16 +12,16 @@ class verifier
   public:
     virtual ~verifier() { free_aux(); }
 
-    virtual bool check_pair(graph* g, uint i, uint j) const = 0;
-    virtual bool check(graph* g, const std::vector<uint>& p, uint n) const = 0;
-    virtual bool check_solution(graph* g, const std::vector<uint>& res) const = 0;
+    virtual bool check_pair(uint i, uint j) const = 0;
+    virtual bool check(const std::vector<uint>& p, uint n) const = 0;
+    virtual bool check_solution(const std::vector<uint>& res) const = 0;
 
     // return aux info for singleton P = { i } and C
-    virtual void init_aux(graph* g, uint i, const std::vector<uint>& c) { }
+    virtual void init_aux(uint i, const std::vector<uint>& c) { }
     // return aux info for P u {i}
     // knowing aux for P as prev_aux
-    virtual void prepare_aux(graph*g, const std::vector<uint>& p, uint i, const std::vector<uint>& c) { }
-    virtual void undo_aux(graph* g, const std::vector<uint>& p, uint i, const std::vector<uint>& c) {}
+    virtual void prepare_aux(const std::vector<uint>& p, uint i, const std::vector<uint>& c) { }
+    virtual void undo_aux(const std::vector<uint>& p, uint i, const std::vector<uint>& c) {}
     // free aux info
     virtual void free_aux() {}
 
@@ -49,8 +45,11 @@ class verifier
       return parameter_description[number];
     }
 
+    void bind_graph(graph* g) { this->g = g; }
+
    protected:
       uint16_t id;
+      const graph* g;
       std::string name;
       std::string description;
       std::string shortcut;
@@ -92,7 +91,7 @@ class VerifierManager
       auto&& v = method();
       if (verifiers_by_shortcut.find(v->get_shortcut()) !=
           verifiers_by_shortcut.end()) {
-          printf("Verifier with shortcut %s already exists.",
+          fprintf(stderr, "Verifier with shortcut %s already exists.",
                  v->get_shortcut().c_str());
           return 0;
       }

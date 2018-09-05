@@ -19,8 +19,8 @@ class graph
   graph(uint n);
   ~graph();
   void add_edge(uint i, uint j);
-  inline bool is_edge(uint i, uint j) {return adj[i][j];} 
-  inline uint weight(uint i) { return weights[i]; }
+  inline bool is_edge(uint i, uint j) const {return adj[i][j];} 
+  inline uint weight(uint i) const { return weights[i]; }
   //void set_weight(uint i, uint w) { weights[i] = w; }
   // note: reordering might take a bit of time
   // do before RDS

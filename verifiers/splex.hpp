@@ -10,14 +10,14 @@ class SPlex: public RegisterVerifier<SPlex> {
     std::vector<std::vector<uint>> nncnt;
 
   public:
-    bool check_pair(graph* g, uint i, uint j) const {
+    bool check_pair(uint i, uint j) const {
       if(s == 1)
         return g->is_edge(i,j);
       else
         return true;
     }
 
-    bool check(graph* g, const std::vector<uint>& p, uint n) const {
+    bool check(const std::vector<uint>& p, uint n) const {
       if(nncnt[level][n] >= s) // degree check
         return false;
       for(uint i = 0; i < nr_sat; ++i) // SAT connectivity check
@@ -26,7 +26,7 @@ class SPlex: public RegisterVerifier<SPlex> {
       return true;
     }
 
-    bool check_solution(graph* g, const std::vector<uint>& res) const {
+    bool check_solution(const std::vector<uint>& res) const {
       std::vector<uint> degrees(res.size());
       for(uint i = 0; i < res.size(); ++i)
         degrees[i] = 0;
@@ -40,7 +40,7 @@ class SPlex: public RegisterVerifier<SPlex> {
       return m_degree >= (res.size() - s);
     }
 
-    void init_aux(graph *g, uint i, const std::vector<uint>& c) {
+    void init_aux(uint i, const std::vector<uint>& c) {
       level = 0;
       nncnt.resize(g->nr_nodes);
       sat.resize(g->nr_nodes);
@@ -54,7 +54,7 @@ class SPlex: public RegisterVerifier<SPlex> {
         nncnt[0][v]=!g->is_edge(v, i);
     }
 
-    void prepare_aux(graph* g, const std::vector<uint>& p, uint j, const std::vector<uint>& c)
+    void prepare_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c)
     {
       nr_sat = 0;
       level++;
@@ -82,7 +82,7 @@ class SPlex: public RegisterVerifier<SPlex> {
       }
     }
 
-    void undo_aux(graph* g, const std::vector<uint>& p, uint j, const std::vector<uint>& c)
+    void undo_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c)
     {
       level--;
     }

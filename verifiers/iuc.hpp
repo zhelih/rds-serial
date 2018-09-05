@@ -4,11 +4,11 @@
 
 class IUC: public RegisterVerifier<IUC> {
   public:
-    bool check_pair(graph* g, uint i, uint j) const {
+    bool check_pair(uint i, uint j) const {
       return true;
     }
 
-    bool check(graph* g, const std::vector<uint>& p, uint n) const {
+    bool check(const std::vector<uint>& p, uint n) const {
       for(auto it = p.begin(); it != p.end(); ++it)
         for(auto it2 = next(it); it2 != p.end(); ++it2)
         if(g->is_edge(*it, *it2) + g->is_edge(*it, n) + g->is_edge(*it2, n) == 2)
@@ -16,7 +16,7 @@ class IUC: public RegisterVerifier<IUC> {
       return true;
     }
 
-    bool check_solution(graph* g, const std::vector<uint>& res) const {
+    bool check_solution(const std::vector<uint>& res) const {
       for(uint i = 0; i < res.size(); ++i)
         for(uint j = i+1; j < res.size(); ++j)
           for(uint k = j+1; k < res.size(); ++k)

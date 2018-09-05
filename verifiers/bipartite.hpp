@@ -8,11 +8,11 @@ class Bipartite: public RegisterVerifier<Bipartite> {
     mutable std::vector<uint> color, s;
 
   public:
-    bool check_pair(graph* g, uint i, uint j) const {
+    bool check_pair(uint i, uint j) const {
       return true;
     }
 
-    bool check(graph* g, const std::vector<uint>& p, uint n) const {
+    bool check(const std::vector<uint>& p, uint n) const {
       for(auto& v: p)
         color[v] = 2;
       uint stack_size = 0;
@@ -39,11 +39,11 @@ class Bipartite: public RegisterVerifier<Bipartite> {
       return true;
     }
 
-    bool check_solution(graph* g, const std::vector<uint>& res) const {
+    bool check_solution(const std::vector<uint>& res) const {
       return true;
     }
 
-    void init_aux(graph *g, uint i, const std::vector<uint>& c) {
+    void init_aux(uint i, const std::vector<uint>& c) {
       s.resize(g->nr_nodes);
       color.resize(g->nr_nodes);
     }
