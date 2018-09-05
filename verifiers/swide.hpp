@@ -76,6 +76,7 @@ class SWide: public RegisterVerifier<SWide> {
       name = "s-Wide graph";
       description = "Well, it's an s-Wide graph";
       shortcut = "-sw";
+      add_parameter("s", &s);
     }
 
     SWide* clone() const {

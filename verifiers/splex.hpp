@@ -7,7 +7,7 @@ class SPlex: public RegisterVerifier<SPlex> {
   private:
     uint s, level, nr_sat;
     std::vector<uint> sat;
-    std::vector<std::vector<uint>> nncnt;;
+    std::vector<std::vector<uint>> nncnt;
 
   public:
     bool check_pair(graph* g, uint i, uint j) const {
@@ -95,6 +95,7 @@ class SPlex: public RegisterVerifier<SPlex> {
       name = "s-Plex";
       description = "Well, it's an s-Plex";
       shortcut = "-sp";
+      add_parameter("s", &s);
     }
 
     SPlex* clone() const {

@@ -64,6 +64,7 @@ class SDefective: public RegisterVerifier<SDefective> {
       name = "s-Defective clique";
       description = "Well, it's an SDC";
       shortcut = "-sd";
+      add_parameter("s", &s);
     }
 
     SDefective* clone() const {

@@ -11,10 +11,10 @@
 #include <functional>
 #include "../graph.h"
 
-class Verifier
+class verifier
 {
   public:
-    virtual ~Verifier() { free_aux(); }
+    virtual ~verifier() { free_aux(); }
 
     virtual bool check_pair(graph* g, uint i, uint j) const = 0;
     virtual bool check(graph* g, const std::vector<uint>& p, uint n) const = 0;
@@ -29,24 +29,48 @@ class Verifier
     // free aux info
     virtual void free_aux() {}
 
-    virtual Verifier* clone() const = 0;
+    virtual verifier* clone() const = 0;
 
-    const std::string& getName() { return this->name; }
-    const std::string& getShortcut() { return this->shortcut; }
-    const std::string& getDescription() { return this->description; }
+    const std::string& get_name() { return this->name; }
+    const std::string& get_shortcut() { return this->shortcut; }
+    const std::string& get_description() { return this->description; }
+
+    unsigned int number_of_parametes() const {
+      return number_of_additional_parameters;
+    }
+
+    void provide_parameter(const unsigned int& value) {
+      if (number_of_provided_parameters < parameters.size())
+        *parameters[number_of_provided_parameters] = value;
+      ++number_of_provided_parameters;
+    }
+
+    const std::string get_parameter_name(const unsigned int number) {
+      return parameter_description[number];
+    }
 
    protected:
       uint16_t id;
       std::string name;
       std::string description;
       std::string shortcut;
+      uint number_of_additional_parameters = 0;
+      uint number_of_provided_parameters = 0;
+      std::vector<unsigned int*> parameters;
+      std::vector<std::string> parameter_description;
+
+      void add_parameter(const std::string& description, unsigned int* ptr) {
+        ++number_of_additional_parameters;
+        parameter_description.push_back(description);
+        parameters.push_back(ptr);
+      }
 };
 
 template<typename Derived>
-class RegisterVerifier: public Verifier
+class RegisterVerifier: public verifier
 {
    public:
-     static Verifier* create() { return new Derived(); }
+     static verifier* create() { return new Derived(); }
      static const uint16_t VERIFIER_ID; // for registration
    protected:
       RegisterVerifier() { id = VERIFIER_ID; } //use parameter to instanciate template
@@ -55,9 +79,9 @@ class RegisterVerifier: public Verifier
 class VerifierManager
 {
   public:
-    using Method = std::function<Verifier*()>;
+    using Method = std::function<verifier*()>;
 
-    static VerifierManager *getInstance()
+    static VerifierManager *instance()
     {
       static VerifierManager inst;
       return &inst;
@@ -65,27 +89,40 @@ class VerifierManager
 
     uint16_t Register(Method method)
     {
-      auto&& verifier = method();
-      if (verifiers_by_shortcut.find(verifier->getShortcut()) !=
+      auto&& v = method();
+      if (verifiers_by_shortcut.find(v->get_shortcut()) !=
           verifiers_by_shortcut.end()) {
           printf("Verifier with shortcut %s already exists.",
-                 verifier->getShortcut().c_str());
+                 v->get_shortcut().c_str());
           return 0;
       }
       verifiers[++lastID] = method;
-      verifiers_by_name[verifier->getName()] = method;
-      verifiers_by_shortcut[verifier->getShortcut()] = method;
-      delete verifier;
+      verifiers_by_name[v->get_name()] = method;
+      verifiers_by_shortcut[v->get_shortcut()] = method;
+      delete v;
       return lastID;
     }
 
-    Verifier *create(uint16_t verid)
+    
+
+    verifier *create(uint16_t verid)
     {
       return verifiers[verid]();
     }
 
-    Verifier *create(std::string shortcut) {
-      return verifiers_by_shortcut[shortcut]();
+    size_t count() const {
+      return verifiers.size();
+    }
+
+    bool is_shortcut(const std::string& shortcut) const {
+      return (verifiers_by_shortcut.find(shortcut) != verifiers_by_shortcut.end());
+    }
+
+    verifier *create(const std::string& shortcut) const {
+      if (verifiers_by_shortcut.find(shortcut) != verifiers_by_shortcut.end())
+        return verifiers_by_shortcut.at(shortcut)();
+      else
+        return nullptr;
     }
 
     std::map<uint16_t, Method> verifiers;
@@ -102,5 +139,5 @@ class VerifierManager
 
 template <typename Derived>
 const uint16_t RegisterVerifier<Derived>::VERIFIER_ID =
-  VerifierManager::getInstance()->Register(&RegisterVerifier<Derived>::create);
+  VerifierManager::instance()->Register(&RegisterVerifier<Derived>::create);
 #endif

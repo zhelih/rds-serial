@@ -17,13 +17,14 @@ void show_usage(const char* argv)
   printf("\t-h|-?\tdisplay this help\n");
   printf("\t-weights <weights file>\n");
   printf("\t-comp\tuse graph complement\n");
-  printf("Maximum Solvers, %ld available:\n", VerifierManager::getInstance()->verifiers.size());
-  for(auto& element: VerifierManager::getInstance()->verifiers) {
+  printf("Maximum Solvers, %ld available:\n", VerifierManager::instance()->count());
+  for(auto& element: VerifierManager::instance()->verifiers) {
     auto&& verifier = element.second();
-    printf("\t%s\t%s\n",
-           verifier->getShortcut().c_str(),
-           verifier->getName().c_str());
-    delete verifier;
+    printf("\t%s", verifier->get_shortcut().c_str());
+    for(unsigned int i = 0; i < verifier->number_of_parametes(); ++i) {
+      printf(" <%s>", verifier->get_parameter_name(i).c_str());
+    }
+    printf("\t%s\n", verifier->get_name().c_str());
   } 
   printf("Vertex ordering:\n");
   printf("\t-vd\tdegree from large to small\n");
@@ -53,27 +54,36 @@ int main(int argc, char* argv[])
       fprintf(stderr, "Failure: no input graph, exiting...\n");
       return 1;
     }
-    Verifier* v = 0;
+    verifier* v = nullptr;
     uint time_lim = 0;
     for(int i = 1; i < argc-1; ++i)
     {
       // so ugly, but switch refuses to compare strings
-      if(string(argv[i]) == "-c") { if(v) delete v; v = new Clique(); }
-      else if (string(argv[i]) == "-s") { if(v) delete v; v = new Stable(); }
+      auto&& arg = std::string(argv[i]);
+      if (VerifierManager::instance()->is_shortcut(arg)) {
+        delete v; v = VerifierManager::instance()->create(arg);
+        for(uint p = 0; p < v->number_of_parametes(); ++p) {
+          int parameter = atoi(argv[i+1]);
+          v->provide_parameter(parameter);
+          i++;
+        }
+      }
 
-      else if (string(argv[i]) == "-vd") { g->reorder_degree(); }
-      else if (string(argv[i]) == "-vd2") { g->reorder_2nb(); }
-      else if (string(argv[i]) == "-vr") { g->reorder_random(); }
-      else if (string(argv[i]) == "-vw") { g->reorder_weight(); }
-      else if (string(argv[i]) == "-vc") { g->reorder_color(atoi(argv[i+1])); i++; }
-      else if (string(argv[i]) == "-vrev") { g->reorder_rev(); }
+      else if (arg == "-vd") { g->reorder_degree(); }
+      else if (arg == "-vd2") { g->reorder_2nb(); }
+      else if (arg == "-vr") { g->reorder_random(); }
+      else if (arg == "-vw") { g->reorder_weight(); }
+      else if (arg == "-vc") { g->reorder_color(atoi(argv[i+1])); i++; }
+      else if (arg == "-vrev") { g->reorder_rev(); }
 
-      else if (string(argv[i]) == "-t") { time_lim = atoi(argv[i+1]); i++; }
-      else if (string(argv[i]) == "-comp") { graph* g_c = g->complement(); delete g; g = g_c; }
-      else if (string(argv[i]) == "-weights") { g->read_weights(argv[i+1]); i++; }
+      else if (arg == "-t") { time_lim = atoi(argv[i+1]); i++; }
+      else if (arg == "-comp") { graph* g_c = g->complement(); delete g; g = g_c; }
+      else if (arg == "-weights") { g->read_weights(argv[i+1]); i++; }
       else {
           fprintf(stderr, "Wrong parameter: %s\n", argv[i]);
-          if(v) delete v; delete g; return 1;
+          delete v;
+          delete g;
+          return 1;
       }
     }
     if(!v)
