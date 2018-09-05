@@ -7,8 +7,6 @@
 #include "graph.h"
 #include "verifiers/verifiers.h"
 
-using namespace std;
-
 void show_usage(const char* argv)
 {
   
@@ -67,7 +65,7 @@ int parse_for_vertex_order_parameters(graph* g, const int& argc, char* argv[], i
   if (position >= argc-1) {
     return position;
   }
-  auto&& arg = std::string(argv[position]);
+  std::string arg = std::string(argv[position]);
   if (arg == "-vd") { g->reorder_degree(); }
   else if (arg == "-vd2") { g->reorder_2nb(); }
   else if (arg == "-vr") { g->reorder_random(); }
@@ -93,7 +91,7 @@ int main(int argc, char* argv[])
   printf("Russian-Doll-Search\nCopyright Eugene Lykhovyd, 2017.\n");
   pr_();
 
-  if(argc < 2 || string(argv[1]) == "-h" || string(argv[1]) == "-?") {
+  if(argc < 2 || std::string(argv[1]) == "-h" || std::string(argv[1]) == "-?") {
     show_usage(argv[0]);
     return 0;
   }
@@ -136,7 +134,7 @@ int main(int argc, char* argv[])
 
   v->bind_graph(g);
 
-  vector<uint> res_p;
+  std::vector<uint> res_p;
   uint res = rds(v, g, res_p, time_lim);
 
   verify_solution(v, res_p);
