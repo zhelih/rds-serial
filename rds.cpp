@@ -38,7 +38,7 @@ void print_lb_atomic(int signal)
 atomic_uint iter (0);
 atomic_bool should_exit (false);
 
-void find_max(vector<VertexSet>& c, VertexSet& p, const uint* mu, verifier *v, graph* g, vector<uint>& res, int level, const chrono::time_point<chrono::steady_clock> start, const uint time_lim)
+void find_max(vector<VertexSet>& c, VertexSet& p, const uint* mu, Verifier *v, graph* g, vector<uint>& res, int level, const chrono::time_point<chrono::steady_clock> start, const uint time_lim)
 {
   auto& curC = c[level];
   if(should_exit)
@@ -104,7 +104,7 @@ void find_max(vector<VertexSet>& c, VertexSet& p, const uint* mu, verifier *v, g
   return;
 }
 
-uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
+uint rds(Verifier* v, graph* g, vector<uint>& res, uint time_lim)
 {
   chrono::time_point<chrono::steady_clock> start = chrono::steady_clock::now(); // C++11 only
   should_exit = false;
@@ -147,7 +147,7 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
     #pragma omp parallel
     {
       // clone for separate threads
-      verifier* v_ = v->clone();
+      Verifier* v_ = v->clone();
       v_->init_aux(g, i, curC);
       vector<VertexSet> c_(c);
       VertexSet p_(p);
