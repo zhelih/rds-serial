@@ -111,6 +111,12 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
   for(uint i = 0; i < n; ++i)
     mu[i] = 0;
 
+  #pragma omp parallel
+  {
+    #pragma omp single
+    fprintf(stderr, "Using up to %d threads (OMP)\n", omp_get_num_threads()); //FIXME might change in the future
+  }
+
   int i;
   for(i = n-1; i >= 0 && !should_exit; --i)
   {
