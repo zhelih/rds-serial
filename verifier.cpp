@@ -3,6 +3,50 @@
 #include <vector>
 #include <stack>
 
+// clique
+bool clique::check_pair(graph* g, uint i, uint j) const { return g->is_edge(i,j); }
+bool clique::check(graph* g, const std::vector<uint>& p, uint n)
+{
+  for(auto it = p.begin(); it != p.end(); ++it)
+    if(!g->is_edge(*it, n))
+      return false;
+  return true;
+}
+bool clique::check_solution(graph* g, const std::vector<uint>& res) const
+{
+  for(uint i = 0; i < res.size(); ++i)
+    for(uint j = i+1; j > res.size(); ++j)
+      if(!g->is_edge(res[i], res[j]))
+        return false;
+  return true;
+}
+verifier* clique::clone() const
+{
+  return new clique(*this);
+}
+
+// stable
+bool stable::check_pair(graph* g, uint i, uint j) const { return !g->is_edge(i,j); }
+bool stable::check(graph* g, const std::vector<uint>& p, uint n)
+{
+  for(auto it = p.begin(); it != p.end(); ++it)
+    if(g->is_edge(*it, n))
+      return false;
+  return true;
+}
+bool stable::check_solution(graph* g, const std::vector<uint>& res) const
+{
+  for(uint i = 0; i < res.size(); ++i)
+    for(uint j = i+1; j > res.size(); ++j)
+      if(g->is_edge(res[i], res[j]))
+        return false;
+  return true;
+}
+verifier* stable::clone() const
+{
+  return new stable(*this);
+}
+
 // iuc
 bool iuc::check_pair(graph* g, uint i, uint j) const { return true; }
 bool iuc::check(graph* g, const std::vector<uint>& p, uint n)

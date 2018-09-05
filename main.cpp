@@ -5,26 +5,19 @@
 #include <cstdlib>
 #include "rds.h"
 #include "graph.h"
-#include "verifiers/verifiers.h"
+#include "verifier.h"
 
 using namespace std;
 
 void show_usage(const char* argv)
 {
-  
   printf("Usage: %s [options] <dimacs input file>\nAvailable options:\n", argv);
   printf("\t-t\tTime limit in seconds (optional)\n");
   printf("\t-h|-?\tdisplay this help\n");
   printf("\t-weights <weights file>\n");
   printf("\t-comp\tuse graph complement\n");
-  printf("Maximum Solvers, %ld available:\n", VerifierManager::getInstance()->verifiers.size());
-  for(auto& element: VerifierManager::getInstance()->verifiers) {
-    auto&& verifier = element.second();
-    printf("\t%s\t%s\n",
-           verifier->getShortcut().c_str(),
-           verifier->getName().c_str());
-    delete verifier;
-  } 
+  printf("Maximum Solvers:\n\t-c\tClique\n\t-s\tStable set\n\t-d s\ts-defective clique\n");
+  printf("\t-p s\ts-plex\n\t-iuc\tIndependent Union of Cliques\n\t-f\tForest\n\t-b\tBipartite\n\t-w\ts-wide");
   printf("Vertex ordering:\n");
   printf("\t-vd\tdegree from large to small\n");
   printf("\t-vd2\t2-neighborhood from large to small\n");
@@ -53,13 +46,19 @@ int main(int argc, char* argv[])
       fprintf(stderr, "Failure: no input graph, exiting...\n");
       return 1;
     }
-    Verifier* v = 0;
+    verifier* v = 0;
     uint time_lim = 0;
     for(int i = 1; i < argc-1; ++i)
     {
       // so ugly, but switch refuses to compare strings
-      if(string(argv[i]) == "-c") { if(v) delete v; v = new Clique(); }
-      else if (string(argv[i]) == "-s") { if(v) delete v; v = new Stable(); }
+      if(string(argv[i]) == "-c") { if(v) delete v; v = new clique(); }
+      else if (string(argv[i]) == "-s") { if(v) delete v; v = new stable(); }
+      else if (string(argv[i]) == "-p") { if(v) delete v; v = new plex(atoi(argv[i+1])); i++; }
+      else if (string(argv[i]) == "-d") { if(v) delete v; v = new defective_clique(atoi(argv[i+1])); i++; }
+      else if (string(argv[i]) == "-f") { if(v) delete v; v = new forest(); i++; }
+      else if (string(argv[i]) == "-b") { if(v) delete v; v = new bipartite(); i++; }
+      else if (string(argv[i]) == "-iuc") { if(v) delete v; v = new iuc(); }
+      else if (string(argv[i]) == "-w") { if(v) delete v; v = new swide(atoi(argv[i+1])); i++; }
 
       else if (string(argv[i]) == "-vd") { g->reorder_degree(); }
       else if (string(argv[i]) == "-vd2") { g->reorder_2nb(); }
