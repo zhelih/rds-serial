@@ -13,5 +13,6 @@
 #include "forest.hpp"
 #include "bipartite.hpp"
 #include "swide.hpp"
+#include "chordal.hpp"
 
 #endif
