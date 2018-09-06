@@ -14,11 +14,11 @@ class Chordal: public RegisterVerifier<Chordal> {
     }
 
     bool check(const std::vector<uint>& p, uint n) const {
-//      printf("Checking if %d and (", n);
+//      printf("\nChecking if %d and (", n+1);
 //      for(unsigned int i = 0; i < p.size(); ++i) {
-//        printf("%d, ", p[i]);
+//        printf("%d, ", p[i]+1);
 //      }
-//       printf("\b\b) form a chordal graph\n");
+//      printf("\b\b) form a chordal graph\n");
       int cnt_bottom[200];
       bool ok_left[200];
       for(int i = 0; i < 200; ++i) {
@@ -31,9 +31,9 @@ class Chordal: public RegisterVerifier<Chordal> {
           if (v == u) {
             continue;
           }
-//          printf("Checking pair %d, %d\n", v, u);
+//          printf("Checking pair %d, %d\n", v+1, u+1);
           if (!g->is_edge(n, v) || !g->is_edge(n, u)) {
-//            printf("Verdict: no edge from %d to one of them\n", n);
+//            printf("Verdict: no edge from %d to one of them\n", n+1);
             continue;
           }
           else {
@@ -41,14 +41,14 @@ class Chordal: public RegisterVerifier<Chordal> {
           }
 
           if (g->is_edge(v, u)) {
-//            printf("Verdict: there is edge (%d, %d)\n", v, u);
+//            printf("Verdict: there is edge (%d, %d)\n", v+1, u+1);
             cnt_bottom[v]++;
-//            printf("cnt_bottom[%d] now is %d\n", v, cnt_bottom[v]);
+//            printf("cnt_bottom[%d] now is %d\n", v+1, cnt_bottom[v]);
             continue;
           }
           
           if (colors[level][v] == colors[level][u]) {
-//            printf("Verdict: (%d, %d, %d) is a claw. Solve it later\n", v, n, u);
+//            printf("Verdict: (%d, %d, %d) is a claw. Solve it later\n", v+1, n+1, u+1);
             continue;
           }
         }
@@ -60,10 +60,10 @@ class Chordal: public RegisterVerifier<Chordal> {
             continue;
           }
           if (g->is_edge(v, u)) {
-//            printf("There is an edge (%d, %d), cnt_bottom[%d] = %d\n", v, u, (int)cnt_bottom[v]);
-            if (cnt_bottom[v] > 2) {
+//            printf("There is an edge (%d, %d), cnt_bottom[%d] = %d\n", v+1, u+1, v+1, cnt_bottom[v]);
+            if (cnt_bottom[v] > 1) {
               ok_left[u] = true;
-//              printf("ok_left[%d] = %d\n", u, (int)ok_left[u]);
+//              printf("ok_left[%d] = %d\n", u+1, (int)ok_left[u]);
             }
           }
         }
@@ -75,7 +75,7 @@ class Chordal: public RegisterVerifier<Chordal> {
             continue;
           }
           if (g->is_edge(n, v) && g->is_edge(n, u) && !g->is_edge(v, u) && colors[level][v] == colors[level][u]) {
-//            printf("Claw: (%d, %d, %d). ok_left[%d] = %d\n", v, n, u, v, (int)ok_left[v]);
+//            printf("Claw: (%d, %d, %d). ok_left[%d] = %d\n", v+1, n+1, u+1, v+1, (int)ok_left[v]);
             if (!ok_left[v]) {
 //              printf("Verdict: no\n");
               return false;
