@@ -147,6 +147,7 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
       if(weight_p > lb)
       {
         mu[i] = weight_p;
+        lb.store(max(lb.load(), weight_p));
         res = p;
       }
       else
