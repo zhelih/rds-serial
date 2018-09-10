@@ -21,10 +21,8 @@ class Chordal: public RegisterVerifier<Chordal> {
 //      printf("\b\b) form a chordal graph\n");
       int cnt_bottom[200];
       bool ok_left[200];
-      for(int i = 0; i < 200; ++i) {
-        ok_left[i] = false;
-        cnt_bottom[i] = 0;
-      }
+      memset(cnt_bottom, 0, sizeof(cnt_bottom));
+      memset(ok_left, 0, sizeof(ok_left));
 
       for(auto& v: p) {
         for(auto& u: p) {
