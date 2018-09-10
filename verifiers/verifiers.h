@@ -12,6 +12,7 @@
 #include "splex.hpp"
 #include "forest.hpp"
 #include "bipartite.hpp"
+#include "bipartite_new.hpp"
 #include "swide.hpp"
 #include "chordal.hpp"
 
