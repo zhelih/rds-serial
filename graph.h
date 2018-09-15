@@ -25,6 +25,7 @@ class graph
   // note: reordering might take a bit of time
   // do before RDS
   void reorder_degree(); // degree order from large to small
+  void reorder_degeneracy();
   void reorder_weight(); // weight from large to small
   void reorder_random(); // permute at random
   void reorder_2nb(); // order based on the size of 2-neigborhood, from large to small

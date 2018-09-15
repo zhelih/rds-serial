@@ -26,6 +26,7 @@ void show_usage(const char* argv)
   } 
   printf("Vertex ordering:\n");
   printf("\t-vd\tdegree from large to small\n");
+  printf("\t-vdg\tdegeneracy order\n");
   printf("\t-vd2\t2-neighborhood from large to small\n");
   printf("\t-vr\trandom ordering\n");
   printf("\t-vc n\tn-color ordering\n");
@@ -38,44 +39,44 @@ void pr_()
   printf("------------------------------------------------\n");
 }
 
-int parse_for_verifier_parameters(verifier*& v, const int& argc, char* argv[], int position) {
+bool parse_for_verifier_parameters(verifier*& v, const int& argc, char* argv[], int& position) {
   if (position >= argc-1) {
-    return position;
+    return false;
   }
   auto&& arg = std::string(argv[position]);
   if (VerifierManager::instance()->is_shortcut(arg)) {
-    ++position;
     delete v;
     v = VerifierManager::instance()->create(arg);
     for(uint p = 0; p < v->number_of_parametes(); ++p) {
       int parameter;
       try {
-        parameter = std::stoi(argv[position++]);
+        parameter = std::stoi(argv[++position]);
       } catch (const std::invalid_argument&) {
         fprintf(stderr, "Verifier: Wrong parameter: %s\n", argv[position-p-1]);
         exit(1);
       }
       v->provide_parameter(parameter);
     }
+    return true;
   }
-  return position;
+  return false;
 }
 
-int parse_for_vertex_order_parameters(graph* g, const int& argc, char* argv[], int position) {
+bool parse_for_vertex_order_parameters(graph* g, const int& argc, char* argv[], int& position) {
   if (position >= argc-1) {
-    return position;
+    return false;
   }
   std::string arg = std::string(argv[position]);
-  if (arg == "-vd") { g->reorder_degree(); }
-  else if (arg == "-vd2") { g->reorder_2nb(); }
-  else if (arg == "-vr") { g->reorder_random(); }
-  else if (arg == "-vw") { g->reorder_weight(); }
-  else if (arg == "-vc") { g->reorder_color(atoi(argv[++position])); }
-  else if (arg == "-vrev") { g->reorder_rev(); }
+  if (arg == "-vd") { g->reorder_degree(); return true;}
+  else if (arg == "-vd2") { g->reorder_2nb(); return true;}
+  else if (arg == "-vdg") { g->reorder_degeneracy(); return true;}
+  else if (arg == "-vr") { g->reorder_random(); return true;}
+  else if (arg == "-vw") { g->reorder_weight(); return true;}
+  else if (arg == "-vc") { g->reorder_color(atoi(argv[++position])); return true;}
+  else if (arg == "-vrev") { g->reorder_rev(); return true;}
   else {
-    return position;
+    return false;
   }
-  return position+1;
 }
 
 void verify_solution(verifier*& v, std::vector<uint>& sol) {
@@ -109,8 +110,8 @@ int main(int argc, char* argv[])
   for(int i = 1; i < argc-1; ++i)
   {
     // so ugly, but switch refuses to compare strings
-    i = parse_for_verifier_parameters(v, argc, argv, i);
-    i = parse_for_vertex_order_parameters(g, argc, argv, i);
+    if (parse_for_verifier_parameters(v, argc, argv, i)) continue;
+    if (parse_for_vertex_order_parameters(g, argc, argv, i)) continue;
     if (i >= argc-1) {
       break;
     }
