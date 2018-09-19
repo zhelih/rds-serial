@@ -12,11 +12,10 @@ class graph;
 
 struct algorithm_run {
   std::string graphname;
-  graph *g;
-  verifier *v;
   bool valid = false;
   bool complete = false;
   bool reverse = false;
+  bool correct = false;
 
   unsigned int time_limit;
 

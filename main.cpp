@@ -23,11 +23,14 @@ algorithm_run run_rds(verifier* v, ordering order, bool reverse, unsigned int ti
     result.valid = false;
     return result;
   }
-  result.g = g;
-  result.v = v;
   g->apply_order(order, reverse);
   v->bind_graph(g);
   rds(v, g, result);
+
+  result.correct = v->check_solution(result.certificate);
+  g->restore_order(result.certificate);
+  std::sort(result.certificate.begin(), result.certificate.end());
+  delete g;
   return result;
 }
 

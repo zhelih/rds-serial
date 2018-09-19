@@ -23,14 +23,12 @@ void fancy(std::ostream& out, const algorithm_run& run) {
     else {
       out<<"Optimal solution size: "<<run.value<<std::endl;
     }
-    std::vector<unsigned int> vertices = run.certificate;
-    run.g->restore_order(vertices);
-    std::sort(vertices.begin(), vertices.end());
     out<<"Vertices: {";
-    for (unsigned int v: vertices) {
+    for (unsigned int v: run.certificate) {
       out<<v<<", ";
     }
     out<<"\b\b}"<<std::endl;
+    out<<"This solution is "<<(run.correct?"correct.":"INCORRECT!")<<std::endl;
   }
   pr_();
 }
