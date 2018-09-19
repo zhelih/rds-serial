@@ -1,12 +1,8 @@
-#include <cstdio>
 #include <string>
 #include <algorithm>
 #include <functional>
 #include <csignal>
-#include <cstdlib>
-#include <chrono>
 #include <iostream>
-#include <iterator>
 #include "graph.h"
 #include "verifiers/verifiers.h"
 #include "rds.h"
@@ -37,9 +33,8 @@ algorithm_run run_rds(verifier* v, ordering order, bool reverse, unsigned int ti
 
 std::vector<std::string> get_graphs_names(std::string batchname) {
   std::ifstream batch(batchname);
-  using iter = std::istream_iterator<Line>;
   std::vector<std::string> result;
-  std::copy(iter{batch}, iter{}, std::back_inserter(result));
+  std::copy(line_iter{batch}, line_iter{}, std::back_inserter(result));
   return result;
 }
 

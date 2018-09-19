@@ -3,6 +3,7 @@
 #include <vector>
 #include "verifiers/verifiers.h"
 #include <cstdio>
+#include <iterator>
 
 void pr_()
 {
@@ -22,5 +23,7 @@ class Line: public std::string {
     return std::getline(is, line);
   }
 };
+
+using line_iter = std::istream_iterator<Line>;
 
 #endif
