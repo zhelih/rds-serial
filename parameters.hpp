@@ -14,7 +14,8 @@ static const std::string PARAM_LATEX   = "-L";
 void show_usage(const char* argv)
 {
   
-  printf("Usage: %s [options] <dimacs input file>\nAvailable options:\n", argv);
+  printf("Usage: %s [options] <dimacs input file>\n", argv);
+  printf("Usage: %s [options] -B <batch file>\nAvailable options:\n", argv);
   printf("\t-t\tTime limit in seconds (optional)\n");
   printf("\t-h|-?\tdisplay this help\n");
   printf("\t-weights <weights file>\n");
@@ -36,6 +37,10 @@ void show_usage(const char* argv)
   printf("\t-vc n\tn-color ordering\n");
   printf("\t-vw\tweight from large to small\n");
   printf("\t-vrev\treverse ordering\n");
+  printf("Batches:\n");
+  std::cout<<"\t"<<PARAM_BATCH<<"\tread a list of dimacs input files (one file per line)."<<std::endl;
+  printf("Output:\n");
+  std::cout<<"\t"<<PARAM_LATEX<<"\tproduce report in a form of LaTeX table"<<std::endl;
 }
 
 verifier* parse_verifier(const int argc, const char* const argv[]) {
