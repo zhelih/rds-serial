@@ -104,8 +104,9 @@ void find_max(vector<vertex_set>& c, vertex_set& p, const uint* mu, verifier *v,
   return;
 }
 
-uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
+uint rds(verifier* v, graph* g, algorithm_run& runtime)
 {
+  uint time_lim = runtime.time_limit;
   chrono::time_point<chrono::steady_clock> start = chrono::steady_clock::now(); // C++11 only
   should_exit = false;
   uint n = g->nr_nodes;
@@ -139,7 +140,7 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
       if(p.weight > lb)
       {
         mu[i] = p.weight;
-        res = p.vertices;
+        runtime.certificate = p.vertices;
       }
       else
         mu[i] = lb.load();
@@ -188,7 +189,7 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
             if(u != i_ && v_->check(p_, u)) //TODO only swap check?
               nextC_.add_vertex(u, g->weight(u));
           }
-          find_max(c_, p_, mu, v_, g, res, 1, start, time_lim);
+          find_max(c_, p_, mu, v_, g, runtime.certificate, 1, start, time_lim);
           p_.pop_vertex(g->weight(i_));
           v_->undo_aux(p_, i_, curC_);
         }
@@ -209,11 +210,14 @@ uint rds(verifier* v, graph* g, vector<uint>& res, uint time_lim)
     }
     fprintf(stderr, "mu[%d] = %d\n", i, mu[i]);
   }
-  printf("RDS done\n");
-  uint fres = mu[i+1]; // last
+  
+  runtime.valid    = true;
+  runtime.last_i   = i+1;
+  runtime.value    = mu[i+1];
+  runtime.complete = ((i+1)==0);
+  runtime.time     = chrono::steady_clock::now() - start;
+
   delete [] mu;
-  chrono::duration<double> d = chrono::steady_clock::now() - start;
-  printf("rds: time elapsed = %.8lf secs\n", d.count());
-  return fres;
+  return runtime.value;
 }
 

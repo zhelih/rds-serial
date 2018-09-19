@@ -3,3 +3,5 @@ tester
 *.clq
 *.pro
 *.pro.user
+core
+batchfile

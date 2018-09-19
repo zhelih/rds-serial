@@ -2,10 +2,30 @@
 #define _RDS_H
 
 #include <vector>
-#include "graph.h"
+#include <string>
+#include <chrono>
 #include "verifiers/verifier.hpp"
 
 typedef unsigned int uint;
+
+class graph;
+
+struct algorithm_run {
+  std::string graphname;
+  graph *g;
+  verifier *v;
+  bool valid = false;
+  bool complete = false;
+  bool reverse = false;
+
+  unsigned int time_limit;
+
+  std::chrono::duration<double> time;
+  unsigned int value;
+  unsigned int last_i;
+
+  std::vector<uint> certificate;
+};
 
 struct vertex_set {
   std::vector<uint> vertices;
@@ -49,8 +69,7 @@ struct vertex_set {
 // time limit in seconds
 // output: maximum subgraph size in g satisfying v
 // res contains the solution, use graph::restore_order to get original nodes
-uint rds(verifier* v, graph*g, std::vector<uint>& res, uint time_lim = 0);
-
+uint rds(verifier* v, graph* g, algorithm_run& runtime);
 void print_lb_atomic(int signal);
 
 #endif

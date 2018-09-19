@@ -95,7 +95,7 @@ class Chordal: public RegisterVerifier<Chordal> {
       for(auto& v: colors) {
         v.resize(g->nr_nodes, 0);
       }
-      for(int i = 0; i < g->nr_nodes; ++i) {
+      for(unsigned int i = 0; i < g->nr_nodes; ++i) {
         colors[0][i] = i;
       }
       

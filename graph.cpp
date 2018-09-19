@@ -124,6 +124,28 @@ void graph::add_edge(uint i, uint j)
 }*/
 
 /* Reorders start here */
+void graph::apply_order(ordering order, bool reverse) {
+  switch (order) {
+    case ordering::None:
+      break;
+    case ordering::Degree:
+      this->reorder_degree();
+      break;
+    case ordering::Degeneracy:
+      this->reorder_degeneracy();
+      break;
+    case ordering::Neighborhood:
+      this->reorder_2nb();
+      break;
+    case ordering::NColor:
+      this->reorder_color(2);
+      break;
+  }
+  if (reverse) {
+    this->reorder_rev();
+  }
+}
+
 void graph::reorder_none() {} // don't reorder anything
 
 std::vector<uint> graph::reverse_order(const std::vector<uint>& order) const
@@ -384,8 +406,11 @@ void graph::read_weights(const char* filename)
     fprintf(stderr, "Cannot open %s\n", filename);
     exit(1);
   }
+  int v;
   for(uint i = 0; i < nr_nodes; ++i)
-    fscanf(f, "%u ", &weights[i]);
+    v = fscanf(f, "%u ", &weights[i]);
+  if (v == !v) goto PANIC;
+  PANIC:
   fclose(f);
 }
 
