@@ -7,12 +7,12 @@
 #include "verifiers/verifiers.h"
 #include "rds.h"
 #include "utils.hpp"
-#include "output.hpp"
-#include "parameters.hpp"
+#include "io/output.hpp"
+#include "io/parameters.hpp"
 #include <fstream>
 using namespace std::placeholders;
 
-algorithm_run run_rds(verifier* v, ordering order, bool reverse, unsigned int time_limit, std::string graph_file) {
+algorithm_run run_rds(std::shared_ptr<verifier> v, ordering order, bool reverse, unsigned int time_limit, const std::string& graph_file) {
   algorithm_run result;
   result.graphname = graph_file;
   result.reverse = reverse;
@@ -25,7 +25,7 @@ algorithm_run run_rds(verifier* v, ordering order, bool reverse, unsigned int ti
   }
   g->apply_order(order, reverse);
   v->bind_graph(g);
-  rds(v, g, result);
+  rds(v.get(), g, result);
 
   result.correct = v->check_solution(result.certificate);
   g->restore_order(result.certificate);
@@ -34,15 +34,14 @@ algorithm_run run_rds(verifier* v, ordering order, bool reverse, unsigned int ti
   return result;
 }
 
-std::vector<std::string> get_graphs_names(std::string batchname) {
+std::vector<std::string> get_graphs_names(const std::string& batchname) {
   std::ifstream batch(batchname);
   std::vector<std::string> result;
   std::copy(line_iter{batch}, line_iter{}, std::back_inserter(result));
   return result;
 }
 
-void main_batch(std::vector<std::string> graphs, std::function<algorithm_run(std::string)> solve, std::function<void(const algorithm_run&)> save) {
-  pr_();
+void main_batch(const std::vector<std::string>& graphs, std::function<algorithm_run(std::string)> solve, std::function<void(const algorithm_run&)> save) {
   std::vector<algorithm_run> results;
   std::transform(graphs.begin(), graphs.end(), std::back_inserter(results), solve);
   std::for_each(results.begin(), results.end(), save);

@@ -5,3 +5,4 @@ tester
 *.pro.user
 core
 batchfile
+*.lst

@@ -1,8 +1,9 @@
 #ifndef _PARAMETERS_HPP
 #define _PARAMETERS_HPP
 #include <vector>
-#include "verifiers/verifiers.h"
+#include "../verifiers/verifiers.h"
 #include <cstdio>
+#include <memory>
 
 namespace parameters {
 static const std::string PARAM_REVERSE = "-vrev";
@@ -43,11 +44,11 @@ void show_usage(const char* argv)
   std::cout<<"\t"<<PARAM_LATEX<<"\tproduce report in a form of LaTeX table"<<std::endl;
 }
 
-verifier* parse_verifier(const int argc, const char* const argv[]) {
+std::shared_ptr<verifier> parse_verifier(const int argc, const char* const argv[]) {
   for (int i = 1; i < argc - 1; ++i) {
     std::string arg(argv[i]);
     if (VerifierManager::instance()->is_shortcut(arg)) {
-      verifier* v = VerifierManager::instance()->create(arg);
+      auto v = VerifierManager::instance()->create(arg);
       for(uint p = 0; p < v->number_of_parametes(); ++p) {
         v->provide_parameter(std::stoi(argv[++i]));
       }
@@ -107,7 +108,7 @@ bool parse_to_latex(const int argc, const char* const argv[]) {
 }
 
 std::function<algorithm_run(std::string)> parse_args(
-  std::function<algorithm_run(verifier*, ordering, bool, unsigned int, std::string)> rds,
+  std::function<algorithm_run(std::shared_ptr<verifier>, ordering, bool, unsigned int, std::string)> rds,
   const int argc, const char* const argv[]
 ) {
   using namespace std::placeholders;

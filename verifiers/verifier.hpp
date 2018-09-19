@@ -5,7 +5,9 @@
 #include <map>
 #include <string>
 #include <functional>
+#include <memory>
 #include "../graph.h"
+#include <iostream>
 
 class verifier
 {
@@ -102,11 +104,9 @@ class VerifierManager
       return lastID;
     }
 
-    
-
-    verifier *create(uint16_t verid)
+    std::shared_ptr<verifier> create(uint16_t verid)
     {
-      return verifiers[verid]();
+      return std::shared_ptr<verifier>(verifiers[verid]());
     }
 
     size_t count() const {
@@ -117,9 +117,9 @@ class VerifierManager
       return (verifiers_by_shortcut.find(shortcut) != verifiers_by_shortcut.end());
     }
 
-    verifier *create(const std::string& shortcut) const {
+    std::shared_ptr<verifier> create(const std::string& shortcut) const {
       if (verifiers_by_shortcut.find(shortcut) != verifiers_by_shortcut.end())
-        return verifiers_by_shortcut.at(shortcut)();
+        return std::shared_ptr<verifier>(verifiers_by_shortcut.at(shortcut)());
       else
         return nullptr;
     }

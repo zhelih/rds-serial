@@ -1,8 +1,8 @@
 #ifndef _OUTPUT_HPP
 #define _OUTPUT_HPP
 #include <iostream>
-#include "rds.h"
-#include "utils.hpp"
+#include "../rds.h"
+#include "../utils.hpp"
 
 namespace output
 {
@@ -14,7 +14,7 @@ void fancy(std::ostream& out, const algorithm_run& run) {
     return;
   }
   else {
-    out<<" was"<<(run.complete?"":" not")<<" completed in ";
+    out<<" was"<<(run.complete?"":" NOT")<<" completed in ";
     out<<run.time.count()<<" seconds"<<std::endl;
     if (!run.complete) {
       out<<"Vertices left unprocessed: "<<run.last_i<<std::endl;
