@@ -270,7 +270,6 @@ void graph::reorder_degeneracy() {
         }
       }
     }
-    fprintf(stderr, "Found %d-th vertex: %d\n", i, selected_vertex);
     order[i] = selected_vertex;
     used[selected_vertex] = true;
   }
