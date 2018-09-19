@@ -65,7 +65,7 @@ graph* from_dimacs(const char* fname)
     }
   }
 
-  printf("graph: %d nodes, %d edges\n", nr_nodes, nr_edges);
+  printf("graph %s: %d nodes, %d edges\n", fname, nr_nodes, nr_edges);
 
   fclose(f);
   return g;
