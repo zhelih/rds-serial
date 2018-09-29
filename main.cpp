@@ -49,7 +49,7 @@ void main_batch(const std::vector<std::string>& graphs, std::function<algorithm_
 
 int main(int argc, char* argv[])
 {
-  printf("Russian-Doll-Search\nCopyright Eugene Lykhovyd, 2017.\n");
+  fprintf(stderr, "Russian-Doll-Search\nCopyright Eugene Lykhovyd, 2017.\n");
   pr_();
 
   if(argc < 2 || std::string(argv[1]) == parameters::PARAM_HELP || std::string(argv[1]) == "-?") {
@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
   }
   signal(SIGINT, print_lb_atomic); // from rds.h  
   std::string filename(argv[argc-1]);
-
+  
   auto processor = parameters::parse_args(run_rds, argc, argv);
   auto graphs = parameters::parse_is_batch(argc, argv)?
     (get_graphs_names(filename)):(std::vector<std::string>{filename});

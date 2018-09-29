@@ -1,6 +1,7 @@
 #ifndef _OUTPUT_HPP
 #define _OUTPUT_HPP
 #include <iostream>
+#include <experimental/iterator>
 #include "../rds.h"
 #include "../utils.hpp"
 
@@ -24,10 +25,8 @@ void fancy(std::ostream& out, const algorithm_run& run) {
       out<<"Optimal solution size: "<<run.value<<std::endl;
     }
     out<<"Vertices: {";
-    for (unsigned int v: run.certificate) {
-      out<<v<<", ";
-    }
-    out<<"\b\b}"<<std::endl;
+    std::copy(run.certificate.begin(), run.certificate.end(), std::experimental::make_ostream_joiner(out, ", "));
+    out<<"}"<<std::endl;
     out<<"This solution is "<<(run.correct?"correct.":"INCORRECT!")<<std::endl;
   }
   pr_();
