@@ -36,7 +36,7 @@ class Stable: public RegisterVerifier<Stable> {
     }
 
     Stable* clone() const {
-        return new Stable();
+        return new Stable(*this);
     }
 };
 

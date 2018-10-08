@@ -25,7 +25,7 @@ void fancy(std::ostream& out, const algorithm_run& run) {
     }
     out<<"Vertices: {";
     for (unsigned int v: run.certificate) {
-      out<<v<<", ";
+      out<<v+1<<", ";
     }
     out<<"\b\b}"<<std::endl;
     out<<"This solution is "<<(run.correct?"correct.":"INCORRECT!")<<std::endl;
