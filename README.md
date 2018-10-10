@@ -1,6 +1,7 @@
 Russian Doll Search for Computing Maximum Vertex Weight Hereditary Structures in Graphs
 
 Copyright Eugene Lykhovyd, 2017-2018.
+
 Copyright Mykyta Makovenko, 2018.
 
 See LICENSE for more details.
