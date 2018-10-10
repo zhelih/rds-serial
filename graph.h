@@ -5,6 +5,10 @@ typedef unsigned int uint;
 
 #include <vector>
 
+enum class ordering {
+  None, Degree, Degeneracy, Neighborhood, NColor
+};
+
 #define CHUNK_SIZE (8*(sizeof(int))) // chunk size
 class graph
 {
@@ -19,12 +23,13 @@ class graph
   graph(uint n);
   ~graph();
   void add_edge(uint i, uint j);
-  inline bool is_edge(uint i, uint j) {return adj[i][j];} 
-  inline uint weight(uint i) { return weights[i]; }
+  inline bool is_edge(uint i, uint j) const {return adj[i][j];} 
+  inline uint weight(uint i) const { return weights[i]; }
   //void set_weight(uint i, uint w) { weights[i] = w; }
   // note: reordering might take a bit of time
   // do before RDS
   void reorder_degree(); // degree order from large to small
+  void reorder_degeneracy();
   void reorder_weight(); // weight from large to small
   void reorder_random(); // permute at random
   void reorder_2nb(); // order based on the size of 2-neigborhood, from large to small
@@ -32,6 +37,8 @@ class graph
   void reorder_none(); // don't reorder anything
   void reorder_rev(); // revert the order of vertices (usually used to change from small to large)
   void restore_order(std::vector<uint>& v);
+
+  void apply_order(ordering order, bool reverse);
   
   std::vector<uint> reverse_order(const std::vector<uint>& order) const;
 
