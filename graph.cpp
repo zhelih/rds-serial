@@ -65,7 +65,7 @@ graph* from_dimacs(const char* fname)
     }
   }
 
-  printf("graph: %d nodes, %d edges\n", nr_nodes, nr_edges);
+  printf("graph %s: %d nodes, %d edges\n", fname, nr_nodes, nr_edges);
 
   fclose(f);
   return g;
@@ -124,6 +124,28 @@ void graph::add_edge(uint i, uint j)
 }*/
 
 /* Reorders start here */
+void graph::apply_order(ordering order, bool reverse) {
+  switch (order) {
+    case ordering::None:
+      break;
+    case ordering::Degree:
+      this->reorder_degree();
+      break;
+    case ordering::Degeneracy:
+      this->reorder_degeneracy();
+      break;
+    case ordering::Neighborhood:
+      this->reorder_2nb();
+      break;
+    case ordering::NColor:
+      this->reorder_color(2);
+      break;
+  }
+  if (reverse) {
+    this->reorder_rev();
+  }
+}
+
 void graph::reorder_none() {} // don't reorder anything
 
 std::vector<uint> graph::reverse_order(const std::vector<uint>& order) const
@@ -139,15 +161,16 @@ std::vector<uint> graph::reverse_order(const std::vector<uint>& order) const
 void graph::reorder_custom(const vector<uint>& order)
 {
   std::vector<uint> order_reverse = this->reverse_order(order);
-
-  bool adj_new[nr_nodes][nr_nodes];
+  bool* adj_new = (bool*)malloc(sizeof(bool)*nr_nodes*nr_nodes);
   for (uint v = 0; v < nr_nodes; ++v)
     for (uint u = 0; u < nr_nodes; ++u)
-      adj_new[order_reverse[v]][order_reverse[u]] = this->adj[v][u];
+      adj_new[order_reverse[v]*nr_nodes + order_reverse[u]] = this->adj[v][u];
 
   for (uint v = 0; v < nr_nodes; ++v)
     for (uint u = 0; u < nr_nodes; ++u)
-      this->adj[v][u] = adj_new[v][u];
+      this->adj[v][u] = adj_new[v*nr_nodes + u];
+
+  free(adj_new);
 
   std::vector<uint> weights_new(nr_nodes);
   for (uint v = 0; v < nr_nodes; ++v)
@@ -222,6 +245,38 @@ void graph::reorder_degree() // degree order from large to small
   reorder_custom(order);
 
   printf("reorder degree done!\n");
+}
+
+void graph::reorder_degeneracy() {
+  std::vector<bool> used(nr_nodes, false);
+  vector<uint> order(nr_nodes);
+  uint counter = 0, min_counter = nr_nodes+1, selected_vertex = 0;
+  for(uint i = 0; i < nr_nodes; ++i) {
+    min_counter = nr_nodes+1;
+    selected_vertex = 0;
+
+    for(uint j = 0; j < nr_nodes; ++j) {
+      counter = 0;
+      if (!used[j]) {
+        for(uint k = 0; k < nr_nodes; ++k) {
+          if (!used[k] && is_edge(k, j)) {
+            ++counter;
+          }
+        }
+
+        if (counter < min_counter) {
+          min_counter = counter;
+          selected_vertex = j;
+        }
+      }
+    }
+    order[i] = selected_vertex;
+    used[selected_vertex] = true;
+  }
+  
+  reorder_custom(order);
+
+  printf("reorder degeneracy done!\n");
 }
 
 void graph::reorder_rev() // revert the order of vertices (usually used to change from small to large)
@@ -350,8 +405,11 @@ void graph::read_weights(const char* filename)
     fprintf(stderr, "Cannot open %s\n", filename);
     exit(1);
   }
+  int v;
   for(uint i = 0; i < nr_nodes; ++i)
-    fscanf(f, "%u ", &weights[i]);
+    v = fscanf(f, "%u ", &weights[i]);
+  if (v == !v) goto PANIC;
+  PANIC:
   fclose(f);
 }
 
