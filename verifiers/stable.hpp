@@ -10,11 +10,8 @@ class Stable: public RegisterVerifier<Stable> {
 
     bool check(const std::vector<uint>& p, uint n) const
     {
-      for(auto& v: p) {
-        if (g->is_edge(v, n)) {
-          return false;
-        }
-      }
+      if (g->is_edge(p.back(), n))
+        return false;
       return true;
     }
 

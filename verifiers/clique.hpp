@@ -9,9 +9,9 @@ class Clique: public RegisterVerifier<Clique> {
     }
 
     bool check(const std::vector<uint>& p, uint n) const {
-      for(auto& v: p)
-        if(!g->is_edge(v, n))
-         return false;
+      uint v = p.back();
+      if(!g->is_edge(v, n))
+        return false;
       return true;
     }
 
