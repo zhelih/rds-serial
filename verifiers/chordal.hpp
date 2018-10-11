@@ -19,10 +19,8 @@ class Chordal: public RegisterVerifier<Chordal> {
 //        printf("%d, ", p[i]+1);
 //      }
 //      printf("\b\b) form a chordal graph\n");
-      int cnt_bottom[200];
-      bool ok_left[200];
-      memset(cnt_bottom, 0, sizeof(cnt_bottom));
-      memset(ok_left, 0, sizeof(ok_left));
+      std::vector<unsigned int> cnt_bottom(g->nr_nodes, 0);
+      std::vector<bool> ok_left(g->nr_nodes, 0);
 
       for(auto& v: p) {
         for(auto& u: p) {
