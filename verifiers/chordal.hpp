@@ -42,7 +42,7 @@ class Chordal: public RegisterVerifier<Chordal> {
 //            printf("cnt_bottom[%d] now is %d\n", v+1, cnt_bottom[v]);
             continue;
           }
-          
+
           if (colors[level][v] == colors[level][u]) {
 //            printf("Verdict: (%d, %d, %d) is a claw. Solve it later\n", v+1, n+1, u+1);
             continue;
@@ -79,7 +79,7 @@ class Chordal: public RegisterVerifier<Chordal> {
           }
         }
       }
-      
+
 //      printf("Verdict: yes\n");
       return true;
     }
@@ -89,14 +89,14 @@ class Chordal: public RegisterVerifier<Chordal> {
     }
 
     void init_aux(uint i, const std::vector<uint>& c) {
-      colors.resize(g->nr_nodes); 
+      colors.resize(g->nr_nodes);
       for(auto& v: colors) {
         v.resize(g->nr_nodes, 0);
       }
       for(unsigned int i = 0; i < g->nr_nodes; ++i) {
         colors[0][i] = i;
       }
-      
+
       colors_to_update.reserve(g->nr_nodes);
     }
 
