@@ -16,5 +16,6 @@
 #include "bipartite_new.hpp"
 #include "swide.hpp"
 #include "chordal.hpp"
+#include "chordal-new.hpp"
 
 #endif
