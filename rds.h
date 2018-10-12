@@ -15,6 +15,7 @@ struct algorithm_run {
   bool valid = false;
   bool complete = false;
   bool reverse = false;
+  bool complement = false;
   bool correct = false;
 
   unsigned int time_limit;
