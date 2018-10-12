@@ -65,8 +65,7 @@ graph* from_dimacs(const char* fname)
     }
   }
 
-  printf("graph %s: %d nodes, %d edges\n", fname, nr_nodes, nr_edges);
-
+  fprintf(stderr, "graph %s: %d nodes, %d edges\n", fname, nr_nodes, nr_edges);
   fclose(f);
   return g;
 }
@@ -244,7 +243,7 @@ void graph::reorder_degree() // degree order from large to small
     order[i] = degrees[i].second;
   reorder_custom(order);
 
-  printf("reorder degree done!\n");
+  fprintf(stderr, "reorder degree done!\n");
 }
 
 void graph::reorder_degeneracy() {
@@ -276,7 +275,7 @@ void graph::reorder_degeneracy() {
   
   reorder_custom(order);
 
-  printf("reorder degeneracy done!\n");
+  fprintf(stderr, "reorder degeneracy done!\n");
 }
 
 void graph::reorder_rev() // revert the order of vertices (usually used to change from small to large)
@@ -285,7 +284,7 @@ void graph::reorder_rev() // revert the order of vertices (usually used to chang
   for(uint i = 0; i < nr_nodes; ++i)
     order[i] = nr_nodes-i-1;
   reorder_custom(order);
-  printf("reorder revert done!\n");
+  fprintf(stderr, "reorder revert done!\n");
 }
 
 
@@ -296,7 +295,7 @@ void graph::reorder_random() // permute at random
     order[i] = i;
   random_shuffle(order.begin(), order.end(), [](int i) { return rand()%i; });
   reorder_custom(order);
-  printf("reorder random done!\n");
+  fprintf(stderr, "reorder random done!\n");
 }
 
 void graph::reorder_2nb() // order based on the size of 2-neigborhood, from large to small
@@ -319,7 +318,7 @@ void graph::reorder_2nb() // order based on the size of 2-neigborhood, from larg
   for(uint i = 0; i < nr_nodes; ++i)
     order[i] = degrees[i].second;
   reorder_custom(order);
-  printf("reorder 2-neighborhood done!\n");
+  fprintf(stderr, "reorder 2-neighborhood done!\n");
 }
 
 void graph::reorder_color(uint s) // See S. Trukhanov et al.
@@ -397,7 +396,7 @@ void graph::restore_order(vector<uint>& v)
 
 void graph::read_weights(const char* filename)
 {
-  printf("Reading weights from %s.\nNB!!! Currently vertex ordering is not supported for weights!\n", filename);
+  fprintf(stderr, "Reading weights from %s.\nNB!!! Currently vertex ordering is not supported for weights!\n", filename);
   FILE *f;
   f = fopen(filename, "r");
   if(!f)

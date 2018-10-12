@@ -24,14 +24,14 @@ atomic_uint lb;
 void print_cont(const vector<uint>& c)
 {
   for(auto it = c.begin(); it != c.end(); ++it)
-    printf("%u ", *it);
-  printf("\n");
+    fprintf(stderr, "%u ", *it);
+  fprintf(stderr, "\n");
 }
 
 void print_lb_atomic(int signal)
 {
-  printf("\nReceived SIGINT\n");
-  printf("Best lower bound found: %u\n", lb.load());
+  fprintf(stderr, "\nReceived SIGINT\n");
+  fprintf(stderr, "Best lower bound found: %u\n", lb.load());
   exit(0);
 }
 
@@ -226,4 +226,3 @@ uint rds(verifier* v, graph* g, algorithm_run& runtime)
   delete [] mu;
   return runtime.value;
 }
-

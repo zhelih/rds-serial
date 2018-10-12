@@ -49,6 +49,38 @@ class BipartiteNew: public RegisterVerifier<BipartiteNew> {
     }
 
     bool check_solution(const std::vector<uint>& res) const {
+      if (res.empty()) return true;
+      std::vector<unsigned int> color(g->nr_nodes, 0);
+      std::deque<unsigned int> dfs;
+      bool keepgoing = false;
+      do {
+        keepgoing = false;
+        for (auto& v: res) {
+          if (!color[v]) {
+            dfs.push_front(v);
+            keepgoing = true;
+	    break;
+	  }
+        }
+        while (!dfs.empty()) {
+          auto v = dfs.front();
+          dfs.pop_front();
+          if (!color[v]) color[v] = 1;
+          for (auto& u: res) {
+            if (g->is_edge(u, v)) {
+              if (color[u]) {
+                if (color[v] == color[u]) {
+                  return false;
+                }
+              }
+              else {
+                color[u] = 3 - color[v];
+                dfs.push_front(u);
+              }
+            }
+          }
+        }
+      } while (keepgoing);
       return true;
     }
 
