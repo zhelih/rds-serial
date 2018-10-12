@@ -1,8 +1,12 @@
-#ifndef _CHORDAL_H
-#define _CHORDAL_H
+#ifndef _CHORDALNEW_H
+#define _CHORDALNEW_H
 #include "verifier.hpp"
+#include <deque>
+#include <algorithm>
+#include <iterator>
+#include <set>
 
-class Chordal: public RegisterVerifier<Chordal> {
+class ChordalNew: public RegisterVerifier<ChordalNew> {
   std::vector<std::vector<unsigned int>> colors;
   std::vector<unsigned int> colors_to_update;
 
@@ -14,89 +18,69 @@ class Chordal: public RegisterVerifier<Chordal> {
     }
 
     bool check(const std::vector<uint>& p, uint n) const {
-//      printf("\nChecking if %d and (", n+1);
-//      for(unsigned int i = 0; i < p.size(); ++i) {
-//        printf("%d, ", p[i]+1);
-//      }
-//      printf("\b\b) form a chordal graph\n");
-      std::vector<unsigned int> cnt_bottom(g->nr_nodes, 0);
-      std::vector<bool> ok_left(g->nr_nodes, 0);
-
-      for(auto& v: p) {
-        for(auto& u: p) {
-          if (v == u) {
-            continue;
-          }
-//          printf("Checking pair %d, %d\n", v+1, u+1);
-          if (!g->is_edge(n, v) || !g->is_edge(n, u)) {
-//            printf("Verdict: no edge from %d to one of them\n", n+1);
-            continue;
-          }
-          else {
-//            printf("There are edges to both of them\n");
-          }
-
-          if (g->is_edge(v, u)) {
-//            printf("Verdict: there is edge (%d, %d)\n", v+1, u+1);
-            cnt_bottom[v]++;
-//            printf("cnt_bottom[%d] now is %d\n", v+1, cnt_bottom[v]);
-            continue;
-          }
-
-          if (colors[level][v] == colors[level][u]) {
-//            printf("Verdict: (%d, %d, %d) is a claw. Solve it later\n", v+1, n+1, u+1);
-            continue;
+      std::deque<unsigned int> nbh;
+      std::vector<bool> reachable(g->nr_nodes, false);
+      std::copy_if(p.begin(), p.end(), std::back_inserter(nbh), [&](uint v){return g->is_edge(n, v);});
+      while (!nbh.empty()) {
+        auto v = nbh.front();
+        nbh.pop_front();
+        for (auto& u: p) {
+          if (!g->is_edge(n, u) && g->is_edge(v, u)) {
+            if (reachable[u]) return false;
+            reachable[u] = true;
+            nbh.push_back(u);
           }
         }
       }
+      return true;
+    }
 
-      for(auto& v: p) {
-        for(auto& u: p) {
-          if (v == u) {
-            continue;
-          }
-          if (g->is_edge(v, u)) {
-//            printf("There is an edge (%d, %d), cnt_bottom[%d] = %d\n", v+1, u+1, v+1, cnt_bottom[v]);
-            if (cnt_bottom[v] > 1) {
-              ok_left[u] = true;
-//              printf("ok_left[%d] = %d\n", u+1, (int)ok_left[u]);
-            }
+    bool is_symplical(const unsigned int& v, const std::set<unsigned int>& vertices) const {
+      std::vector<unsigned int> nbh;
+      std::copy_if(vertices.begin(), vertices.end(), std::back_inserter(nbh), [&](uint u){return g->is_edge(v, u);});
+      std::cout<<"Checking if vertex "<<v+1<<" is symplical"<<std::endl;
+      std::cout<<"v's nbh is ";
+      std::copy(nbh.begin(), nbh.end(), std::ostream_iterator<uint>(std::cout, "+1,"));
+      std::cout<<std::endl;
+      for (auto& u: nbh) {
+        for (auto& v: nbh) {
+          if (u != v && !g->is_edge(u, v)) {
+            std::cout<<"There is no edge from "<<u+1<<" to "<<v+1<<std::endl;
+            return false;
           }
         }
       }
-
-      for(auto& v: p) {
-        for(auto& u: p) {
-          if (v == u) {
-            continue;
-          }
-          if (g->is_edge(n, v) && g->is_edge(n, u) && !g->is_edge(v, u) && colors[level][v] == colors[level][u]) {
-//            printf("Claw: (%d, %d, %d). ok_left[%d] = %d\n", v+1, n+1, u+1, v+1, (int)ok_left[v]);
-            if (!ok_left[v]) {
-//              printf("Verdict: no\n");
-              return false;
-            }
-          }
-        }
-      }
-
-//      printf("Verdict: yes\n");
       return true;
     }
 
     bool check_solution(const std::vector<uint>& res) const {
+      std::set<unsigned int> candidates(res.begin(), res.end());
+      bool symplical_found = false;
+      while (!candidates.empty()) {
+        symplical_found = false;
+        for (auto& v: candidates) {
+          if (this->is_symplical(v, candidates)) {
+            candidates.erase(v);
+            symplical_found = true;
+            break;
+          }
+        }
+        if (!symplical_found) {
+          return false;
+        }
+      }
       return true;
     }
-
+/*
     void init_aux(uint i, const std::vector<uint>& c) {
-      colors.resize(g->nr_nodes);
+      colors.resize(g->nr_nodes); 
       for(auto& v: colors) {
         v.resize(g->nr_nodes, 0);
       }
       for(unsigned int i = 0; i < g->nr_nodes; ++i) {
         colors[0][i] = i;
       }
-
+      
       colors_to_update.reserve(g->nr_nodes);
     }
 
@@ -128,15 +112,15 @@ class Chordal: public RegisterVerifier<Chordal> {
     void free_aux() {
       level = 0;
     }
-
-    Chordal() {
-      name = "Chordal";
+*/
+    ChordalNew() {
+      name = "ChordalNew";
       description = "Well, it's a chordal graph";
-      shortcut = "-ch";
+      shortcut = "-chn";
     }
 
-    Chordal* clone() const {
-        return new Chordal(*this);
+    ChordalNew* clone() const {
+        return new ChordalNew(*this);
     }
 };
 

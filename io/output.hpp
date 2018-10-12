@@ -8,7 +8,10 @@ namespace output
 {
 void fancy(std::ostream& out, const algorithm_run& run) {
   pr_();
-  out<<"RDS run for graph "<<run.graphname;
+  out<<"RDS run for "<<run.graphname;
+  if (run.complement) {
+    out<<"'s complement";
+  }
   if (!run.valid) {
     out<<" failed."<<std::endl;
     return;
@@ -23,12 +26,17 @@ void fancy(std::ostream& out, const algorithm_run& run) {
     else {
       out<<"Optimal solution size: "<<run.value<<std::endl;
     }
-    out<<"Vertices: {";
-    for (unsigned int v: run.certificate) {
-      out<<v+1<<", ";
+    if (run.certificate.empty()) {
+      out<<"Vertices: {}"<<std::endl;
     }
-    out<<"\b\b}"<<std::endl;
-    out<<"This solution is "<<(run.correct?"correct.":"INCORRECT!")<<std::endl;
+    else {
+      out<<"Vertices: {";
+      for (size_t i = 0; i < run.certificate.size() - 1; ++i) {
+        out<<run.certificate[i]<<", ";
+      }
+      out<<run.certificate.back()<<"}"<<std::endl;
+      out<<"This solution is "<<(run.correct?"correct.":"INCORRECT!")<<std::endl;
+    }
   }
   pr_();
 }
