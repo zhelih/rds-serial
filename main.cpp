@@ -12,17 +12,25 @@
 #include <fstream>
 using namespace std::placeholders;
 
-algorithm_run run_rds(std::shared_ptr<verifier> v, ordering order, bool reverse, unsigned int time_limit, const std::string& graph_file) {
+algorithm_run run_rds(std::shared_ptr<verifier> v, ordering order, bool reverse, bool complement, unsigned int time_limit, const std::string& graph_file) {
   algorithm_run result;
   result.graphname = graph_file;
   result.reverse = reverse;
   result.time_limit = time_limit;
+  result.complement = complement;
 
   graph *g = from_dimacs(graph_file.c_str());
   if (!g) {
     result.valid = false;
     return result;
   }
+
+  if (complement) {
+    graph *ng = g->complement();
+    delete g;
+    g = ng;
+  }
+
   g->apply_order(order, reverse);
   v->bind_graph(g);
   rds(v.get(), g, result);
@@ -49,7 +57,7 @@ void main_batch(const std::vector<std::string>& graphs, std::function<algorithm_
 
 int main(int argc, char* argv[])
 {
-  printf("Russian-Doll-Search\nCopyright Eugene Lykhovyd, 2017.\n");
+  fprintf(stderr, "Russian-Doll-Search\nCopyright Eugene Lykhovyd, 2017.\n");
   pr_();
 
   if(argc < 2 || std::string(argv[1]) == parameters::PARAM_HELP || std::string(argv[1]) == "-?") {
@@ -58,7 +66,6 @@ int main(int argc, char* argv[])
   }
   signal(SIGINT, print_lb_atomic); // from rds.h  
   std::string filename(argv[argc-1]);
-
   auto processor = parameters::parse_args(run_rds, argc, argv);
   auto graphs = parameters::parse_is_batch(argc, argv)?
     (get_graphs_names(filename)):(std::vector<std::string>{filename});
