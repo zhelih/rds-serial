@@ -71,7 +71,7 @@ class ChordalNew: public RegisterVerifier<ChordalNew> {
       }
       return true;
     }
-
+/*
     void init_aux(uint i, const std::vector<uint>& c) {
       colors.resize(g->nr_nodes); 
       for(auto& v: colors) {
@@ -112,7 +112,7 @@ class ChordalNew: public RegisterVerifier<ChordalNew> {
     void free_aux() {
       level = 0;
     }
-
+*/
     ChordalNew() {
       name = "ChordalNew";
       description = "Well, it's a chordal graph";

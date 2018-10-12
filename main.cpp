@@ -12,17 +12,25 @@
 #include <fstream>
 using namespace std::placeholders;
 
-algorithm_run run_rds(std::shared_ptr<verifier> v, ordering order, bool reverse, unsigned int time_limit, const std::string& graph_file) {
+algorithm_run run_rds(std::shared_ptr<verifier> v, ordering order, bool reverse, bool complement, unsigned int time_limit, const std::string& graph_file) {
   algorithm_run result;
   result.graphname = graph_file;
   result.reverse = reverse;
   result.time_limit = time_limit;
+  result.complement = complement;
 
   graph *g = from_dimacs(graph_file.c_str());
   if (!g) {
     result.valid = false;
     return result;
   }
+
+  if (complement) {
+    graph *ng = g->complement();
+    delete g;
+    g = ng;
+  }
+
   g->apply_order(order, reverse);
   v->bind_graph(g);
   rds(v.get(), g, result);

@@ -9,7 +9,10 @@ namespace output
 {
 void fancy(std::ostream& out, const algorithm_run& run) {
   pr_();
-  out<<"RDS run for graph "<<run.graphname;
+  out<<"RDS run for "<<run.graphname;
+  if (run.complement) {
+    out<<"'s complement";
+  }
   if (!run.valid) {
     out<<" failed."<<std::endl;
     return;

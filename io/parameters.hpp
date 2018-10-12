@@ -11,16 +11,17 @@ static const std::string PARAM_TIMELIM = "-t";
 static const std::string PARAM_BATCH   = "-B";
 static const std::string PARAM_HELP    = "-h";
 static const std::string PARAM_LATEX   = "-L";
+static const std::string PARAM_COMPL   = "-comp";
 
 void show_usage(const char* argv)
 {
   
   printf("Usage: %s [options] <dimacs input file>\n", argv);
   printf("Usage: %s [options] -B <batch file>\nAvailable options:\n", argv);
-  printf("\t-t\tTime limit in seconds (optional)\n");
-  printf("\t-h|-?\tdisplay this help\n");
-  printf("\t-weights <weights file>\n");
-  printf("\t-comp\tuse graph complement\n");
+  std::cout<<"\t"<<PARAM_TIMELIM<<"\tTime limit in seconds (optional)"<<std::endl;
+  std::cout<<"\t"<<PARAM_HELP<<"\tDisplay this help"<<std::endl;
+//  printf("\t-weights <weights file>\n");
+  std::cout<<"\t"<<PARAM_COMPL<<"\tUse graph complement"<<std::endl;
   printf("Maximum Solvers, %ld available:\n", VerifierManager::instance()->count());
   for(auto& element: VerifierManager::instance()->verifiers) {
     auto&& verifier = element.second();
@@ -107,15 +108,25 @@ bool parse_to_latex(const int argc, const char* const argv[]) {
   return false;
 }
 
+bool parse_complement(const int argc, const char* const argv[]) {
+  for (int i = 1; i < argc-1; ++i) {
+    std::string arg(argv[i]);
+    if (arg == PARAM_COMPL) {
+      return true;
+    }
+  }
+  return false;
+}
+
 std::function<algorithm_run(std::string)> parse_args(
-  std::function<algorithm_run(std::shared_ptr<verifier>, ordering, bool, unsigned int, std::string)> rds,
+  std::function<algorithm_run(std::shared_ptr<verifier>, ordering, bool, bool, unsigned int, std::string)> rds,
   const int argc, const char* const argv[]
 ) {
   using namespace std::placeholders;
   try {
     return std::bind(
                      rds, parse_verifier(argc, argv),
-                     parse_order(argc, argv), parse_reverse(argc, argv),
+                     parse_order(argc, argv), parse_reverse(argc, argv), parse_complement(argc, argv),
                      parse_time_limit(argc, argv), _1
                     );
   }
