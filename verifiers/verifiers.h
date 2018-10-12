@@ -6,7 +6,6 @@
 // Add your custom verifiers here
 // They will appear in app in the same order
 #include "clique.hpp"
-#include "clique-new.hpp"
 #include "stable.hpp"
 #include "iuc.hpp"
 #include "sdefective.hpp"
@@ -17,6 +16,6 @@
 #include "bipartite_new.hpp"
 #include "swide.hpp"
 #include "chordal.hpp"
-#include "chordal-new.hpp"
+#include "dep1.hpp"
 
 #endif

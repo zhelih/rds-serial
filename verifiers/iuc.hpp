@@ -9,10 +9,14 @@ class IUC: public RegisterVerifier<IUC> {
     }
 
     bool check(const std::vector<uint>& p, uint n) const {
-      for(auto it = p.begin(); it != p.end(); ++it)
-        for(auto it2 = next(it); it2 != p.end(); ++it2)
-        if(g->is_edge(*it, *it2) + g->is_edge(*it, n) + g->is_edge(*it2, n) == 2)
+      uint a = p.back();
+      for(uint b : p)
+      {
+        if(a == b)
+          continue;
+        if(g->is_edge(a,b) + g->is_edge(a,n) + g->is_edge(b,n) == 2)
           return false;
+      }
       return true;
     }
 

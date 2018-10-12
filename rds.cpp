@@ -76,13 +76,13 @@ void find_max(vector<vertex_set>& c, vertex_set& p, const uint* mu, verifier *v,
     {
       return;
     }
-    
+
     uint i = curC[c_i];
     if(mu[i] + p.weight <= lb) // Prune 2
     {
       return;
     }
-    
+
     curC.weight -= g->weight(i);
 //    NB: exploit that we adding only 1 vertex to p
 //    thus verifier can prepare some info using prev calculations
@@ -116,6 +116,12 @@ uint rds(verifier* v, graph* g, algorithm_run& runtime)
   for(uint i = 0; i < n; ++i)
     mu[i] = 0;
 
+  #pragma omp parallel
+  {
+    #pragma omp single
+    fprintf(stderr, "Using up to %d threads (OMP)\n", omp_get_num_threads()); //FIXME might change in the future
+  }
+
   int i;
   for(i = n-1; i >= 0 && !should_exit; --i)
   {
@@ -126,7 +132,7 @@ uint rds(verifier* v, graph* g, algorithm_run& runtime)
     for(auto&& vs: c)
       vs.reserve(g->nr_nodes);
     auto& curC = c[0];
-    
+
     for(uint j = i+1; j < n; ++j)
       if(v->check_pair(i, j))
         curC.add_vertex(j, g->weight(j));
@@ -157,7 +163,7 @@ uint rds(verifier* v, graph* g, algorithm_run& runtime)
       uint num_threads = omp_get_num_threads();
 
       uint mu_i = 0;
- 
+
       auto& curC_ = c_[0];
       for(uint c_i = thread_i; c_i < curC_.size() && !should_exit; c_i += num_threads) // split by threads
       {
@@ -166,13 +172,13 @@ uint rds(verifier* v, graph* g, algorithm_run& runtime)
         for(uint j = 0; j < num_threads; ++j)
           if(c_i >= j+1)
             curC_.weight -= g->weight(c_i - j - 1);
-            
+
         if(curC_.weight + p_.weight <= lb) // Prune 1
         {
           mu_i = lb.load();
           break;
         }
-        
+
         uint i_ = curC_[c_i];
         if(mu[i_] + p_.weight <= lb) // Prune 2
         {
@@ -210,7 +216,7 @@ uint rds(verifier* v, graph* g, algorithm_run& runtime)
     }
     fprintf(stderr, "mu[%d] = %d\n", i, mu[i]);
   }
-  
+
   runtime.valid    = true;
   runtime.last_i   = i+1;
   runtime.value    = mu[i+1];
@@ -220,4 +226,3 @@ uint rds(verifier* v, graph* g, algorithm_run& runtime)
   delete [] mu;
   return runtime.value;
 }
-

@@ -66,7 +66,6 @@ graph* from_dimacs(const char* fname)
   }
 
   fprintf(stderr, "graph %s: %d nodes, %d edges\n", fname, nr_nodes, nr_edges);
-
   fclose(f);
   return g;
 }
@@ -279,6 +278,38 @@ void graph::reorder_degeneracy() {
   fprintf(stderr, "reorder degeneracy done!\n");
 }
 
+void graph::reorder_degeneracy() {
+  std::vector<bool> used(nr_nodes, false);
+  vector<uint> order(nr_nodes);
+  uint counter = 0, min_counter = nr_nodes+1, selected_vertex = 0;
+  for(uint i = 0; i < nr_nodes; ++i) {
+    min_counter = nr_nodes+1;
+    selected_vertex = 0;
+
+    for(uint j = 0; j < nr_nodes; ++j) {
+      counter = 0;
+      if (!used[j]) {
+        for(uint k = 0; k < nr_nodes; ++k) {
+          if (!used[k] && is_edge(k, j)) {
+            ++counter;
+          }
+        }
+
+        if (counter < min_counter) {
+          min_counter = counter;
+          selected_vertex = j;
+        }
+      }
+    }
+    order[i] = selected_vertex;
+    used[selected_vertex] = true;
+  }
+  
+  reorder_custom(order);
+
+  printf("reorder degeneracy done!\n");
+}
+
 void graph::reorder_rev() // revert the order of vertices (usually used to change from small to large)
 {
   vector<uint> order(nr_nodes);
@@ -342,7 +373,7 @@ void graph::reorder_color(uint s) // See S. Trukhanov et al.
       return;
     }
     vector<uint> c;
-    uint min_c = -1;
+    uint min_c = nr_nodes+1;
     for(uint j = 0; j < nr_nodes; ++j)
       if(is_edge(u,j) && colnum[j] < s-1)
       {

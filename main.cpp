@@ -66,7 +66,6 @@ int main(int argc, char* argv[])
   }
   signal(SIGINT, print_lb_atomic); // from rds.h  
   std::string filename(argv[argc-1]);
-  
   auto processor = parameters::parse_args(run_rds, argc, argv);
   auto graphs = parameters::parse_is_batch(argc, argv)?
     (get_graphs_names(filename)):(std::vector<std::string>{filename});
