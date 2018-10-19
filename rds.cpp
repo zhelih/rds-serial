@@ -61,17 +61,6 @@ void find_max(vector<vertex_set>& c, vertex_set& p, const uint* mu, verifier *v,
   auto& nextC = c[level+1];
   for(uint c_i = 0; c_i < curC.size(); ++c_i)
   {
-    iter++;
-    if(iter % 1000 == 0 && time_lim > 0)
-    {
-      chrono::duration<double> d = chrono::steady_clock::now() - start;
-      if(d.count() >= (double)time_lim)
-      {
-        should_exit = true;
-        return;
-      }
-    }
-
     if(curC.weight + p.weight <= lb) // Prune 1
     {
       return;
