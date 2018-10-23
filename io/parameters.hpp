@@ -66,6 +66,7 @@ ordering parse_order(const int argc, const char* const argv[]) {
     if (arg == std::string("-vd2")) return ordering::Neighborhood;
     if (arg == std::string("-vdg")) return ordering::Degeneracy;
     if (arg == std::string("-vc")) return ordering::NColor;
+    if (arg == std::string("-vclq")) return ordering::Cliquer;
   }
   return ordering::None;
 }

@@ -13,27 +13,33 @@
 using namespace std::placeholders;
 
 algorithm_run run_rds(std::shared_ptr<verifier> v, ordering order, bool reverse, bool complement, unsigned int time_limit, const std::string& graph_file) {
+  std::cerr<<"Running RDS"<<std::endl;
   algorithm_run result;
   result.graphname = graph_file;
   result.reverse = reverse;
   result.time_limit = time_limit;
   result.complement = complement;
 
+  std::cerr<<"Reading graph"<<std::endl;
   graph *g = from_dimacs(graph_file.c_str());
   if (!g) {
     result.valid = false;
     return result;
   }
-
+  std::cerr<<"Done"<<std::endl;
   if (complement) {
     graph *ng = g->complement();
     delete g;
     g = ng;
   }
 
+  std::cerr<<"Sorting graph..."<<std::endl;
   g->apply_order(order, reverse);
+  std::cerr<<"Done"<<std::endl;
   v->bind_graph(g);
+  std::cerr<<"Calling rds...";
   rds(v.get(), g, result);
+  std::cerr<<"Done"<<std::endl;
 
   result.correct = v->check_solution(result.certificate);
   g->restore_order(result.certificate);
@@ -67,6 +73,7 @@ int main(int argc, char* argv[])
   signal(SIGINT, print_lb_atomic); // from rds.h  
   std::string filename(argv[argc-1]);
   auto processor = parameters::parse_args(run_rds, argc, argv);
+  std::cerr<<"Parsed processor parameters"<<std::endl;
   auto graphs = parameters::parse_is_batch(argc, argv)?
     (get_graphs_names(filename)):(std::vector<std::string>{filename});
   auto out = std::bind(parameters::parse_to_latex(argc, argv)?(output::latex):(output::fancy), ref(std::cout), _1);
