@@ -10,12 +10,6 @@ using namespace std;
 
 #define FROM_1
 
-#ifndef min
-#define min(a,b) (((a)<(b))?(a):(b))
-#endif
-#ifndef max
-#define max(a,b) (((a)>(b))?(a):(b))
-#endif
 
 graph* from_dimacs(const char* fname)
 {
@@ -138,6 +132,9 @@ void graph::apply_order(ordering order, bool reverse) {
       break;
     case ordering::NColor:
       this->reorder_color(2);
+      break;
+    case ordering::Cliquer:
+      this->reorder_cliquer();
       break;
   }
   if (reverse) {
@@ -383,6 +380,55 @@ void graph::reorder_weight() // weight from large to small
   sort(wt.begin(), wt.end(), [](const pair<uint,uint> &left, const pair<uint,uint> &right) { return left.first > right.first; });
   for(uint i = 0; i < nr_nodes; ++i)
     order[i] = wt[i].second;
+  reorder_custom(order);
+}
+
+
+#include <iostream>
+void graph::reorder_cliquer() {
+  std::cerr<<"Number of nodes in the graph: "<<(this->nr_nodes)<<std::endl;
+  vector<unsigned int> order(nr_nodes, 0);
+  std::vector<int> degree(this->nr_nodes+10, 0);
+  std::vector<int> used(this->nr_nodes+10, 0);
+
+	for (unsigned int i=0; i < this->nr_nodes; ++i)
+		for (unsigned int j=0; j < this->nr_nodes; ++j)
+      if (i != j && this->is_edge(i, j))
+        ++degree[i];
+
+  int maxdegree = 0, maxvertex = 0;
+  unsigned int v = 0;
+  bool samecolor = false;
+ 
+  while (v < this->nr_nodes) {
+    used = std::vector<int>(this->nr_nodes+10, 0);
+    do {
+      maxdegree = -1;
+      samecolor = false;
+
+			for (unsigned int i = 0; i < this->nr_nodes; ++i) {
+				if (!used[i] && degree[i] > maxdegree) {
+					maxvertex = i;
+					maxdegree = degree[i];
+					samecolor = true;
+				}
+			}
+			if (samecolor == true) {
+				order[v]=maxvertex;
+				degree[maxvertex]=-1;
+				v++;
+
+				for (unsigned int i = 0; i < this->nr_nodes; ++i) {
+					if (this->is_edge(maxvertex, i)) {
+            used[i] = true;
+						degree[i]--;
+					}
+				}
+			}
+
+    } while (samecolor);
+  }
+
   reorder_custom(order);
 }
 

@@ -6,7 +6,7 @@ typedef unsigned int uint;
 #include <vector>
 
 enum class ordering {
-  None, Degree, Degeneracy, Neighborhood, NColor
+  None, Degree, Degeneracy, Neighborhood, NColor, Cliquer
 };
 
 #define CHUNK_SIZE (8*(sizeof(int))) // chunk size
@@ -36,6 +36,7 @@ class graph
   void reorder_color(uint s); // See S. Trukhanov et al.
   void reorder_none(); // don't reorder anything
   void reorder_rev(); // revert the order of vertices (usually used to change from small to large)
+  void reorder_cliquer();
   void restore_order(std::vector<uint>& v);
 
   void apply_order(ordering order, bool reverse);
