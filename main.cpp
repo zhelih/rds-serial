@@ -13,7 +13,6 @@
 using namespace std::placeholders;
 
 algorithm_run run_rds(std::shared_ptr<verifier> v, ordering order, bool reverse, bool complement, unsigned int time_limit, const std::string& graph_file) {
-  std::cerr<<"Running RDS"<<std::endl;
   algorithm_run result;
   result.graphname = graph_file;
   result.reverse = reverse;
@@ -26,14 +25,13 @@ algorithm_run run_rds(std::shared_ptr<verifier> v, ordering order, bool reverse,
     result.valid = false;
     return result;
   }
-  std::cerr<<"Done"<<std::endl;
+
   if (complement) {
     graph *ng = g->complement();
     delete g;
     g = ng;
   }
 
-  std::cerr<<"Sorting graph..."<<std::endl;
   g->apply_order(order, reverse);
   std::cerr<<"Done"<<std::endl;
   v->bind_graph(g);

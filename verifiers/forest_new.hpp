@@ -90,7 +90,7 @@ class ForestNew: public RegisterVerifier<ForestNew> {
           }
         }
       }
-      
+
       if (newC >= 0) {
         join_p(nextP, newC, j);
       }

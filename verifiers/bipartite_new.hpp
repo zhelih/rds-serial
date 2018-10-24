@@ -121,7 +121,7 @@ class BipartiteNew: public RegisterVerifier<BipartiteNew> {
           }
         }
       }
-      
+
       if (newC >= 0) {
         join_p(nextP, nextSP[newC], j);
         nextSP[j] = newC;
