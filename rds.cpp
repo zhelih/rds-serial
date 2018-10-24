@@ -81,7 +81,7 @@ void find_max(vector<vertex_set>& c, vertex_set& p, const uint* mu, verifier *v,
     for(uint it2 = c_i; it2 < curC.size(); ++it2)
     {
       auto&& u = curC[it2];
-      if(u != i && g->is_edge(u, i))
+      if(u != i && v->check(p, u))
       {
         nextC.add_vertex(u, g->weight(u));
       }
