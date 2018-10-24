@@ -387,27 +387,26 @@ void graph::reorder_weight() // weight from large to small
 #include <iostream>
 void graph::reorder_cliquer() {
   std::cerr<<"Number of nodes in the graph: "<<(this->nr_nodes)<<std::endl;
-  vector<int> order(nr_nodes, 0);
+  vector<unsigned int> order(nr_nodes, 0);
   std::vector<int> degree(this->nr_nodes+10, 0);
   std::vector<int> used(this->nr_nodes+10, 0);
 
-	for (int i=0; i < this->nr_nodes; ++i)
-		for (int j=0; j < this->nr_nodes; ++j)
+	for (unsigned int i=0; i < this->nr_nodes; ++i)
+		for (unsigned int j=0; j < this->nr_nodes; ++j)
       if (i != j && this->is_edge(i, j))
         ++degree[i];
 
-  int v = 0, maxdegree = 0, maxvertex = 0;
+  int maxdegree = 0, maxvertex = 0;
+  unsigned int v = 0;
   bool samecolor = false;
-  
+ 
   while (v < this->nr_nodes) {
-	  printf("Restarted while cycle, v = %d\n", v);
     used = std::vector<int>(this->nr_nodes+10, 0);
     do {
-		  printf("Restarted do cycle, v = %d\n", v);
       maxdegree = -1;
       samecolor = false;
 
-			for (int i = 0; i < this->nr_nodes; ++i) {
+			for (unsigned int i = 0; i < this->nr_nodes; ++i) {
 				if (!used[i] && degree[i] > maxdegree) {
 					maxvertex = i;
 					maxdegree = degree[i];
@@ -419,10 +418,8 @@ void graph::reorder_cliquer() {
 				degree[maxvertex]=-1;
 				v++;
 
-				/* Mark neighbors not to color with same
-				 * color and update neighbor degrees. */
-				for (int i = 0; i < this->nr_nodes; ++i) {
-					if (v < this->nr_nodes && this->is_edge(maxvertex, i)) {
+				for (unsigned int i = 0; i < this->nr_nodes; ++i) {
+					if (this->is_edge(maxvertex, i)) {
             used[i] = true;
 						degree[i]--;
 					}
@@ -431,9 +428,8 @@ void graph::reorder_cliquer() {
 
     } while (samecolor);
   }
-  
-  std::vector<uint> actorder(order.begin(), order.end());
-  reorder_custom(actorder);
+
+  reorder_custom(order);
 }
 
 void graph::restore_order(vector<uint>& v)

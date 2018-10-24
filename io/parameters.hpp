@@ -15,7 +15,6 @@ static const std::string PARAM_COMPL   = "-comp";
 
 void show_usage(const char* argv)
 {
-  
   printf("Usage: %s [options] <dimacs input file>\n", argv);
   printf("Usage: %s [options] -B <batch file>\nAvailable options:\n", argv);
   std::cout<<"\t"<<PARAM_TIMELIM<<"\tTime limit in seconds (optional)"<<std::endl;
@@ -38,6 +37,7 @@ void show_usage(const char* argv)
   printf("\t-vr\trandom ordering\n");
   printf("\t-vc n\tn-color ordering\n");
   printf("\t-vw\tweight from large to small\n");
+  printf("\t-vclq\torder from Cliquer\n");
   printf("\t-vrev\treverse ordering\n");
   printf("Batches:\n");
   std::cout<<"\t"<<PARAM_BATCH<<"\tread a list of dimacs input files (one file per line)."<<std::endl;
