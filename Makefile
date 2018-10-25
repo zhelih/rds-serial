@@ -5,11 +5,8 @@ endif
 
 all: rds tester
 
-rds: graph.cpp rds.cpp main.cpp verifiers/verifiers.h verifiers/*.hpp
-	$(CXX) graph.cpp rds.cpp main.cpp -O2 -lm -o rds -Wall -Wextra -std=c++11 -Wno-unused-parameter -fopenmp -g
-
-rds-debug: graph.cpp rds.cpp main.cpp
-	$(CXX) graph.cpp rds.cpp main.cpp -g -lm -o rds -Wall -Wextra -std=c++11 -Wno-unused-parameter -fopenmp -g
+rds: rds.cpp main.cpp verifiers/verifiers.h verifiers/*.hpp graph/*.hpp graph/*.cpp graph/*.h
+	$(CXX) graph/graph.cpp graph/graph_adjacency.cpp graph/graph_matrix.cpp graph/orders.cpp rds.cpp main.cpp -O3 -lm -o rds -Wall -Wextra -std=c++11 -Wno-unused-parameter -fopenmp
 
 tester: tester.cpp
 	$(CXX) tester.cpp -O2 -o tester -Wall -Wextra -std=c++11
