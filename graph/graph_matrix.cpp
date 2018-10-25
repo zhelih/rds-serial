@@ -14,8 +14,7 @@ void graph_matrix::separate_vertex(uint v) {
   }
 }
 
-void graph_matrix::reorder_custom(const std::vector<uint>& order)
-{
+void graph_matrix::reorder_custom(const std::vector<uint>& order) {
   std::vector<uint> order_reverse = this->reverse_order(order);
   bool* adj_new = (bool*)malloc(sizeof(bool)*nr_nodes*nr_nodes);
   for (uint v = 0; v < nr_nodes; ++v)
