@@ -17,5 +17,6 @@
 #include "swide.hpp"
 #include "chordal.hpp"
 #include "dep1.hpp"
+#include "biclique.hpp"
 
 #endif

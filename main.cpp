@@ -37,7 +37,6 @@ algorithm_run run_rds(std::shared_ptr<verifier> v, ordering order, bool reverse,
     g = ng;
   }
 
-  std::cerr<<"Sorting graph..."<<std::endl;
   g->apply_order(order, reverse);
   std::cerr<<"Done"<<std::endl;
   v->bind_graph(g);
@@ -74,7 +73,7 @@ int main(int argc, char* argv[])
     parameters::show_usage(argv[0]);
     return 0;
   }
-  signal(SIGINT, print_lb_atomic); // from rds.h  
+  signal(SIGINT, print_lb_atomic); 
   std::string filename(argv[argc-1]);
   auto processor = parameters::parse_args(run_rds, argc, argv);
   std::cerr<<"Parsed processor parameters"<<std::endl;
