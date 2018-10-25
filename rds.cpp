@@ -38,6 +38,18 @@ void print_lb_atomic(int signal)
 atomic_uint iter (0);
 atomic_bool should_exit (false);
 
+inline bool check_iuc(const std::vector<uint>& p, uint n, graph* g) {
+  uint a = p.back();
+  for(uint b : p)
+  {
+    if(a == b)
+      continue;
+    if(g->is_edge(a,b) + g->is_edge(a,n) + g->is_edge(b,n) == 2)
+      return false;
+  }
+  return true;
+}
+
 void find_max(vector<vertex_set>& c, vertex_set& p, const uint* mu, verifier *v, graph* g, vector<uint>& res, int level, const chrono::time_point<chrono::steady_clock> start, const uint time_lim)
 {
   auto& curC = c[level];
@@ -104,12 +116,6 @@ uint rds(verifier* v, graph* g, algorithm_run& runtime)
   uint* mu = new uint[n];
   for(uint i = 0; i < n; ++i)
     mu[i] = 0;
-
-  #pragma omp parallel
-  {
-    #pragma omp single
-    fprintf(stderr, "Using up to %d threads (OMP)\n", omp_get_num_threads()); //FIXME might change in the future
-  }
 
   int i;
   for(i = n-1; i >= 0 && !should_exit; --i)

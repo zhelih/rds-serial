@@ -3,32 +3,36 @@
 #include <functional>
 #include <csignal>
 #include <iostream>
-#include "graph.h"
+#include "graph/graph_utils.hpp"
+#include "graph/graph.h"
 #include "verifiers/verifiers.h"
 #include "rds.h"
 #include "utils.hpp"
 #include "io/output.hpp"
 #include "io/parameters.hpp"
+#include "graph/graph_matrix.h"
+#include "graph/graph_adjacency.h"
 #include <fstream>
 using namespace std::placeholders;
 
-algorithm_run run_rds(std::shared_ptr<verifier> v, ordering order, bool reverse, bool complement, unsigned int time_limit, const std::string& graph_file) {
-  std::cerr<<"Running RDS"<<std::endl;
+algorithm_run run_rds(std::shared_ptr<verifier> v, ordering order, bool reverse, bool do_complement, unsigned int time_limit, const std::string& graph_file) {
   algorithm_run result;
   result.graphname = graph_file;
   result.reverse = reverse;
   result.time_limit = time_limit;
-  result.complement = complement;
+  result.complement = do_complement;
 
-  std::cerr<<"Reading graph"<<std::endl;
-  graph *g = from_dimacs(graph_file.c_str());
+  std::ifstream graph_source(graph_file);
+  graph_matrix *g = from_dimacs<graph_matrix>(graph_source);
+
   if (!g) {
     result.valid = false;
     return result;
   }
+
   std::cerr<<"Done"<<std::endl;
-  if (complement) {
-    graph *ng = g->complement();
+  if (do_complement) {
+    graph_matrix *ng = complement<graph_matrix>(g);
     delete g;
     g = ng;
   }
@@ -37,7 +41,7 @@ algorithm_run run_rds(std::shared_ptr<verifier> v, ordering order, bool reverse,
   g->apply_order(order, reverse);
   std::cerr<<"Done"<<std::endl;
   v->bind_graph(g);
-  std::cerr<<"Calling rds...";
+  std::cerr<<"Calling rds..."<<std::endl;
   rds(v.get(), g, result);
   std::cerr<<"Done"<<std::endl;
 

@@ -6,7 +6,7 @@
 #include <string>
 #include <functional>
 #include <memory>
-#include "../graph.h"
+#include "../graph/graph.h"
 #include <iostream>
 
 class verifier
