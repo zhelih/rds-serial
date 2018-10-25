@@ -35,7 +35,6 @@ void print_lb_atomic(int signal)
   exit(0);
 }
 
-atomic_uint iter (0);
 atomic_bool should_exit (false);
 
 inline bool check_iuc(const std::vector<uint>& p, uint n, graph* g) {
