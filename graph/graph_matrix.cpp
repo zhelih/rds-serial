@@ -1,10 +1,5 @@
 #include "graph_matrix.h"
-#include <cstdio>
-#include <string>
 #include <vector>
-#include <algorithm>
-#include <set>
-#include <cstdlib>
 
 using namespace std;
 

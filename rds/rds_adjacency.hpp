@@ -26,8 +26,8 @@ void print_lb_atomic(int signal)
   exit(0);
 }
 
-template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_set& p, const uint* mu, Verifier *v, graph_matrix* g, std::vector<uint>& res, int level, const std::chrono::time_point<std::chrono::steady_clock> start, const uint time_lim) {
-  auto& curC = c[level];
+template <typename Verifier> void find_max(vertex_set& c, vertex_set& p, const uint* mu, Verifier *v, graph_adjacency* g, std::vector<uint>& res, int level, const std::chrono::time_point<std::chrono::steady_clock> start, const uint time_lim) {
+  auto& curC = c;
   if(should_exit)
     return;
   if(curC.empty())
@@ -45,7 +45,7 @@ template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_se
       return;
   }
 
-  auto& nextC = c[level+1];
+  vertex_set nextC;
   for(uint c_i = 0; c_i < curC.size(); ++c_i)
   {
     if(curC.weight + p.weight <= lb) // Prune 1
@@ -73,21 +73,15 @@ template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_se
         nextC.add_vertex(u, g->weight(u));
       }
     }
-    find_max(c, p, mu, v, g, res, level+1, start, time_lim);
+    find_max(nextC, p, mu, v, g, res, level+1, start, time_lim);
     p.pop_vertex(g->weight(i));
     v->undo_aux(p, i, curC);
   }
   return;
 }
 
-template <typename Verifier> uint rds(Verifier* v, graph_matrix* g, algorithm_run& runtime)
+template <typename Verifier> uint rds(Verifier* v, graph_adjacency* g, algorithm_run& runtime)
 {
-  #pragma omp parallel
-  {
-    #pragma omp single
-    fprintf(stderr, "OpenMP: using up to %d threads.\n", omp_get_num_threads());
-  }
-
   uint time_lim = runtime.time_limit;
   auto start = std::chrono::steady_clock::now(); // C++11 only
   should_exit = false;
@@ -104,10 +98,11 @@ template <typename Verifier> uint rds(Verifier* v, graph_matrix* g, algorithm_ru
     // form candidate set
     // take vertices from v \in {i+1, n} for which pair (i,v) satisfies \Pi
     // first iteration c is empty, that must set bound to 1
-    std::vector<vertex_set> c(g->nr_nodes);
+/*    std::vector<vertex_set> c(g->nr_nodes);
     for(auto&& vs: c)
       vs.reserve(g->nr_nodes);
-    auto& curC = c[0];
+*/
+    vertex_set curC;
 
     for(uint j = i+1; j < n; ++j)
       if(v->check_pair(i, j))
@@ -132,15 +127,15 @@ template <typename Verifier> uint rds(Verifier* v, graph_matrix* g, algorithm_ru
       // clone for separate threads
       auto v_ = v->clone();
       v_->init_aux(i, curC);
-      std::vector<vertex_set> c_(c);
+//      std::vector<vertex_set> c_(c);
       vertex_set p_(p);
+      vertex_set curC_(curC);
 
       uint thread_i = omp_get_thread_num();
       uint num_threads = omp_get_num_threads();
 
       uint mu_i = 0;
 
-      auto& curC_ = c_[0];
       for(uint c_i = thread_i; c_i < curC_.size() && !should_exit; c_i += num_threads) // split by threads
       {
         // adjust weight_c
@@ -163,7 +158,7 @@ template <typename Verifier> uint rds(Verifier* v, graph_matrix* g, algorithm_ru
         } else {
           v_->prepare_aux(p_, i_, curC_);
           p_.add_vertex(i_, g->weight(i_));
-          auto& nextC_ = c_[1];
+          vertex_set nextC_;
           nextC_.clear();
           for(uint it2 = c_i; it2 < curC_.size(); ++it2)
           {
@@ -171,7 +166,7 @@ template <typename Verifier> uint rds(Verifier* v, graph_matrix* g, algorithm_ru
             if(u != i_ && v_->check(p_, u)) //TODO only swap check?
               nextC_.add_vertex(u, g->weight(u));
           }
-          find_max(c_, p_, mu, v_, g, runtime.certificate, 1, start, time_lim);
+          find_max(curC_, p_, mu, v_, g, runtime.certificate, 1, start, time_lim);
           p_.pop_vertex(g->weight(i_));
           v_->undo_aux(p_, i_, curC_);
         }

@@ -1,5 +1,6 @@
 #include <vector>
 #include <algorithm>
+#include <iterator>
 #include "graph.h"
 #include "orders.h"
 
@@ -71,6 +72,8 @@ void graph::restore_order(std::vector<uint>& v)
   std::transform(v.begin(), v.end(), v.begin(), [&](const int& i){return current_order[i];});
 }
 
-void graph::read_weights(const char* filename)
+void graph::read_weights(std::istream& weights)
 {
+  std::istream_iterator<uint> input(weights);
+  std::copy_n(input, this->nr_nodes, std::back_inserter(this->weights));
 }
