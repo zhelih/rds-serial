@@ -45,16 +45,11 @@ void show_usage(const char* argv)
   std::cout<<"\t"<<PARAM_LATEX<<"\tproduce report in a form of LaTeX table"<<std::endl;
 }
 
-std::shared_ptr<verifier> parse_verifier(const int argc, const char* const argv[]) {
+RDSMethod parse_verifier(const int argc, const char* const argv[]) {
   for (int i = 1; i < argc - 1; ++i) {
     std::string arg(argv[i]);
-    if (VerifierManager::instance()->is_shortcut(arg)) {
-      auto v = VerifierManager::instance()->create(arg);
-      for(uint p = 0; p < v->number_of_parametes(); ++p) {
-        v->provide_parameter(std::stoi(argv[++i]));
-      }
-      return v;
-    }
+    if (VerifierManager::instance()->is_shortcut(arg))
+      return VerifierManager::instance()->get_rds(arg);
   }
   throw std::invalid_argument("No task specified");
 }
@@ -119,14 +114,11 @@ bool parse_complement(const int argc, const char* const argv[]) {
   return false;
 }
 
-std::function<algorithm_run(std::string)> parse_args(
-  std::function<algorithm_run(std::shared_ptr<verifier>, ordering, bool, bool, unsigned int, std::string)> rds,
-  const int argc, const char* const argv[]
+std::function<algorithm_run(std::string)> parse_args(const int argc, const char* const argv[]
 ) {
   using namespace std::placeholders;
   try {
-    return std::bind(
-                     rds, parse_verifier(argc, argv),
+    return std::bind(parse_verifier(argc, argv),
                      parse_order(argc, argv), parse_reverse(argc, argv), parse_complement(argc, argv),
                      parse_time_limit(argc, argv), _1
                     );

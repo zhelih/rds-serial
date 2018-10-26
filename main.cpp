@@ -6,7 +6,7 @@
 #include "graph/graph_utils.hpp"
 #include "graph/graph.h"
 #include "verifiers/verifiers.h"
-#include "rds.h"
+#include "rds/rds.hpp"
 #include "utils.hpp"
 #include "io/output.hpp"
 #include "io/parameters.hpp"
@@ -14,42 +14,6 @@
 #include "graph/graph_adjacency.h"
 #include <fstream>
 using namespace std::placeholders;
-
-algorithm_run run_rds(std::shared_ptr<verifier> v, ordering order, bool reverse, bool do_complement, unsigned int time_limit, const std::string& graph_file) {
-  algorithm_run result;
-  result.graphname = graph_file;
-  result.reverse = reverse;
-  result.time_limit = time_limit;
-  result.complement = do_complement;
-
-  std::ifstream graph_source(graph_file);
-  graph_matrix *g = from_dimacs<graph_matrix>(graph_source);
-
-  if (!g) {
-    result.valid = false;
-    return result;
-  }
-
-  std::cerr<<"Done"<<std::endl;
-  if (do_complement) {
-    graph_matrix *ng = complement<graph_matrix>(g);
-    delete g;
-    g = ng;
-  }
-
-  g->apply_order(order, reverse);
-  std::cerr<<"Done"<<std::endl;
-  v->bind_graph(g);
-  std::cerr<<"Calling rds..."<<std::endl;
-  rds(v.get(), g, result);
-  std::cerr<<"Done"<<std::endl;
-
-  result.correct = v->check_solution(result.certificate);
-  g->restore_order(result.certificate);
-  std::sort(result.certificate.begin(), result.certificate.end());
-  delete g;
-  return result;
-}
 
 std::vector<std::string> get_graphs_names(const std::string& batchname) {
   std::ifstream batch(batchname);
@@ -75,7 +39,7 @@ int main(int argc, char* argv[])
   }
   signal(SIGINT, print_lb_atomic); 
   std::string filename(argv[argc-1]);
-  auto processor = parameters::parse_args(run_rds, argc, argv);
+  auto processor = parameters::parse_args(argc, argv);
   std::cerr<<"Parsed processor parameters"<<std::endl;
   auto graphs = parameters::parse_is_batch(argc, argv)?
     (get_graphs_names(filename)):(std::vector<std::string>{filename});
