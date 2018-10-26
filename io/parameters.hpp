@@ -25,7 +25,7 @@ void show_usage(const char* argv)
   for(auto& element: VerifierManager::instance()->verifiers) {
     auto&& verifier = element.second();
     printf("\t%s", verifier->get_shortcut().c_str());
-    for(unsigned int i = 0; i < verifier->number_of_parametes(); ++i) {
+    for(unsigned int i = 0; i < verifier->number_of_parameters(); ++i) {
       printf(" <%s>", verifier->get_parameter_name(i).c_str());
     }
     printf("\t%s\n", verifier->get_name().c_str());
@@ -48,8 +48,12 @@ void show_usage(const char* argv)
 RDSMethod parse_verifier(const int argc, const char* const argv[]) {
   for (int i = 1; i < argc - 1; ++i) {
     std::string arg(argv[i]);
-    if (VerifierManager::instance()->is_shortcut(arg))
-      return VerifierManager::instance()->get_rds(arg);
+    if (VerifierManager::instance()->is_shortcut(arg)) {
+      auto v = VerifierManager::instance()->create(arg);
+      std::vector<int> verifier_parameters;
+      std::generate_n(std::back_inserter(verifier_parameters), v->number_of_parameters(), [&]() {return std::stoi(argv[++i]);});
+      return VerifierManager::instance()->get_rds(arg, verifier_parameters);
+    }
   }
   throw std::invalid_argument("No task specified");
 }

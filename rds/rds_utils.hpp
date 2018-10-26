@@ -63,8 +63,9 @@ struct vertex_set {
 
 using RDSMethod = std::function<algorithm_run(ordering, bool, bool, unsigned int, const std::string&)>;
 
-template <typename Verifier> algorithm_run run_rds(ordering order, bool reverse, bool do_complement, unsigned int time_limit, const std::string& graph_file) {
+template <typename Verifier> algorithm_run run_rds(std::vector<int> verifier_parameters, ordering order, bool reverse, bool do_complement, unsigned int time_limit, const std::string& graph_file) {
   Verifier *v = new Verifier;
+  for (auto& p: verifier_parameters) v->provide_parameter(p);
   algorithm_run result;
   result.graphname = graph_file;
   result.reverse = reverse;

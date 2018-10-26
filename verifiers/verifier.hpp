@@ -35,7 +35,7 @@ class verifier
     const std::string& get_shortcut() { return this->shortcut; }
     const std::string& get_description() { return this->description; }
 
-    unsigned int number_of_parametes() const {
+    unsigned int number_of_parameters() const {
       return number_of_additional_parameters;
     }
 
@@ -83,6 +83,7 @@ class VerifierManager
 {
   public:
     using Method = std::function<verifier*()>;
+    using RDSMethodUnparametrized = std::function<algorithm_run(std::vector<int>, ordering, bool, bool, unsigned int, const std::string&)>;
     using RDSMethod = std::function<algorithm_run(ordering, bool, bool, unsigned int, const std::string&)>;
 
     static VerifierManager *instance()
@@ -91,7 +92,7 @@ class VerifierManager
       return &inst;
     }
 
-    uint16_t Register(Method method, RDSMethod method_rds)
+    uint16_t Register(Method method, RDSMethodUnparametrized method_rds)
     {
       auto&& v = method();
       if (verifiers_by_shortcut.find(v->get_shortcut()) !=
@@ -113,8 +114,9 @@ class VerifierManager
       return std::shared_ptr<verifier>(verifiers[verid]());
     }
 
-    RDSMethod get_rds(const std::string& shortcut) const {
-      return verifiers_by_shortcut_rds.at(shortcut);
+    RDSMethod get_rds(const std::string& shortcut, std::vector<int> verifier_parameters) const {
+      using namespace std::placeholders;
+      return std::bind(verifiers_by_shortcut_rds.at(shortcut), verifier_parameters, _1, _2, _3, _4, _5);
     }
 
     size_t count() const {
@@ -135,7 +137,7 @@ class VerifierManager
     std::map<uint16_t, Method> verifiers;
     std::map<std::string, Method> verifiers_by_name;
     std::map<std::string, Method> verifiers_by_shortcut;
-    std::map<std::string, RDSMethod> verifiers_by_shortcut_rds;
+    std::map<std::string, RDSMethodUnparametrized> verifiers_by_shortcut_rds;
     uint16_t lastID = 0;
 
   private:
