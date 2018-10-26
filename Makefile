@@ -23,6 +23,15 @@ RDS_mat: main.cpp verifiers/verifiers.h verifiers/*.hpp graph/*.hpp graph/*.cpp 
 	rm rds/rds_utils.hpp
 	rm verifiers/verifier.hpp
 
+RDS_clq: main.cpp verifiers/verifiers.h verifiers/*.hpp graph/*.hpp graph/*.cpp graph/*.h rds/*.hpp
+	cp rds/rds_cliquer.hpp rds/rds.hpp
+	cp rds/rds_utils_cliquer.hpp rds/rds_utils.hpp
+	cp verifiers/verifier_cliquer.hpp verifiers/verifier.hpp
+	$(CXX) graph/graph.cpp graph/orders.cpp main.cpp -O3 -lm -o RDS -Wall -Wextra -std=c++11 -Wno-unused-parameter -fopenmp
+	rm rds/rds.hpp
+	rm rds/rds_utils.hpp
+	rm verifiers/verifier.hpp	
+
 RDS-debug: main.cpp verifiers/verifiers.h verifiers/*.hpp graph/*.hpp graph/*.cpp graph/*.h rds/*.hpp
 	$(CXX) graph/graph.cpp graph/graph_adjacency.cpp graph/graph_matrix.cpp graph/orders.cpp main.cpp -g -lm -o RDSDebug -Wall -Wextra -std=c++11 -Wno-unused-parameter -fopenmp
 
