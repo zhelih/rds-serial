@@ -26,7 +26,7 @@ void print_lb_atomic(int signal)
   exit(0);
 }
 
-template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_set& p, const uint* mu, Verifier *v, graph* g, std::vector<uint>& res, int level, const std::chrono::time_point<std::chrono::steady_clock> start, const uint time_lim) {
+template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_set& p, const uint* mu, Verifier *v, graph_matrix* g, std::vector<uint>& res, int level, const std::chrono::time_point<std::chrono::steady_clock> start, const uint time_lim) {
   auto& curC = c[level];
   if(should_exit)
     return;
@@ -80,7 +80,7 @@ template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_se
   return;
 }
 
-template <typename Verifier> uint rds(Verifier* v, graph* g, algorithm_run& runtime)
+template <typename Verifier> uint rds(Verifier* v, graph_matrix* g, algorithm_run& runtime)
 {
   uint time_lim = runtime.time_limit;
   auto start = std::chrono::steady_clock::now(); // C++11 only

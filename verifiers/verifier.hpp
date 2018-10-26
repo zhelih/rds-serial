@@ -7,6 +7,7 @@
 #include <functional>
 #include <memory>
 #include "../graph/graph.h"
+#include "../graph/graph_matrix.h"
 #include "../rds/rds_utils.hpp"
 #include <iostream>
 
@@ -48,11 +49,11 @@ class verifier
       return parameter_description[number];
     }
 
-    void bind_graph(graph* g) { this->g = g; }
+    void bind_graph(graph_matrix* g) { this->g = g; }
 
    protected:
       uint16_t id;
-      const graph* g;
+      const graph_matrix* g;
       std::string name;
       std::string description;
       std::string shortcut;
