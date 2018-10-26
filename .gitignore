@@ -1,4 +1,3 @@
-rds
 tester
 *.clq
 *.pro
@@ -6,3 +5,5 @@ tester
 core
 batchfile
 *.lst
+RDS
+RDSDebug
