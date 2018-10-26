@@ -7,7 +7,6 @@
 #include "io/output.hpp"
 #include "io/parameters.hpp"
 #include <fstream>
-using namespace std::placeholders;
 
 std::vector<std::string> get_graphs_names(const std::string& batchname) {
   std::ifstream batch(batchname);
@@ -37,6 +36,7 @@ int main(int argc, char* argv[])
   std::cerr<<"Parsed processor parameters"<<std::endl;
   auto graphs = parameters::parse_is_batch(argc, argv)?
     (get_graphs_names(filename)):(std::vector<std::string>{filename});
+  using namespace std::placeholders;
   auto out = std::bind(parameters::parse_to_latex(argc, argv)?(output::latex):(output::fancy), ref(std::cout), _1);
   main_batch(graphs, processor, out);
 

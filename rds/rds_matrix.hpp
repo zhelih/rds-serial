@@ -76,6 +76,12 @@ template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_se
 
 template <typename Verifier> uint rds(Verifier* v, graph_matrix* g, algorithm_run& runtime)
 {
+  #pragma omp parallel
+  {
+    #pragma omp single
+    fprintf(stderr, "OpenMP: using up to %d threads.\n", omp_get_num_threads());
+  }
+
   uint time_lim = runtime.time_limit;
   auto start = std::chrono::steady_clock::now(); // C++11 only
   should_exit = false;
