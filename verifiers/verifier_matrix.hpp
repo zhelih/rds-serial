@@ -1,15 +1,12 @@
 #ifndef _VERIFIER_NEW_H
 #define _VERIFIER_NEW_H
 
-#include <stdio.h>
 #include <map>
 #include <string>
 #include <functional>
 #include <memory>
-#include "../graph/graph.h"
 #include "../graph/graph_matrix.h"
 #include "../rds/rds_utils.hpp"
-#include <iostream>
 
 class verifier
 {

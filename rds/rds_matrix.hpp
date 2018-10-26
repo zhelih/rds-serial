@@ -1,20 +1,14 @@
 #ifndef _RDS_H
 #define _RDS_H
-
-#include <vector>
-#include <string>
-#include "../verifiers/verifier.hpp"
-#include "rds_utils.hpp"
 #include <vector>
 #include <algorithm>
 #include <ctime>
 #include <cstdio>
 #include <atomic>
 #include <chrono>
-#include <cstdlib>
 #include <omp.h>
-#include <atomic>
-#include <csignal>
+#include "../verifiers/verifier.hpp"
+#include "rds_utils.hpp"
 
 std::atomic_bool should_exit (false);
 std::atomic_uint lb;

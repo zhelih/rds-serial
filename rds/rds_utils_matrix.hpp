@@ -4,9 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include "../graph/graph_matrix.h"
-#include "../graph/graph_adjacency.h"
 #include "../graph/graph_utils.hpp"
-#include <algorithm>
 
 struct algorithm_run {
   std::string graphname;

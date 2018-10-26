@@ -1,9 +1,8 @@
 #ifndef _PARAMETERS_HPP
 #define _PARAMETERS_HPP
 #include <vector>
-#include "../verifiers/verifiers.h"
 #include <cstdio>
-#include <memory>
+#include "../verifiers/verifiers.h"
 
 namespace parameters {
 static const std::string PARAM_REVERSE = "-vrev";
