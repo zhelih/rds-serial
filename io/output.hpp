@@ -32,7 +32,7 @@ void fancy(std::ostream& out, const algorithm_run& run) {
     else {
       out<<"Vertices: {";
       for (size_t i = 0; i < run.certificate.size() - 1; ++i) {
-        out<<run.certificate[i]<<", ";
+        out<<run.certificate[i]+1<<", ";
       }
       out<<run.certificate.back()<<"}"<<std::endl;
       out<<"This solution is "<<(run.correct?"correct.":"INCORRECT!")<<std::endl;
