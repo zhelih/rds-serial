@@ -8,11 +8,11 @@ class Forest: public RegisterVerifier<Forest> {
     mutable std::vector<uint> color, parent, s;
 
   public:
-    bool check_pair(uint i, uint j) const {
+    inline bool check_pair(uint i, uint j) const {
       return true;
     }
 
-    inline bool check(const std::vector<uint>& p, uint n) const {
+    inline bool check(const std::vector<uint>& p, uint i, uint n) const {
       for(auto& v: p)
         color[v] = 0;
       uint stack_size = 0;

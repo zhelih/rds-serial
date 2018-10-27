@@ -13,18 +13,18 @@ class verifier
   public:
     virtual ~verifier() { free_aux(); }
 
-    virtual bool check_pair(uint i, uint j) const = 0;
-    virtual bool check(const std::vector<uint>& p, uint n) const = 0;
+    virtual inline bool check_pair(uint i, uint j) const = 0;
+    virtual inline bool check(const std::vector<uint>& p, uint i, uint n) const = 0;
     virtual bool check_solution(const std::vector<uint>& res) const = 0;
 
     // return aux info for singleton P = { i } and C
-    virtual void init_aux(uint i, const std::vector<uint>& c) { }
+    virtual inline void init_aux(uint i, const std::vector<uint>& c) { }
     // return aux info for P u {i}
     // knowing aux for P as prev_aux
-    virtual void prepare_aux(const std::vector<uint>& p, uint i, const std::vector<uint>& c) { }
-    virtual void undo_aux(const std::vector<uint>& p, uint i, const std::vector<uint>& c) {}
+    virtual inline void prepare_aux(const std::vector<uint>& p, uint i, const std::vector<uint>& c) { }
+    virtual inline void undo_aux(const std::vector<uint>& p, uint i, const std::vector<uint>& c) {}
     // free aux info
-    virtual void free_aux() {}
+    virtual inline void free_aux() {}
 
     virtual verifier* clone() const = 0;
 

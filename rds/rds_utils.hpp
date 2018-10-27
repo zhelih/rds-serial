@@ -58,6 +58,10 @@ struct vertex_set {
 
   inline const uint& operator[](const size_t& idx) const { return vertices[idx]; }
   inline uint& operator[](const size_t& idx) { return vertices[idx]; }
+  const decltype(vertices)::value_type& back() const { return vertices.back(); }
+
+  inline std::vector<uint>::iterator begin() { return vertices.begin(); }
+  inline std::vector<uint>::iterator end() { return vertices.end(); }
 };
 
 using RDSMethod = std::function<algorithm_run(ordering, bool, bool, unsigned int, const std::string&)>;

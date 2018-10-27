@@ -8,11 +8,11 @@ class Bipartite: public RegisterVerifier<Bipartite> {
     mutable std::vector<uint> color, s;
 
   public:
-    bool check_pair(uint i, uint j) const {
+    inline bool check_pair(uint i, uint j) const {
       return true;
     }
 
-    inline bool check(const std::vector<uint>& p, uint n) const {
+    inline bool check(const std::vector<uint>& p, uint i, uint n) const {
       for(auto& v: p)
         color[v] = 2;
       uint stack_size = 0;

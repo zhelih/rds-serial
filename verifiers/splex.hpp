@@ -10,14 +10,15 @@ class SPlex: public RegisterVerifier<SPlex> {
     std::vector<std::vector<uint>> nncnt;
 
   public:
-    bool check_pair(uint i, uint j) const {
+    inline bool check_pair(uint i, uint j) const {
       if(s == 1)
         return g->is_edge(i,j);
       else
         return true;
     }
 
-    inline bool check(const std::vector<uint>& p, uint n) const {
+    inline bool check(const std::vector<uint>& p, uint i, uint n) const {
+      if (g->is_edge(n, i)) return true;
       if(nncnt[level][n] >= s) // degree check
         return false;
       for(uint i = 0; i < nr_sat; ++i) // SAT connectivity check
