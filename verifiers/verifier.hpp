@@ -5,7 +5,7 @@
 #include <string>
 #include <functional>
 #include <memory>
-#include "../graph/graph_cliquer.h"
+#include "../graph/graph_switcher.h"
 #include "../rds/rds_utils.hpp"
 
 class verifier
@@ -46,11 +46,11 @@ class verifier
       return parameter_description[number];
     }
 
-    void bind_graph(graph_cliquer* g) { this->g = g; }
+    void bind_graph(Graph* g) { this->g = g; }
 
    protected:
       uint16_t id;
-      const graph_cliquer* g;
+      const Graph* g;
       std::string name;
       std::string description;
       std::string shortcut;

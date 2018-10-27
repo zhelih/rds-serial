@@ -4,9 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include "../graph/graph_matrix.h"
-#include "../graph/graph_adjacency.h"
 #include "../graph/graph_utils.hpp"
-#include <algorithm>
 
 struct algorithm_run {
   std::string graphname;
@@ -74,7 +72,7 @@ template <typename Verifier> algorithm_run run_rds(std::vector<int> verifier_par
   result.complement = do_complement;
 
   std::ifstream graph_source(graph_file);
-  graph_cliquer *g = from_dimacs<graph_cliquer>(graph_source);
+  Graph* g = from_dimacs<Graph>(graph_source);
 
   if (!g) {
     result.valid = false;
@@ -83,7 +81,7 @@ template <typename Verifier> algorithm_run run_rds(std::vector<int> verifier_par
 
   std::cerr<<"Done"<<std::endl;
   if (do_complement) {
-    graph_cliquer *ng = complement<graph_cliquer>(g);
+    auto ng = complement<Graph>(g);
     delete g;
     g = ng;
   }

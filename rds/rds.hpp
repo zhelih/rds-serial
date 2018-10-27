@@ -25,7 +25,7 @@ void print_lb_atomic(int signal)
 
 static int nr_calls = 0;
 
-template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_set& p, const uint* mu, Verifier *v, graph_matrix* g, std::vector<uint>& res, int level) {
+template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_set& p, const uint* mu, Verifier *v, Graph* g, std::vector<uint>& res, int level) {
   auto& curC = c[level];
 /*  if(should_exit)
     return;
@@ -84,7 +84,7 @@ template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_se
   return;
 }
 
-template <typename Verifier> uint rds(Verifier* v, graph_matrix* g, algorithm_run& runtime)
+template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runtime)
 {
   #pragma omp parallel
   {
