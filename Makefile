@@ -18,7 +18,7 @@ RDS_mat: main.cpp verifiers/verifiers.h verifiers/*.hpp graph/*.hpp graph/*.cpp 
 	cp rds/rds_matrix.hpp rds/rds.hpp
 	cp rds/rds_utils_matrix.hpp rds/rds_utils.hpp
 	cp verifiers/verifier_matrix.hpp verifiers/verifier.hpp
-	$(CXX) graph/graph.cpp graph/graph_adjacency.cpp graph/graph_matrix.cpp graph/orders.cpp main.cpp -O3 -lm -o RDS -Wall -Wextra -std=c++11 -Wno-unused-parameter -fopenmp
+	$(CXX) graph/graph.cpp graph/graph_adjacency.cpp graph/graph_matrix.cpp graph/orders.cpp main.cpp -O3 -lm -o RDS -Wall -Wextra -std=c++11 -Wno-unused-parameter -fopenmp -funroll-loops -fomit-frame-pointer
 	rm rds/rds.hpp
 	rm rds/rds_utils.hpp
 	rm verifiers/verifier.hpp
