@@ -3,7 +3,9 @@ ifeq (${USE_OPENMP}, 1)
 	CXXFLAGS+=-fopenmp
 endif
 
+# GRAPH_MATRIX, GRAPH_SET, GRAPH_LIST
 GRAPH_TYPE = GRAPH_MATRIX
+# O3 or g
 BUILD_TYPE = O3
 
 all: RDS tester
