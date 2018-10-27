@@ -12,7 +12,7 @@ class SDefective: public RegisterVerifier<SDefective> {
       return (s>0)||(g->is_edge(i,j));
     }
 
-    bool check(const std::vector<uint>& p, uint n) const {
+    inline bool check(const std::vector<uint>& p, uint n) const {
       return nnv + nncnt[level][n] <= s;
     }
 

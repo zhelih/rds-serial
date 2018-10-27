@@ -8,7 +8,7 @@ class Stable: public RegisterVerifier<Stable> {
       return !g->is_edge(i,j);
     }
 
-    bool check(const std::vector<uint>& p, uint n) const
+    inline bool check(const std::vector<uint>& p, uint n) const
     {
       if (g->is_edge(p.back(), n))
         return false;

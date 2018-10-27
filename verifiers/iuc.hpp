@@ -8,7 +8,7 @@ class IUC: public RegisterVerifier<IUC> {
       return true;
     }
 
-    bool check(const std::vector<uint>& p, uint n) const {
+    inline bool check(const std::vector<uint>& p, uint n) const {
       uint a = p.back();
       for(uint b : p)
       {

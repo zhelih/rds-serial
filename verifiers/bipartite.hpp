@@ -12,7 +12,7 @@ class Bipartite: public RegisterVerifier<Bipartite> {
       return true;
     }
 
-    bool check(const std::vector<uint>& p, uint n) const {
+    inline bool check(const std::vector<uint>& p, uint n) const {
       for(auto& v: p)
         color[v] = 2;
       uint stack_size = 0;

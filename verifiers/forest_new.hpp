@@ -26,7 +26,7 @@ class ForestNew: public RegisterVerifier<ForestNew> {
       return true;
     }
 
-    bool check(const std::vector<uint>& P, uint n) const {
+    inline bool check(const std::vector<uint>& P, uint n) const {
       connected.assign(g->nr_nodes, false);
       auto& currentP = p[level];
       for(auto& v: P) {

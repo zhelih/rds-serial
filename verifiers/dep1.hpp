@@ -8,7 +8,7 @@ class dep1: public RegisterVerifier<dep1> {
       return true;
     }
 
-    bool check(const std::vector<uint>& p, uint n) const {
+    inline bool check(const std::vector<uint>& p, uint n) const {
       uint a = p.back();
       for(uint b : p)
       {

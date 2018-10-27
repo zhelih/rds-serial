@@ -12,7 +12,7 @@ class Forest: public RegisterVerifier<Forest> {
       return true;
     }
 
-    bool check(const std::vector<uint>& p, uint n) const {
+    inline bool check(const std::vector<uint>& p, uint n) const {
       for(auto& v: p)
         color[v] = 0;
       uint stack_size = 0;

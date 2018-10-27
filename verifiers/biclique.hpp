@@ -8,7 +8,7 @@ class Biclique: public RegisterVerifier<Biclique> {
       return true;
     }
 
-    bool check(const std::vector<uint>& p, uint n) const {
+    inline bool check(const std::vector<uint>& p, uint n) const {
       if(p.size() <= 1)
         return true;
       return !(g->is_edge(p.front(), n) ^ g->is_edge(p.back(), p.front()) ^ g->is_edge(n,p.back()));

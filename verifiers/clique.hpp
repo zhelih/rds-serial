@@ -8,7 +8,7 @@ class Clique: public RegisterVerifier<Clique> {
       return g->is_edge(i,j);
     }
 
-    bool check(const std::vector<uint>& p, uint n) const {
+    inline bool check(const std::vector<uint>& p, uint n) const {
       uint v = p.back();
       if(!g->is_edge(v, n))
         return false;
