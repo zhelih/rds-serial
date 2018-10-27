@@ -11,19 +11,29 @@
 #include "rds_utils.hpp"
 
 std::atomic_bool should_exit (false);
-std::atomic_uint lb;
+//std::atomic_uint lb;
+static uint lb;
+
+bool should_return = false;
 
 void print_lb_atomic(int signal)
 {
   fprintf(stderr, "\nReceived SIGINT\n");
-  fprintf(stderr, "Best lower bound found: %u\n", lb.load());
+  fprintf(stderr, "Best lower bound found: %u\n", lb);
   exit(0);
 }
 
-template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_set& p, const uint* mu, Verifier *v, graph_matrix* g, std::vector<uint>& res, int level, const std::chrono::time_point<std::chrono::steady_clock> start, const uint time_lim) {
+static int nr_calls = 0;
+
+template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_set& p, const uint* mu, Verifier *v, graph_matrix* g, std::vector<uint>& res, int level) {
   auto& curC = c[level];
-  if(should_exit)
+/*  if(should_exit)
     return;
+*/
+  nr_calls++;
+  if(should_return)
+    return;
+
   if(curC.empty())
   {
     if(p.weight > lb)
@@ -31,12 +41,11 @@ template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_se
       #pragma omp critical (lbupdate)
       {
       res = p.vertices; //copy
-      lb.store(std::max(lb.load(), p.weight));
+      lb = p.weight;
+//      should_return = true;
       }
-      return;
     }
-    else
-      return;
+    return;
   }
 
   auto& nextC = c[level+1];
@@ -57,17 +66,18 @@ template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_se
 //    NB: exploit that we adding only 1 vertex to p
 //    thus verifier can prepare some info using prev calculations
     v->prepare_aux(p, i, curC);
-    p.add_vertex(i, g->weight(i));
     nextC.clear();
-    for(uint it2 = c_i; it2 < curC.size(); ++it2)
+    p.add_vertex(i, g->weight(i));
+    uint* from = (curC.vertices.data() + c_i + 1);
+    uint* to = (curC.vertices.data() + curC.size());
+    for(uint* u = from; u != to; ++u)
     {
-      auto&& u = curC[it2];
-      if(u != i && v->check(p, u))
+      if(v->check(p, *u))
       {
-        nextC.add_vertex(u, g->weight(u));
+        nextC.add_vertex(*u, 1);
       }
     }
-    find_max(c, p, mu, v, g, res, level+1, start, time_lim);
+    find_max(c, p, mu, v, g, res, level+1);
     p.pop_vertex(g->weight(i));
     v->undo_aux(p, i, curC);
   }
@@ -109,7 +119,6 @@ template <typename Verifier> uint rds(Verifier* v, graph_matrix* g, algorithm_ru
 
     vertex_set p;
     p.add_vertex(i, g->weight(i));
-    fprintf(stderr, "i = %u, c.size = %lu, ", i, curC.size());
     // run for level = 0 manually with respect to the thread number
     if(curC.empty())
     {
@@ -119,8 +128,9 @@ template <typename Verifier> uint rds(Verifier* v, graph_matrix* g, algorithm_ru
         runtime.certificate = p.vertices;
       }
       else
-        mu[i] = lb.load();
+        mu[i] = lb;
     } else {
+    should_return = false;
     #pragma omp parallel
     {
       // clone for separate threads
@@ -145,14 +155,14 @@ template <typename Verifier> uint rds(Verifier* v, graph_matrix* g, algorithm_ru
 
         if(curC_.weight + p_.weight <= lb) // Prune 1
         {
-          mu_i = lb.load();
+          mu_i = lb;
           break;
         }
 
         uint i_ = curC_[c_i];
         if(mu[i_] + p_.weight <= lb) // Prune 2
         {
-          mu_i = lb.load();
+          mu_i = lb;
           break;
         } else {
           v_->prepare_aux(p_, i_, curC_);
@@ -165,12 +175,12 @@ template <typename Verifier> uint rds(Verifier* v, graph_matrix* g, algorithm_ru
             if(u != i_ && v_->check(p_, u)) //TODO only swap check?
               nextC_.add_vertex(u, g->weight(u));
           }
-          find_max(c_, p_, mu, v_, g, runtime.certificate, 1, start, time_lim);
+          find_max(c_, p_, mu, v_, g, runtime.certificate, 1);
           p_.pop_vertex(g->weight(i_));
           v_->undo_aux(p_, i_, curC_);
         }
       }
-      mu_i = lb.load();
+      mu_i = lb;
       #pragma omp critical
       {
         mu[i] = std::max(mu_i, mu[i]);
@@ -184,8 +194,11 @@ template <typename Verifier> uint rds(Verifier* v, graph_matrix* g, algorithm_ru
       delete v_;
     } // pragma omp parallel
     }
-    fprintf(stderr, "mu[%d] = %d\n", i, mu[i]);
+    if(i == (int)g->nr_nodes-1 || mu[i] != mu[i+1] || i < (int)g->nr_nodes/2)
+      fprintf(stderr, "i = %u (%d/%d), mu = %d\n", i, (g->nr_nodes-i), g->nr_nodes, mu[i]);
   }
+
+  fprintf(stderr, "nr_calls = %d\n", nr_calls);
 
   runtime.valid    = true;
   runtime.last_i   = i+1;
