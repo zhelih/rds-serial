@@ -13,7 +13,7 @@ class SWide: public RegisterVerifier<SWide> {
       return true;
     }
 
-    inline bool check(const std::vector<uint>& p, uint n) const {
+    inline bool check(const std::vector<uint>& p, uint i, uint n) const {
       uint nr_ends = 0;
       for(uint i = 0; nr_ends < 3 && i < p.size(); ++i)
         if (g->is_edge(p[i], n)) {

@@ -4,14 +4,14 @@
 
 class Biclique: public RegisterVerifier<Biclique> {
   public:
-    bool check_pair(uint i, uint j) const {
+    inline bool check_pair(uint i, uint j) const {
       return true;
     }
 
-    inline bool check(const std::vector<uint>& p, uint n) const {
+    inline bool check(const std::vector<uint>& p, uint i, uint n) const {
       if(p.size() <= 1)
         return true;
-      return !(g->is_edge(p.front(), n) ^ g->is_edge(p.back(), p.front()) ^ g->is_edge(n,p.back()));
+      return !(g->is_edge(p.front(), n) ^ g->is_edge(i, p.front()) ^ g->is_edge(n,i));
     }
 
     bool check_solution(const std::vector<uint>& res) const {

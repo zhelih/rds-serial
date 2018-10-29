@@ -4,15 +4,13 @@
 
 class Stable: public RegisterVerifier<Stable> {
   public:
-    bool check_pair(uint i, uint j) const {
-      return !g->is_edge(i,j);
+    inline bool check_pair(uint i, uint j) const {
+      return (!g->is_edge(i,j));
     }
 
-    inline bool check(const std::vector<uint>& p, uint n) const
+    inline bool check(const std::vector<uint>& p, uint i, uint n) const
     {
-      if (g->is_edge(p.back(), n))
-        return false;
-      return true;
+      return (!g->is_edge(n, i));
     }
 
     bool check_solution(const std::vector<uint>& res) const {

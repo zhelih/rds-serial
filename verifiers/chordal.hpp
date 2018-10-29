@@ -17,7 +17,7 @@ class ChordalNew: public RegisterVerifier<ChordalNew> {
       return true;
     }
 
-    inline bool check(const std::vector<uint>& p, uint n) const {
+    inline bool check(const std::vector<uint>& p, uint i, uint n) const {
       std::deque<unsigned int> nbh;
       std::vector<bool> reachable(g->nr_nodes, false);
       std::copy_if(p.begin(), p.end(), std::back_inserter(nbh), [&](uint v){return g->is_edge(n, v);});

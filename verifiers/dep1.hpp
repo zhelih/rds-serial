@@ -4,12 +4,11 @@
 
 class dep1: public RegisterVerifier<dep1> {
   public:
-    bool check_pair(uint i, uint j) const {
+    inline bool check_pair(uint i, uint j) const {
       return true;
     }
 
-    inline bool check(const std::vector<uint>& p, uint n) const {
-      uint a = p.back();
+    inline bool check(const std::vector<uint>& p, uint a, uint n) const {
       for(uint b : p)
       {
         if(a == b)

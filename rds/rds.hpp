@@ -25,66 +25,52 @@ void print_lb_atomic(int signal)
 
 static int nr_calls = 0;
 
-template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_set& p, const uint* mu, Verifier *v, graph_matrix* g, std::vector<uint>& res, int level) {
-  auto& curC = c[level];
-/*  if(should_exit)
-    return;
-*/
-  nr_calls++;
-  if(should_return)
-    return;
+template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_set& p, const uint* mu, Verifier *v, Graph* g, std::vector<uint>& res, int level) {
+  vertex_set& curC = c[level];
+//  nr_calls++;
 
   if(curC.empty())
   {
-    if(p.weight > lb)
+    #pragma omp critical (lbupdate)
     {
-      #pragma omp critical (lbupdate)
-      {
-      res = p.vertices; //copy
-      lb = p.weight;
-//      should_return = true;
-      }
+    res = p.vertices; //copy
+    lb = p.weight;
     }
     return;
   }
 
-  auto& nextC = c[level+1];
-  for(uint c_i = 0; c_i < curC.size(); ++c_i)
-  {
+  vertex_set& nextC = c[level+1];
+  for (auto v_it = curC.begin(); v_it != curC.end(); ++v_it) {
     if(curC.weight + p.weight <= lb) // Prune 1
-    {
       return;
-    }
-
-    uint i = curC[c_i];
-    if(mu[i] + p.weight <= lb) // Prune 2
-    {
+    if(mu[*v_it] + p.weight <= lb) // Prune 2
       return;
-    }
 
-    curC.weight -= g->weight(i);
+    uint v_weight = g->weight(*v_it);
+    curC.weight -= v_weight;
+
 //    NB: exploit that we adding only 1 vertex to p
 //    thus verifier can prepare some info using prev calculations
-    v->prepare_aux(p, i, curC);
+    v->prepare_aux(p, *v_it, curC);
     nextC.clear();
-    p.add_vertex(i, g->weight(i));
-    uint* from = (curC.vertices.data() + c_i + 1);
-    uint* to = (curC.vertices.data() + curC.size());
-    for(uint* u = from; u != to; ++u)
-    {
-      if(v->check(p, *u))
-      {
-        nextC.add_vertex(*u, 1);
-      }
+    p.add_vertex(*v_it, v_weight);
+    for(auto u_it = v_it+1; u_it != curC.end(); ++u_it)
+      if(v->check(p, *v_it, *u_it))
+        nextC.add_vertex(*u_it, g->weight(*u_it));
+
+    if (nextC.weight + p.weight <= lb) {
+      p.pop_vertex(v_weight);
+      continue;
     }
+
     find_max(c, p, mu, v, g, res, level+1);
-    p.pop_vertex(g->weight(i));
-    v->undo_aux(p, i, curC);
+    p.pop_vertex(v_weight);
+    v->undo_aux(p, *v_it, curC);
   }
   return;
 }
 
-template <typename Verifier> uint rds(Verifier* v, graph_matrix* g, algorithm_run& runtime)
+template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runtime)
 {
   #pragma omp parallel
   {
@@ -172,7 +158,7 @@ template <typename Verifier> uint rds(Verifier* v, graph_matrix* g, algorithm_ru
           for(uint it2 = c_i; it2 < curC_.size(); ++it2)
           {
             uint u = curC_[it2];
-            if(u != i_ && v_->check(p_, u)) //TODO only swap check?
+            if(u != i_ && v_->check(p_, i_, u)) //TODO only swap check?
               nextC_.add_vertex(u, g->weight(u));
           }
           find_max(c_, p_, mu, v_, g, runtime.certificate, 1);

@@ -27,11 +27,11 @@ class BipartiteNew: public RegisterVerifier<BipartiteNew> {
       }
     }
 
-    bool check_pair(uint i, uint j) const {
+    inline bool check_pair(uint i, uint j) const {
       return true;
     }
 
-    inline bool check(const std::vector<uint>& P, uint n) const {
+    inline bool check(const std::vector<uint>& P, uint i, uint n) const {
       connected.assign(g->nr_nodes, false);
       auto& currentP = p[level];
       auto& currentSP = second_part[level];
