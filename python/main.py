@@ -124,7 +124,7 @@ def work(directory, problem):
 def main():
     email = []
     the_directory = "/home/lykhovyd/GRAPH_DATA/DIMACS_all_ascii"
-    problems = [ "-c", "-s", "-iuc", "-sd 1", "-sd 2", "-sd 3", "-sp 2", "-sp 3", "-sp 4", "-fn", "-bn", "-chn", "-bc"]
+    problems = [ "-c", "-s", "-iuc", "-fn", "-bn", "-chn", "-bc" ] #, "-sd 1", "-sd 2", "-sd 3", "-sp 2", "-sp 3", "-sp 4" ]
     for i in problems.copy():
         problems.append("-comp " + i)
 
