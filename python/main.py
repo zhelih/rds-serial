@@ -9,6 +9,29 @@ from subprocess import PIPE
 
 import pymail
 
+blacklist = [
+"brock800_1.clq",
+"brock800_2.clq",
+"brock800_3.clq",
+"brock800_4.clq",
+"keller6.clq",
+"DSJC1000_5.clq",
+"p_hat700-1.clq",
+"p_hat700-2.clq",
+"p_hat700-3.clq",
+"p_hat1000-1.clq",
+"p_hat1000-2.clq",
+"p_hat1000-3.clq",
+"p_hat1500-1.clq",
+"p_hat1500-2.clq",
+"p_hat1500-3.clq",
+"san1000.clq",
+"C1000.9.clq",
+"C2000.5.clq",
+"C2000.9.clq",
+"C4000.5.clq"
+]
+
 class TimeoutLowError(Exception):
     pass
 
@@ -64,7 +87,7 @@ def work(directory, problem):
     # walk through a dir for graphs
     for dirName, subdirs, files in os.walk(directory):
         for fname in files:
-            if fname.endswith(".clq") and not fname.startswith("."): # and fname == "johnson8-2-4.clq":
+            if fname.endswith(".clq") and not fname.startswith(".") and not fname in blacklist: # and fname == "johnson8-2-4.clq":
                 realfname = os.path.join(dirName, fname)
                 best_time = -1.
                 best_order = "N/A"
