@@ -110,8 +110,9 @@ def main():
         email.append("Results for problem %s\n\n" % problem)
         email.append(msg)
         email.append("--------------------\n\n")
-    data = "".join(email)
-    pymail.SendMail("RDS Results for Orders", data)
+        data = "".join(email)
+        pymail.SendMail("RDS Results for %s" % problem, data)
+        email = []
 
 main()
 
