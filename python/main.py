@@ -3,6 +3,7 @@
 import subprocess
 import time
 import os
+import sys
 
 from subprocess import PIPE
 
@@ -13,7 +14,7 @@ class TimeoutLowError(Exception):
 
 def run_timeout(args, time_low, time_high):
     #FIXME measure time here?
-    print(args)
+    print(args, file=sys.stderr)
     proc = subprocess.Popen(args, stdout=PIPE, stderr=PIPE)
     try:
         time.sleep(time_low)
@@ -57,13 +58,13 @@ TIMELIM = 300 # 5 minutes
 
 def work(directory, problem):
     output = []
-    orders = [ "-vd", "-vdg", "-vd2", "-vclq" ]
+    orders = [ "", "-vd", "-vdg", "-vd2", "-vclq" ]
     for i in orders.copy():
         orders.append(i + " -vrev")
     # walk through a dir for graphs
     for dirName, subdirs, files in os.walk(directory):
         for fname in files:
-            if fname.endswith(".clq") and not fname.startswith("."):# and fname == "johnson8-2-4.clq":
+            if fname.endswith(".clq") and not fname.startswith("."): # and fname == "johnson8-2-4.clq":
                 realfname = os.path.join(dirName, fname)
                 best_time = -1.
                 best_order = "N/A"
@@ -75,7 +76,7 @@ def work(directory, problem):
                         for i in problem.split(" "):
                             args.append(i)
                         args.append(realfname)
-                        code, outs, errs = run_timeout(args, 1.5, TIMELIM)
+                        code, outs, errs = run_timeout(args, 0, TIMELIM)
                         if code == 0:
                             try:
                                 timeres, _ = parse_RDS_output(outs)
@@ -92,7 +93,9 @@ def work(directory, problem):
                 except Exception as e:
                     print(str(e))
                     best_order = "Error"
-                output.append("%s  &  %s  &  %s  &  %f\n" % (fname, problem, best_order, best_time))
+                    best_time = 10000.
+                if best_time > 1.5:
+                    output.append("%s  &  %s  &  %s  &  %f\n" % (fname, problem, best_order, best_time))
     return "".join(output)
 
 def main():
