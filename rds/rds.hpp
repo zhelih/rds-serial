@@ -31,10 +31,12 @@ template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_se
 
   if(curC.empty())
   {
+    if(p.weight <= lb)
+      return;
     #pragma omp critical (lbupdate)
     {
-    res = p.vertices; //copy
-    lb = p.weight;
+      res = p.vertices; //copy
+      lb = p.weight;
     }
     return;
   }
