@@ -33,11 +33,11 @@ class SPlex: public RegisterVerifier<SPlex> {
         degrees[i] = 0;
       for(uint i = 0; i < res.size(); ++i){
         uint v = res[i];
-        for(auto& u: res)
+        for(uint u: res)
           if (v != u && g->is_edge(v, u))
             ++degrees[i];
       }
-      uint m_degree = *std::max_element(degrees.begin(), degrees.end());
+      uint m_degree = *std::min_element(degrees.begin(), degrees.end());
       return m_degree >= (res.size() - s);
     }
 
