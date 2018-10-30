@@ -31,7 +31,17 @@ class dep1: public RegisterVerifier<dep1> {
             if(ij + ik + jk == 2 || ij + ik + jk == 3)
               return false;
           }
-      return true;
+      std::vector<uint> degrees(res.size());
+      for(uint i = 0; i < res.size(); ++i)
+        degrees[i] = 0;
+      for(uint i = 0; i < res.size(); ++i){
+        uint v = res[i];
+        for(uint u: res)
+          if (v != u && g->is_edge(v, u))
+            ++degrees[i];
+      }
+      uint m_degree = *std::max_element(degrees.begin(), degrees.end());
+      return m_degree <= 1;
     }
 
     dep1() {
