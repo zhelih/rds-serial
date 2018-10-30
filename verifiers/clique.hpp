@@ -13,8 +13,8 @@ class Clique: public RegisterVerifier<Clique> {
     }
 
     inline bool check_solution(const std::vector<uint>& res) const {
-      for (auto& v: res) {
-        for (auto& u: res) {
+      for (uint v: res) {
+        for (uint u: res) {
           if (v != u && !g->is_edge(v, u)) {
             return false;
           }

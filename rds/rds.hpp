@@ -119,7 +119,7 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
     #pragma omp parallel
     {
       // clone for separate threads
-      auto v_ = v->clone();
+      Verifier* v_ = v->clone();
       v_->init_aux(i, curC);
       std::vector<vertex_set> c_(c);
       vertex_set p_(p);

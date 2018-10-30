@@ -6,15 +6,15 @@
 class ForestNew: public RegisterVerifier<ForestNew> {
   private:
     mutable std::vector<bool> connected;
-    mutable std::vector<std::vector<unsigned int>> p;
-    unsigned int level;
+    mutable std::vector<std::vector<uint>> p_;
+    uint level;
 
   public:
-    unsigned int get_p(std::vector<uint>& p, const unsigned int v) const {
+    uint get_p(std::vector<uint>& p, const uint v) const {
       return (v == p[v])?v:(p[v] = get_p(p, p[v]));
     }
 
-    void join_p(std::vector<unsigned int>& p, unsigned int a, unsigned int b) {
+    void join_p(std::vector<uint>& p, uint a, uint b) {
       a = get_p(p, a);
       b = get_p(p, b);
       if (a != b) {
@@ -28,10 +28,10 @@ class ForestNew: public RegisterVerifier<ForestNew> {
 
     inline bool check(const std::vector<uint>& P, uint i, uint n) const {
       connected.assign(g->nr_nodes, false);
-      auto& currentP = p[level];
-      for(auto& v: P) {
+      auto& currentP = p_[level];
+      for(uint v: P) {
         if(g->is_edge(v, n)) {
-          unsigned int actualV = get_p(currentP, v);
+          uint actualV = get_p(currentP, v);
           if (connected[actualV]) return false;
           connected[actualV] = true;
         }
@@ -44,7 +44,7 @@ class ForestNew: public RegisterVerifier<ForestNew> {
       std::vector<uint> color(g->nr_nodes);
       for(uint i = 0; i < g->nr_nodes; ++i)
         color[i] = 0;
-      for(auto& v: res)
+      for(uint v: res)
         if(color[v] == 0) // undiscovered
         {
           // start BFS from j
@@ -53,7 +53,7 @@ class ForestNew: public RegisterVerifier<ForestNew> {
           {
             std::pair<uint,uint> pair = s.top(); s.pop();
             color[pair.first] = 1;
-            for(auto& u: res)
+            for(uint u: res)
               if(u != pair.second && g->is_edge(pair.first, u)) {
                 if(color[u] == 1)
                   return false;
@@ -66,21 +66,22 @@ class ForestNew: public RegisterVerifier<ForestNew> {
     }
 
     void init_aux(uint i, const std::vector<uint>& c) {
-      p.resize(g->nr_nodes);
+      p_.resize(g->nr_nodes);
       connected.resize(g->nr_nodes);
-      for(auto& v: p) v.resize(g->nr_nodes);
-      for(unsigned int i = 0; i < p[0].size(); ++i) p[0][i] = i;
+      for(auto& v: p_) v.resize(g->nr_nodes);
+      for(uint i = 0; i < p_[0].size(); ++i)
+        p_[0][i] = i;
 
       level = 0;
     }
 
     void prepare_aux(const std::vector<uint>& P, uint j, const std::vector<uint>& c)
     {
-      auto& currentP = p[level];
-      auto& nextP = p[level+1];
+      auto& currentP = p_[level];
+      auto& nextP = p_[level+1];
       nextP = currentP;
       int newC = -1;
-      for(auto& v: P) {
+      for(uint v: P) {
         if (g->is_edge(v, j)) {
           if (newC >= 0) {
             join_p(nextP, newC, v);

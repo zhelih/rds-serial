@@ -51,7 +51,7 @@ class SPlex: public RegisterVerifier<SPlex> {
       for(uint it = 0; it < c.size(); ++it)
         for(uint l = 0; l < g->nr_nodes; ++l)
           nncnt[l][it] = 0;
-      for(auto& v: c)
+      for(uint v: c)
         nncnt[0][v]=!g->is_edge(v, i);
     }
 
@@ -59,7 +59,7 @@ class SPlex: public RegisterVerifier<SPlex> {
     {
       nr_sat = 0;
       level++;
-      for(auto& v: p) {
+      for(uint v: p) {
         nncnt[level][v] = nncnt[level-1][v];
         if (!g->is_edge(v, j)) {
           ++nncnt[level][v];
@@ -70,7 +70,7 @@ class SPlex: public RegisterVerifier<SPlex> {
         }
       }
 
-      for(auto& v: c) {
+      for(uint v: c) {
         nncnt[level][v] = nncnt[level-1][v];
         if(!g->is_edge(v,j))
           nncnt[level][v]++;

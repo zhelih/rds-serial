@@ -13,7 +13,7 @@ class Bipartite: public RegisterVerifier<Bipartite> {
     }
 
     inline bool check(const std::vector<uint>& p, uint i, uint n) const {
-      for(auto& v: p)
+      for(uint v: p)
         color[v] = 2;
       uint stack_size = 0;
       s[stack_size++] = n;
@@ -21,7 +21,7 @@ class Bipartite: public RegisterVerifier<Bipartite> {
       while(stack_size > 0)
       {
         uint u = s[--stack_size];
-        for(auto& v: p)
+        for(uint v: p)
         {
           if(g->is_edge(v, n) && color[v] == color[n])
             return false;

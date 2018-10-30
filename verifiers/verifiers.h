@@ -3,6 +3,8 @@
 // Do not touch this
 #include "verifier.hpp"
 
+typedef unsigned int uint;
+
 // Add your custom verifiers here
 // They will appear in app in the same order
 #include "clique.hpp"

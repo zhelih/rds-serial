@@ -61,7 +61,7 @@ class SWide: public RegisterVerifier<SWide> {
     {
       uint nr_ends = 0;
       is_end[n] = 0;
-      for(auto& v: p) {
+      for(uint v: p) {
         if(g->is_edge(v, n))
         {
           is_end[v] = 1;

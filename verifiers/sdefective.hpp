@@ -42,7 +42,7 @@ class SDefective: public RegisterVerifier<SDefective> {
     {
       nnv += nncnt[level][j];
       level++;
-      for(auto& v: c) {
+      for(uint v: c) {
         nncnt[level][v] = nncnt[level-1][v];
         if(!g->is_edge(v, j))
           nncnt[level][v]++;
