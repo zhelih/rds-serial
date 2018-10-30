@@ -18,7 +18,6 @@ class SPlex: public RegisterVerifier<SPlex> {
     }
 
     inline bool check(const std::vector<uint>& p, uint i, uint n) const {
-      if (g->is_edge(n, i)) return true;
       if(nncnt[level][n] >= s) // degree check
         return false;
       for(uint i = 0; i < nr_sat; ++i) // SAT connectivity check
