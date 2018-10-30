@@ -8,6 +8,8 @@
 #include "io/parameters.hpp"
 #include <fstream>
 
+extern const char* gitversion;
+
 std::vector<std::string> get_graphs_names(const std::string& batchname) {
   std::ifstream batch(batchname);
   std::vector<std::string> result;
@@ -23,7 +25,7 @@ void main_batch(const std::vector<std::string>& graphs, std::function<algorithm_
 
 int main(int argc, char* argv[])
 {
-  fprintf(stderr, "Russian-Doll-Search\nCopyright Eugene Lykhovyd, 2017.\n");
+  fprintf(stderr, "Russian-Doll-Search, build %s\n\n", gitversion);
   pr_();
 
   if(argc < 2 || std::string(argv[1]) == parameters::PARAM_HELP || std::string(argv[1]) == "-?") {
