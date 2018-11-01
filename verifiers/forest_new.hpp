@@ -5,7 +5,6 @@
 
 class ForestNew: public RegisterVerifier<ForestNew> {
   private:
-    mutable std::vector<bool> connected;
     mutable std::vector<std::vector<uint>> p_;
     uint level;
 
@@ -27,13 +26,13 @@ class ForestNew: public RegisterVerifier<ForestNew> {
     }
 
     inline bool check(const std::vector<uint>& P, uint i, uint n) const {
-      connected.assign(g->nr_nodes, false);
       auto& currentP = p_[level];
-      for(uint v: P) {
-        if(g->is_edge(v, n)) {
-          uint actualV = get_p(currentP, v);
-          if (connected[actualV]) return false;
-          connected[actualV] = true;
+      uint ip = get_p(currentP, i);
+      bool encountered = false;
+      for (uint v: P) {
+        if (g->is_edge(v, n) && get_p(currentP, v) == ip) {
+          if (encountered) return false;
+          encountered = true;
         }
       }
       return true;
@@ -67,7 +66,6 @@ class ForestNew: public RegisterVerifier<ForestNew> {
 
     void init_aux(uint i, const std::vector<uint>& c) {
       p_.resize(g->nr_nodes);
-      connected.resize(g->nr_nodes);
       for(auto& v: p_) v.resize(g->nr_nodes);
       for(uint i = 0; i < p_[0].size(); ++i)
         p_[0][i] = i;

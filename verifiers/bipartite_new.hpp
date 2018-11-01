@@ -32,17 +32,20 @@ class BipartiteNew: public RegisterVerifier<BipartiteNew> {
     }
 
     inline bool check(const std::vector<uint>& P, uint i, uint n) const {
-      connected.assign(g->nr_nodes, false);
       auto& currentP = p_[level];
       auto& currentSP = second_part[level];
-      for(uint v: P) {
-        if(g->is_edge(v, n)) {
-          uint actualV = get_p(currentP, v);
-          connected[actualV] = true;
 
-          if(currentSP[actualV] >= 0 && connected[get_p(currentP, currentSP[actualV])]) {
-            return false;
-          }
+      int iP = get_p(currentP, i), sP = currentSP[iP];
+      if (sP == -1) return true;
+      
+      sP = get_p(currentP, currentSP[iP]);
+      bool encounteredLeft = false, encounteredRight = false;
+      for (uint v: P) {
+        if (g->is_edge(v, n)) {
+          int vP = get_p(currentP, v);
+          if (vP == iP) encounteredLeft = true;
+          if (vP == sP) encounteredRight = true;
+          if (encounteredLeft && encounteredRight) return false;
         }
       }
       return true;
