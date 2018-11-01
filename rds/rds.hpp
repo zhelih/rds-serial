@@ -23,7 +23,6 @@ void print_lb_atomic(int signal)
   exit(0);
 }
 
-atomic_bool should_exit (false);
 static int nr_calls = 0;
 
 template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_set& p, const uint* mu, Verifier *v, Graph* g, std::vector<uint>& res, int level) {
