@@ -7,16 +7,18 @@
 
 template <typename T> T* from_dimacs(std::istream& source) {
   std::string line, _;
-  int V, E, U;
+  int V, E, U, N;
   T* result = nullptr;
+  int line_counter = 0;
   while (std::getline(source, line)) {
     std::istringstream linestream(line);
+    ++line_counter;
     std::string type;
     linestream >> type;
     if (type == "c") continue;
     else if (type == "p") {
-      linestream >> _ >> V >> E;
-      result = new T(V);
+      linestream >> _ >> N >> E;
+      result = new T(N);
     }
     else if (type == "e") {
       if (!result) {
@@ -25,11 +27,11 @@ template <typename T> T* from_dimacs(std::istream& source) {
       }
       else {
         linestream >> U >> V;
-        result->add_edge(U-1, V-1);
+        result->add_edge(U - 1, V - 1);
       }
     }
     else {
-      std::cerr<<"Failed to read graph data stream: malformed line in data stream: "<<line<<std::endl;
+      std::cerr<<"Failed to read graph data stream: malformed line " << line_counter << ":"<<line<<std::endl;
       return nullptr;
     }
   }

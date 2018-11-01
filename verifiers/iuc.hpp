@@ -4,17 +4,16 @@
 
 class IUC: public RegisterVerifier<IUC> {
   public:
-    bool check_pair(uint i, uint j) const {
+    inline bool check_pair(uint i, uint j) const {
       return true;
     }
 
-    bool check(const std::vector<uint>& p, uint n) const {
-      uint a = p.back();
+    inline bool check(const std::vector<uint>& p, uint i, uint n) const {
       for(uint b : p)
       {
-        if(a == b)
+        if(i == b)
           continue;
-        if(g->is_edge(a,b) + g->is_edge(a,n) + g->is_edge(b,n) == 2)
+        if(g->is_edge(i,b) + g->is_edge(i,n) + g->is_edge(b,n) == 2)
           return false;
       }
       return true;

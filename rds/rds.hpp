@@ -1,113 +1,85 @@
-#include "rds.h"
+#ifndef _RDS_H
+#define _RDS_H
 #include <vector>
 #include <algorithm>
 #include <ctime>
 #include <cstdio>
 #include <atomic>
 #include <chrono>
-#include <cstdlib>
 #include <omp.h>
+#include "../verifiers/verifier.hpp"
+#include "rds_utils.hpp"
 
-#include <csignal> // Display best result for SIGINT before exit
+std::atomic_bool should_exit (false);
+//std::atomic_uint lb;
+static uint lb;
 
-#ifndef max
-#define max(a,b) (((a)>(b))?(a):(b))
-#endif
-
-using namespace std;
-
-typedef unsigned int uint;
-
-atomic_uint lb;
-
-// for debug
-void print_cont(const vector<uint>& c)
-{
-  for(auto it = c.begin(); it != c.end(); ++it)
-    fprintf(stderr, "%u ", *it);
-  fprintf(stderr, "\n");
-}
+bool should_return = false;
 
 void print_lb_atomic(int signal)
 {
   fprintf(stderr, "\nReceived SIGINT\n");
-  fprintf(stderr, "Best lower bound found: %u\n", lb.load());
+  fprintf(stderr, "Best lower bound found: %u\n", lb);
   exit(0);
 }
 
 atomic_bool should_exit (false);
+static int nr_calls = 0;
 
-inline bool check_iuc(const std::vector<uint>& p, uint n, graph* g) {
-  uint a = p.back();
-  for(uint b : p)
-  {
-    if(a == b)
-      continue;
-    if(g->is_edge(a,b) + g->is_edge(a,n) + g->is_edge(b,n) == 2)
-      return false;
-  }
-  return true;
-}
+template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_set& p, const uint* mu, Verifier *v, Graph* g, std::vector<uint>& res, int level) {
+  vertex_set& curC = c[level];
+//  nr_calls++;
 
-void find_max(vector<vertex_set>& c, vertex_set& p, const uint* mu, verifier *v, graph* g, vector<uint>& res, int level, const chrono::time_point<chrono::steady_clock> start, const uint time_lim)
-{
-  auto& curC = c[level];
-  if(should_exit)
-    return;
   if(curC.empty())
   {
-    if(p.weight > lb)
+    if(p.weight <= lb)
+      return;
+    #pragma omp critical (lbupdate)
     {
-      #pragma omp critical (lbupdate)
-      {
       res = p.vertices; //copy
-      lb.store(max(lb.load(), p.weight));
-      }
-      return;
+      lb = p.weight;
     }
-    else
-      return;
+    return;
   }
 
-  auto& nextC = c[level+1];
-  for(uint c_i = 0; c_i < curC.size(); ++c_i)
-  {
+  vertex_set& nextC = c[level+1];
+  for (auto v_it = curC.begin(); v_it != curC.end(); ++v_it) {
     if(curC.weight + p.weight <= lb) // Prune 1
-    {
       return;
-    }
-
-    uint i = curC[c_i];
-    if(mu[i] + p.weight <= lb) // Prune 2
-    {
+    if(mu[*v_it] + p.weight <= lb) // Prune 2
       return;
-    }
 
-    curC.weight -= g->weight(i);
+    uint v_weight = g->weight(*v_it);
+    curC.weight -= v_weight;
+
 //    NB: exploit that we adding only 1 vertex to p
 //    thus verifier can prepare some info using prev calculations
-    v->prepare_aux(p, i, curC);
-    p.add_vertex(i, g->weight(i));
+    v->prepare_aux(p, *v_it, curC);
     nextC.clear();
-    for(uint it2 = c_i; it2 < curC.size(); ++it2)
-    {
-      auto&& u = curC[it2];
-      if(u != i && v->check(p, u))
-      {
-        nextC.add_vertex(u, g->weight(u));
-      }
-    }
-    find_max(c, p, mu, v, g, res, level+1, start, time_lim);
-    p.pop_vertex(g->weight(i));
-    v->undo_aux(p, i, curC);
+    p.add_vertex(*v_it, v_weight);
+    for(auto u_it = v_it+1; u_it != curC.end(); ++u_it)
+      if(v->check(p, *v_it, *u_it))
+        nextC.add_vertex(*u_it, g->weight(*u_it));
+
+    if (nextC.weight + p.weight > lb) // continue if <=
+      find_max(c, p, mu, v, g, res, level+1);
+
+    p.pop_vertex(v_weight);
+    v->undo_aux(p, *v_it, curC);
   }
   return;
 }
 
-uint rds(verifier* v, graph* g, algorithm_run& runtime)
+template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runtime)
 {
+  #pragma omp parallel
+  {
+    #pragma omp single
+    fprintf(stderr, "OpenMP: using up to %d threads.\n", omp_get_num_threads());
+  }
+
   uint time_lim = runtime.time_limit;
-  chrono::time_point<chrono::steady_clock> start = chrono::steady_clock::now(); // C++11 only
+  auto start = std::chrono::steady_clock::now(); // C++11 only
   should_exit = false;
   uint n = g->nr_nodes;
   // order V
@@ -133,7 +105,6 @@ uint rds(verifier* v, graph* g, algorithm_run& runtime)
 
     vertex_set p;
     p.add_vertex(i, g->weight(i));
-    fprintf(stderr, "i = %u, c.size = %lu, ", i, curC.size());
     // run for level = 0 manually with respect to the thread number
     if(curC.empty())
     {
@@ -143,14 +114,15 @@ uint rds(verifier* v, graph* g, algorithm_run& runtime)
         runtime.certificate = p.vertices;
       }
       else
-        mu[i] = lb.load();
+        mu[i] = lb;
     } else {
+    should_return = false;
     #pragma omp parallel
     {
       // clone for separate threads
-      auto v_ = v->clone();
+      Verifier* v_ = v->clone();
       v_->init_aux(i, curC);
-      vector<vertex_set> c_(c);
+      std::vector<vertex_set> c_(c);
       vertex_set p_(p);
 
       uint thread_i = omp_get_thread_num();
@@ -169,14 +141,14 @@ uint rds(verifier* v, graph* g, algorithm_run& runtime)
 
         if(curC_.weight + p_.weight <= lb) // Prune 1
         {
-          mu_i = lb.load();
+          mu_i = lb;
           break;
         }
 
         uint i_ = curC_[c_i];
         if(mu[i_] + p_.weight <= lb) // Prune 2
         {
-          mu_i = lb.load();
+          mu_i = lb;
           break;
         } else {
           v_->prepare_aux(p_, i_, curC_);
@@ -186,37 +158,43 @@ uint rds(verifier* v, graph* g, algorithm_run& runtime)
           for(uint it2 = c_i; it2 < curC_.size(); ++it2)
           {
             uint u = curC_[it2];
-            if(u != i_ && v_->check(p_, u)) //TODO only swap check?
+            if(u != i_ && v_->check(p_, i_, u)) //TODO only swap check?
               nextC_.add_vertex(u, g->weight(u));
           }
-          find_max(c_, p_, mu, v_, g, runtime.certificate, 1, start, time_lim);
+          find_max(c_, p_, mu, v_, g, runtime.certificate, 1);
           p_.pop_vertex(g->weight(i_));
           v_->undo_aux(p_, i_, curC_);
         }
       }
-      mu_i = lb.load();
+      mu_i = lb;
       #pragma omp critical
       {
-        mu[i] = max(mu_i, mu[i]);
+        mu[i] = std::max(mu_i, mu[i]);
       }
       if(time_lim > 0)
       {
-        chrono::duration<double> d = chrono::steady_clock::now() - start;
+        auto d = std::chrono::steady_clock::now() - start;
         if(static_cast<uint>(d.count()) >= time_lim)
           should_exit = true;
       }
       delete v_;
     } // pragma omp parallel
     }
-    fprintf(stderr, "mu[%d] = %d\n", i, mu[i]);
+    if(i == (int)g->nr_nodes-1 || mu[i] != mu[i+1] || i < (int)g->nr_nodes/2)
+      fprintf(stderr, "i = %u (%d/%d), mu = %d\n", i, (g->nr_nodes-i), g->nr_nodes, mu[i]);
   }
+
+  fprintf(stderr, "nr_calls = %d\n", nr_calls);
 
   runtime.valid    = true;
   runtime.last_i   = i+1;
   runtime.value    = mu[i+1];
   runtime.complete = ((i+1)==0);
-  runtime.time     = chrono::steady_clock::now() - start;
+  runtime.time     = std::chrono::steady_clock::now() - start;
 
   delete [] mu;
   return runtime.value;
 }
+
+#endif
+

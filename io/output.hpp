@@ -1,8 +1,8 @@
 #ifndef _OUTPUT_HPP
 #define _OUTPUT_HPP
 #include <iostream>
-#include "../rds.h"
 #include "../utils.hpp"
+#include "../rds/rds_utils.hpp"
 
 namespace output
 {
@@ -32,9 +32,9 @@ void fancy(std::ostream& out, const algorithm_run& run) {
     else {
       out<<"Vertices: {";
       for (size_t i = 0; i < run.certificate.size() - 1; ++i) {
-        out<<run.certificate[i]<<", ";
+        out<<run.certificate[i]+1<<", ";
       }
-      out<<run.certificate.back()<<"}"<<std::endl;
+      out<<run.certificate.back()+1<<"}"<<std::endl;
       out<<"This solution is "<<(run.correct?"correct.":"INCORRECT!")<<std::endl;
     }
   }

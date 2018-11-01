@@ -10,14 +10,14 @@ class SPlex: public RegisterVerifier<SPlex> {
     std::vector<std::vector<uint>> nncnt;
 
   public:
-    bool check_pair(uint i, uint j) const {
+    inline bool check_pair(uint i, uint j) const {
       if(s == 1)
         return g->is_edge(i,j);
       else
         return true;
     }
 
-    bool check(const std::vector<uint>& p, uint n) const {
+    inline bool check(const std::vector<uint>& p, uint i, uint n) const {
       if(nncnt[level][n] >= s) // degree check
         return false;
       for(uint i = 0; i < nr_sat; ++i) // SAT connectivity check
@@ -32,11 +32,11 @@ class SPlex: public RegisterVerifier<SPlex> {
         degrees[i] = 0;
       for(uint i = 0; i < res.size(); ++i){
         uint v = res[i];
-        for(auto& u: res)
+        for(uint u: res)
           if (v != u && g->is_edge(v, u))
             ++degrees[i];
       }
-      uint m_degree = *std::max_element(degrees.begin(), degrees.end());
+      uint m_degree = *std::min_element(degrees.begin(), degrees.end());
       return m_degree >= (res.size() - s);
     }
 
@@ -50,7 +50,7 @@ class SPlex: public RegisterVerifier<SPlex> {
       for(uint it = 0; it < c.size(); ++it)
         for(uint l = 0; l < g->nr_nodes; ++l)
           nncnt[l][it] = 0;
-      for(auto& v: c)
+      for(uint v: c)
         nncnt[0][v]=!g->is_edge(v, i);
     }
 
@@ -58,7 +58,7 @@ class SPlex: public RegisterVerifier<SPlex> {
     {
       nr_sat = 0;
       level++;
-      for(auto& v: p) {
+      for(uint v: p) {
         nncnt[level][v] = nncnt[level-1][v];
         if (!g->is_edge(v, j)) {
           ++nncnt[level][v];
@@ -69,7 +69,7 @@ class SPlex: public RegisterVerifier<SPlex> {
         }
       }
 
-      for(auto& v: c) {
+      for(uint v: c) {
         nncnt[level][v] = nncnt[level-1][v];
         if(!g->is_edge(v,j))
           nncnt[level][v]++;

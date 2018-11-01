@@ -1,9 +1,8 @@
 #ifndef _PARAMETERS_HPP
 #define _PARAMETERS_HPP
 #include <vector>
-#include "../verifiers/verifiers.h"
 #include <cstdio>
-#include <memory>
+#include "../verifiers/verifiers.h"
 
 namespace parameters {
 static const std::string PARAM_REVERSE = "-vrev";
@@ -25,7 +24,7 @@ void show_usage(const char* argv)
   for(auto& element: VerifierManager::instance()->verifiers) {
     auto&& verifier = element.second();
     printf("\t%s", verifier->get_shortcut().c_str());
-    for(unsigned int i = 0; i < verifier->number_of_parametes(); ++i) {
+    for(unsigned int i = 0; i < verifier->number_of_parameters(); ++i) {
       printf(" <%s>", verifier->get_parameter_name(i).c_str());
     }
     printf("\t%s\n", verifier->get_name().c_str());
@@ -45,15 +44,14 @@ void show_usage(const char* argv)
   std::cout<<"\t"<<PARAM_LATEX<<"\tproduce report in a form of LaTeX table"<<std::endl;
 }
 
-std::shared_ptr<verifier> parse_verifier(const int argc, const char* const argv[]) {
+RDSMethod parse_verifier(const int argc, const char* const argv[]) {
   for (int i = 1; i < argc - 1; ++i) {
     std::string arg(argv[i]);
     if (VerifierManager::instance()->is_shortcut(arg)) {
       auto v = VerifierManager::instance()->create(arg);
-      for(uint p = 0; p < v->number_of_parametes(); ++p) {
-        v->provide_parameter(std::stoi(argv[++i]));
-      }
-      return v;
+      std::vector<int> verifier_parameters;
+      std::generate_n(std::back_inserter(verifier_parameters), v->number_of_parameters(), [&]() {return std::stoi(argv[++i]);});
+      return VerifierManager::instance()->get_rds(arg, verifier_parameters);
     }
   }
   throw std::invalid_argument("No task specified");
@@ -119,14 +117,11 @@ bool parse_complement(const int argc, const char* const argv[]) {
   return false;
 }
 
-std::function<algorithm_run(std::string)> parse_args(
-  std::function<algorithm_run(std::shared_ptr<verifier>, ordering, bool, bool, unsigned int, std::string)> rds,
-  const int argc, const char* const argv[]
+std::function<algorithm_run(std::string)> parse_args(const int argc, const char* const argv[]
 ) {
   using namespace std::placeholders;
   try {
-    return std::bind(
-                     rds, parse_verifier(argc, argv),
+    return std::bind(parse_verifier(argc, argv),
                      parse_order(argc, argv), parse_reverse(argc, argv), parse_complement(argc, argv),
                      parse_time_limit(argc, argv), _1
                     );

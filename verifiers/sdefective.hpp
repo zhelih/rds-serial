@@ -8,11 +8,11 @@ class SDefective: public RegisterVerifier<SDefective> {
     std::vector<std::vector<uint>> nncnt;
 
   public:
-    bool check_pair(uint i, uint j) const {
+    inline bool check_pair(uint i, uint j) const {
       return (s>0)||(g->is_edge(i,j));
     }
 
-    bool check(const std::vector<uint>& p, uint n) const {
+    inline bool check(const std::vector<uint>& p, uint i, uint n) const {
       return nnv + nncnt[level][n] <= s;
     }
 
@@ -42,7 +42,7 @@ class SDefective: public RegisterVerifier<SDefective> {
     {
       nnv += nncnt[level][j];
       level++;
-      for(auto& v: c) {
+      for(uint v: c) {
         nncnt[level][v] = nncnt[level-1][v];
         if(!g->is_edge(v, j))
           nncnt[level][v]++;

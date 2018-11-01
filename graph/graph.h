@@ -28,6 +28,6 @@ public:
   void apply_order(ordering order, bool reverse);
   std::vector<uint> reverse_order(const std::vector<uint>& order) const;
   void reorder(const std::vector<uint>& order);
-  void read_weights(const char* filename);
+  void read_weights(std::istream& weights);
 };
 #endif
