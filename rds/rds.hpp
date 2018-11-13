@@ -94,8 +94,8 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
     // take vertices from v \in {i+1, n} for which pair (i,v) satisfies \Pi
     // first iteration c is empty, that must set bound to 1
     std::vector<vertex_set> c(g->nr_nodes);
-    for(auto&& vs: c)
-      vs.reserve(g->nr_nodes);
+//    for(auto&& vs: c)
+//      vs.reserve(g->nr_nodes);
     auto& curC = c[0];
 
     for(uint j = i+1; j < n; ++j)
@@ -110,6 +110,7 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
       if(p.weight > lb)
       {
         mu[i] = p.weight;
+        lb = mu[i];
         runtime.certificate = p.vertices;
       }
       else
@@ -166,7 +167,7 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
         }
       }
       mu_i = lb;
-      #pragma omp critical
+      #pragma omp critical (muupdate)
       {
         mu[i] = std::max(mu_i, mu[i]);
       }
@@ -179,8 +180,9 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
       delete v_;
     } // pragma omp parallel
     }
-    if(i == (int)g->nr_nodes-1 || mu[i] != mu[i+1] || i < (int)g->nr_nodes/2)
+    if(i == (int)g->nr_nodes-1 || mu[i] != mu[i+1] || i < 200)
       fprintf(stderr, "i = %u (%d/%d), mu = %d\n", i, (g->nr_nodes-i), g->nr_nodes, mu[i]);
+//      fprintf(stderr, "lb = %u\n", lb);
   }
 
   fprintf(stderr, "nr_calls = %d\n", nr_calls);

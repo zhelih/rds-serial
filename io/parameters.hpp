@@ -10,6 +10,7 @@ static const std::string PARAM_TIMELIM = "-t";
 static const std::string PARAM_BATCH   = "-B";
 static const std::string PARAM_HELP    = "-h";
 static const std::string PARAM_LATEX   = "-L";
+static const std::string PARAM_WEIGHT  = "-W";
 static const std::string PARAM_COMPL   = "-comp";
 
 void show_usage(const char* argv)
@@ -117,13 +118,23 @@ bool parse_complement(const int argc, const char* const argv[]) {
   return false;
 }
 
+bool parse_weight(const int argc, const char* const argv[]) {
+  for (int i = 1; i < argc-1; ++i) {
+    std::string arg(argv[i]);
+    if (arg == PARAM_WEIGHT) {
+      return true;
+    }
+  }
+  return false;
+}
+
 std::function<algorithm_run(std::string)> parse_args(const int argc, const char* const argv[]
 ) {
   using namespace std::placeholders;
   try {
     return std::bind(parse_verifier(argc, argv),
                      parse_order(argc, argv), parse_reverse(argc, argv), parse_complement(argc, argv),
-                     parse_time_limit(argc, argv), _1
+                     parse_time_limit(argc, argv), parse_weight(argc, argv), _1
                     );
   }
   catch (const std::invalid_argument& error) {

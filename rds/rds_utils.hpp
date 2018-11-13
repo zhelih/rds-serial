@@ -64,9 +64,10 @@ struct vertex_set {
   inline std::vector<uint>::iterator end() { return vertices.end(); }
 };
 
-using RDSMethod = std::function<algorithm_run(ordering, bool, bool, unsigned int, const std::string&)>;
+using RDSMethod = std::function<algorithm_run(ordering, bool, bool, unsigned int, bool, const std::string&)>;
 
-template <typename Verifier> algorithm_run run_rds(std::vector<int> verifier_parameters, ordering order, bool reverse, bool do_complement, unsigned int time_limit, const std::string& graph_file) {
+template <typename Verifier> algorithm_run run_rds(std::vector<int> verifier_parameters, ordering order, bool reverse, bool do_complement, unsigned int time_limit, bool weighted, const std::string& graph_file) {
+  std::cerr<<"Preparing to run RDS"<<std::endl;
   Verifier *v = new Verifier;
   for (auto& p: verifier_parameters) v->provide_parameter(p);
   algorithm_run result;
@@ -75,8 +76,15 @@ template <typename Verifier> algorithm_run run_rds(std::vector<int> verifier_par
   result.time_limit = time_limit;
   result.complement = do_complement;
 
+  std::cerr<<"Reading graph"<<std::endl;
   std::ifstream graph_source(graph_file);
   Graph* g = from_dimacs<Graph>(graph_source);
+  
+  std::cerr<<"Trying to read weights"<<std::endl;
+  std::cerr<<"Weighted is "<<weighted<<std::endl;
+  if (weighted) {
+    g->read_weights(std::ifstream(graph_file+".weights"));
+  }
 
   if (!g) {
     result.valid = false;
