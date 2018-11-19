@@ -2,6 +2,7 @@
 #define _PARAMETERS_HPP
 #include <vector>
 #include <cstdio>
+#include <omp.h>
 #include "../verifiers/verifiers.h"
 
 namespace parameters {
@@ -11,6 +12,8 @@ static const std::string PARAM_BATCH   = "-B";
 static const std::string PARAM_HELP    = "-h";
 static const std::string PARAM_LATEX   = "-L";
 static const std::string PARAM_COMPL   = "-comp";
+static const std::string PARAM_THREADS = "-omp";
+
 
 void show_usage(const char* argv)
 {
@@ -20,6 +23,7 @@ void show_usage(const char* argv)
   std::cout<<"\t"<<PARAM_HELP<<"\tDisplay this help"<<std::endl;
 //  printf("\t-weights <weights file>\n");
   std::cout<<"\t"<<PARAM_COMPL<<"\tUse graph complement"<<std::endl;
+  std::cout<<"\t"<<PARAM_THREADS<<"\tSpecify max number of OpenMP threads"<<std::endl;
   printf("Maximum Solvers, %ld available:\n", VerifierManager::instance()->count());
   for(auto& element: VerifierManager::instance()->verifiers) {
     auto&& verifier = element.second();
@@ -117,10 +121,29 @@ bool parse_complement(const int argc, const char* const argv[]) {
   return false;
 }
 
+void parse_threads(const int argc, const char* const argv[]) {
+  for(int i = 1; i < argc-1; ++i) {
+    std::string arg(argv[i]);
+    if(arg == PARAM_THREADS) {
+      try {
+        int threads = std::stoi(argv[i+1]);
+        if(threads <= 0)
+          throw "neg";
+        omp_set_num_threads(threads);
+        break;
+      }
+      catch(...) {
+        throw "Cannot convert omp thread number to a positive integer!";
+      }
+    }
+  }
+}
+
 std::function<algorithm_run(std::string)> parse_args(const int argc, const char* const argv[]
 ) {
   using namespace std::placeholders;
   try {
+    parse_threads(argc, argv);
     return std::bind(parse_verifier(argc, argv),
                      parse_order(argc, argv), parse_reverse(argc, argv), parse_complement(argc, argv),
                      parse_time_limit(argc, argv), _1
@@ -128,6 +151,14 @@ std::function<algorithm_run(std::string)> parse_args(const int argc, const char*
   }
   catch (const std::invalid_argument& error) {
     std::cerr<<error.what()<<std::endl;
+    exit(1);
+  }
+  catch (const char* msg) {
+    std::cerr<<msg<<std::endl;
+    exit(1);
+  }
+  catch (...) {
+    std::cerr<<"Unknown exception!"<<std::endl;
     exit(1);
   }
 }
