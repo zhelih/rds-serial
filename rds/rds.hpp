@@ -26,6 +26,8 @@ void print_lb_atomic(int signal)
 static int nr_calls = 0;
 
 template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_set& p, const uint* mu, Verifier *v, Graph* g, std::vector<uint>& res, int level) {
+  if(should_return)
+    return;
   vertex_set& curC = c[level];
 //  nr_calls++;
 
@@ -37,6 +39,7 @@ template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_se
     {
       res = p.vertices; //copy
       lb = p.weight;
+      should_return = true;
     }
     return;
   }
@@ -166,7 +169,7 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
         }
       }
       mu_i = lb;
-      #pragma omp critical
+      #pragma omp critical (mu_update)
       {
         mu[i] = std::max(mu_i, mu[i]);
       }
