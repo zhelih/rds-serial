@@ -38,8 +38,8 @@ template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_se
     #pragma omp critical (lbupdate)
     {
       res = p.vertices; //copy
-      lb = p.weight;
       should_return = true;
+      lb = std::max(lb, p.weight);
     }
     return;
   }
