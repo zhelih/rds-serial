@@ -89,44 +89,37 @@ def work(directory, problem):
         for fname in files:
             if fname.endswith(".clq") and not fname.startswith(".") and not fname in blacklist: # and fname == "johnson8-2-4.clq":
                 realfname = os.path.join(dirName, fname)
-                best_time = -1.
-                best_order = "N/A"
+                best_time = TIMELIM
                 try:
                     for order in orders:
-                        args = [ "../RDS" ]
-                        for i in order.split(" "):
-                            args.append(i)
-                        for i in problem.split(" "):
-                            args.append(i)
-                        args.append(realfname)
-                        timelim = TIMELIM
-                        if best_time > 0:
-                            timelim = best_time
-                        code, outs, errs = run_timeout(args, 0, timelim)
+                        args = [ "../RDS" ] + order.split() + problem.split() + [realfname]
+                        code, outs, errs = run_timeout(args, 0, best_time + 2.0)
                         if code == 0:
                             try:
+#                                print(outs)
                                 timeres, _ = parse_RDS_output(outs)
                                 timeres = float(timeres)
-                                if best_time < 0. or timeres < best_time:
+                                output.append(f"{fname} & {problem} & {order} & {timeres}")
+                                if timeres < best_time:
                                     best_time = timeres
-                                    best_order = order
                             except:
-                                print(str(outs))
-                                print(str(errs))
-                                print(args)
+#                                print(str(outs))
+#                                print(str(errs))
+#                                print(args)
                                 raise
+                        elif code == 2:
+                            output.append(f"{fname} & {problem} & {order} & TLE/{best_time}")
 
                 except Exception as e:
-                    print(str(e))
+#                    print(str(e))
                     best_order = "Error"
                     best_time = 10000.
-                if best_time > 1.5:
-                    output.append("%s  &  %s  &  %s  &  %f\n" % (fname, problem, best_order, best_time))
     return "".join(output)
 
 def main():
     email = []
-    the_directory = "/home/lykhovyd/GRAPH_DATA/DIMACS_all_ascii"
+#    the_directory = "/home/lykhovyd/GRAPH_DATA/DIMACS_all_ascii"
+    the_directory = "/home/tsumiman/Documents/Graphs/DIMACS/"
     problems = [ "-c", "-s", "-iuc", "-fn", "-bn", "-chn", "-bc" ] #, "-sd 1", "-sd 2", "-sd 3", "-sp 2", "-sp 3", "-sp 4" ]
     for i in problems.copy():
         problems.append("-comp " + i)
