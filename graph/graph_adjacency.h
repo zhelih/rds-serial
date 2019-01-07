@@ -18,7 +18,7 @@ public:
   inline void add_edge(uint i, uint j) final override {adj[i].emplace(j); adj[j].emplace(i);}
   inline bool is_edge(uint i, uint j) const final override {return (adj[i].find(j) != adj[i].end());}
   void separate_vertex(uint i) final override;
-  
+
   using neighbourhood_iterator = std::unordered_set<uint>::const_iterator;
 
   inline neighbourhood_iterator nbh_begin(const uint v) {

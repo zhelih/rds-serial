@@ -30,7 +30,7 @@ public:
       using reference = uint&;
       using pointer = uint;
       using iterator_category = std::input_iterator_tag;
-    
+
       neighbourhood_iterator(const graph_matrix* g, const uint v, const uint u): m_of_vertex(v), m_to_vertex(u), graph(g) {}
 
       void operator++() {

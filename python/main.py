@@ -32,6 +32,10 @@ blacklist = [
 "C4000.5.clq"
 ]
 
+whitelist = [
+"karate.dimacs"
+]
+
 class TimeoutLowError(Exception):
     pass
 
@@ -87,7 +91,7 @@ def work(directory, problem):
     # walk through a dir for graphs
     for dirName, subdirs, files in os.walk(directory):
         for fname in files:
-            if fname.endswith(".clq") and not fname.startswith(".") and not fname in blacklist: # and fname == "johnson8-2-4.clq":
+            if not fname.startswith(".") and not fname in blacklist: # and fname == "johnson8-2-4.clq":
                 realfname = os.path.join(dirName, fname)
                 best_time = TIMELIM
                 try:
@@ -99,7 +103,7 @@ def work(directory, problem):
 #                                print(outs)
                                 timeres, _ = parse_RDS_output(outs)
                                 timeres = float(timeres)
-                                output.append(f"{fname} & {problem} & {order} & {timeres}")
+                                output.append("{} & {} & {} & {}".format(fname, problem, order, timeres))
                                 if timeres < best_time:
                                     best_time = timeres
                             except:
@@ -108,18 +112,18 @@ def work(directory, problem):
 #                                print(args)
                                 raise
                         elif code == 2:
-                            output.append(f"{fname} & {problem} & {order} & TLE/{best_time}")
+                            output.append("{} & {} & {} & TLE/{}".format(fname, problem, order, best_time))
 
                 except Exception as e:
 #                    print(str(e))
                     best_order = "Error"
                     best_time = 10000.
-    return "".join(output)
+    return "\n".join(output)
 
 def main():
     email = []
-#    the_directory = "/home/lykhovyd/GRAPH_DATA/DIMACS_all_ascii"
-    the_directory = "/home/tsumiman/Documents/Graphs/DIMACS/"
+    the_directory = "/home/lykhovyd/GRAPH_DATA/rds_test/"
+#    the_directory = "/home/tsumiman/Documents/Graphs/DIMACS/"
     problems = [ "-c", "-s", "-iuc", "-fn", "-bn", "-chn", "-bc" ] #, "-sd 1", "-sd 2", "-sd 3", "-sp 2", "-sp 3", "-sp 4" ]
     for i in problems.copy():
         problems.append("-comp " + i)
@@ -128,7 +132,7 @@ def main():
         msg = work(the_directory, problem)
         email.append("Results for problem %s\n\n" % problem)
         email.append(msg)
-        email.append("--------------------\n\n")
+        email.append("\n--------------------\n\n")
         data = "".join(email)
         pymail.SendMail("RDS Results for %s" % problem, data)
         email = []
