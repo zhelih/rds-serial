@@ -99,7 +99,10 @@ def work(directory, problem):
                         for i in problem.split(" "):
                             args.append(i)
                         args.append(realfname)
-                        code, outs, errs = run_timeout(args, 0, TIMELIM)
+                        timelim = TIMELIM
+                        if best_time > 0:
+                            timelim = best_time
+                        code, outs, errs = run_timeout(args, 0, timelim)
                         if code == 0:
                             try:
                                 timeres, _ = parse_RDS_output(outs)
