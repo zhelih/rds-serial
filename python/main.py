@@ -33,7 +33,8 @@ blacklist = [
 ]
 
 whitelist = [
-"karate.dimacs"
+"karate.dimacs",
+"brock800_1.clq"
 ]
 
 class TimeoutLowError(Exception):
@@ -91,7 +92,7 @@ def work(directory, problem):
     # walk through a dir for graphs
     for dirName, subdirs, files in os.walk(directory):
         for fname in files:
-            if not fname.startswith(".") and not fname in blacklist: # and fname == "johnson8-2-4.clq":
+            if not fname.startswith("."):# and fname in whitelist: # and fname == "johnson8-2-4.clq":
                 realfname = os.path.join(dirName, fname)
                 best_time = TIMELIM
                 try:
