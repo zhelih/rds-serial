@@ -20,4 +20,5 @@ typedef unsigned int uint;
 #include "chordal.hpp"
 #include "dep1.hpp"
 #include "biclique.hpp"
+#include "iusd.hpp"
 #endif
