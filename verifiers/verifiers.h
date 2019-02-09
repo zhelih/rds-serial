@@ -21,4 +21,5 @@ typedef unsigned int uint;
 #include "dep1.hpp"
 #include "biclique.hpp"
 #include "iusd.hpp"
+#include "iusp.hpp"
 #endif
