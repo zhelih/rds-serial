@@ -21,11 +21,12 @@ class IUSP: public RegisterVerifier<IUSP> {
       int cnt = 0;
       for (auto& V: newsplex) {
         for (auto& U: newsplex) {
-          if (g->is_edge(V, U)) ++cnt;
+          if (V != U && g->is_edge(V, U)) ++cnt;
         }
-        if (cnt < static_cast<int>(newsplex.size()) - 1 - static_cast<int>(s)) {
+        if (cnt < static_cast<int>(newsplex.size()) - static_cast<int>(s)) {
           return false;
         }
+        cnt = 0;
       }
       return true;
     }
