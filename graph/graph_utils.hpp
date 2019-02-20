@@ -27,7 +27,8 @@ template <typename T> T* from_dimacs(std::istream& source) {
       }
       else {
         linestream >> U >> V;
-        result->add_edge(U - 1, V - 1);
+        if(!result->is_edge(U - 1, V - 1))
+          result->add_edge(U - 1, V - 1);
       }
     }
     else {
