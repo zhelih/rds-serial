@@ -10,11 +10,17 @@
 #include "../verifiers/verifier.hpp"
 #include "rds_utils.hpp"
 
-std::atomic_bool should_exit (false);
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#include <windows.h>
+#include <timeapi.h> //?
+#else
+#include <unistd.h>
+#endif
+
 //std::atomic_uint lb;
 static uint lb;
-
 bool should_return = false;
+bool should_exit = false;
 
 void print_lb_atomic(int signal)
 {
@@ -23,10 +29,15 @@ void print_lb_atomic(int signal)
   exit(0);
 }
 
+void handle_sigalrm(int signal)
+{
+  should_exit = true;
+}
+
 static int nr_calls = 0;
 
 template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_set& p, const uint* mu, Verifier *v, Graph* g, std::vector<uint>& res, int level) {
-  if(should_return)
+  if(should_return || should_exit)
     return;
   vertex_set& curC = c[level];
 //  nr_calls++;
@@ -75,7 +86,7 @@ template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_se
 template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runtime)
 {
 
-  if(g->nr_nodes >= 500)
+  if(false && g->nr_nodes >= 500)
   {
     runtime.valid    = true;
     runtime.last_i   = 1;
@@ -91,6 +102,13 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
 
   uint time_lim = runtime.time_limit;
   auto start = std::chrono::steady_clock::now(); // C++11 only
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+  timeSetEvent(time_lim*1000, 1000, handle_sigarlm, NULL, TIME_ONESHOT);
+#else
+  signal(SIGALRM, handle_sigalrm);
+  if(time_lim > 0)
+    alarm(time_lim);
+#endif
   should_exit = false;
   uint n = g->nr_nodes;
   // order V
@@ -181,12 +199,6 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
       #pragma omp critical (mu_update)
       {
         mu[i] = std::max(mu_i, mu[i]);
-      }
-      if(time_lim > 0)
-      {
-        auto d = std::chrono::steady_clock::now() - start;
-        if(static_cast<uint>(d.count()) >= time_lim)
-          should_exit = true;
       }
       delete v_;
     } // pragma omp parallel
