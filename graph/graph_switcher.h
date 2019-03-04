@@ -7,7 +7,7 @@ using Graph = graph_matrix;
 #endif
 
 #ifdef GRAPH_LIST
-#include "graph_adjacency.h"
+#include "graph_list.h"
 using Graph = graph_adjacency;
 #endif
 

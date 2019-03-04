@@ -1,4 +1,4 @@
-#include "graph_adjacency.h"
+#include "graph_list.h"
 #include <cstdio>
 #include <string>
 #include <vector>
@@ -7,12 +7,12 @@
 #include <iterator>
 #include <cstdlib>
 
-void graph_adjacency::separate_vertex(uint v) {
+void graph_list::separate_vertex(uint v) {
   adj[v].clear();
   for (auto& list: adj) list.erase(v);
 }
 
-void graph_adjacency::reorder_custom(const std::vector<uint>& order) {
+void graph_list::reorder_custom(const std::vector<uint>& order) {
   std::vector<uint> order_reverse = this->reverse_order(order);
   for (uint v = 0; v < this->nr_nodes; ++v) {
     std::unordered_set<uint> new_adj;
