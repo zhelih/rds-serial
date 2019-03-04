@@ -16,6 +16,9 @@ RDS: main.cpp verifiers/verifiers.h verifiers/*.hpp graph/*.hpp graph/*.cpp grap
 tester: tester.cpp
 	$(CXX) tester.cpp -O2 -o tester -Wall -Wextra -std=c++11
 
+peeler: peeler.cpp
+	$(CXX) graph/graph.cpp graph/orders.cpp graph/graph_adjacency.cpp peeler.cpp -Wall -Wextra -O2 -o peeler -std=c++11
+
 version.c: .git/HEAD .git/index
 	echo "const char *gitversion = \"$(shell git describe --tags --always)\";" > $@
 

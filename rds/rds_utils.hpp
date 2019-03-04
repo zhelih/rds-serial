@@ -1,7 +1,6 @@
 #ifndef __RDS_UTILS_HPP__
 #define __RDS_UTILS_HPP__
 #include <chrono>
-#include <fstream>
 #include <iostream>
 #include "../graph/graph_matrix.h"
 #include "../graph/graph_utils.hpp"

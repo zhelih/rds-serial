@@ -2,6 +2,7 @@
 #define __GRAPH_UTILS_HPP__
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <string>
 #include "graph.h"
 
