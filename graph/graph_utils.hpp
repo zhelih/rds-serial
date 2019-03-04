@@ -5,7 +5,8 @@
 #include <string>
 #include "graph.h"
 
-template <typename T> T* from_dimacs(std::istream& source) {
+template <typename T> T* from_dimacs(const char* graph_file) {
+  std::ifstream source(graph_file);
   std::string line, _;
   int V, E, U, N;
   T* result = nullptr;

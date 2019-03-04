@@ -75,8 +75,7 @@ template <typename Verifier> algorithm_run run_rds(std::vector<int> verifier_par
   result.time_limit = time_limit;
   result.complement = do_complement;
 
-  std::ifstream graph_source(graph_file);
-  Graph* g = from_dimacs<Graph>(graph_source);
+  Graph* g = from_dimacs<Graph>(graph_file.c_str());
 
   if (!g) {
     result.valid = false;
