@@ -41,6 +41,21 @@ template <typename T> T* from_dimacs(const char* graph_file) {
   return result;
 }
 
+template <typename T> void save_dimacs(const T* g, const char* filename) {
+  FILE* f = fopen(filename, "w");
+  if(!f) {
+    fprintf(stderr, "Failed to open %s\n", filename);
+    return;
+  }
+  fprintf(f, "p edge %d %d\n", g->nr_nodes, 0); // FIXME nr_edges?
+  //FIXME efficiency
+  for(int i = 0; i < g->nr_nodes; ++i)
+    for(int j = i+1; j < g->nr_nodes; ++j)
+      if(g->is_edge(i, j))
+        fprintf(f, "e %d %d\n", i+1, j+1);
+  fclose(f);
+}
+
 template <typename T> T* complement(const graph* original) {
   T* g = new T(original->nr_nodes);
   for(unsigned int i = 0; i < original->nr_nodes; ++i)
