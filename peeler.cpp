@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
   if(argc > 3)
     out_fname = argv[3];
 
-  printf("Peeled %d vertices, saving to %s\n", nr_deleted, out_fname.c_str());
+  printf("Peeled %d vertices (%d left), saving to %s\n", nr_deleted, g->nr_nodes - nr_deleted, out_fname.c_str());
 
   // do map
   vector<int> offset(g->nr_nodes, 0);
