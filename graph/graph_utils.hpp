@@ -13,6 +13,7 @@ template <typename T> T* from_dimacs(const char* graph_file) {
   T* result = nullptr;
   int line_counter = 0;
   while (std::getline(source, line)) {
+    if(line == "") continue;
     std::istringstream linestream(line);
     ++line_counter;
     std::string type;
