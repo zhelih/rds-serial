@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
     printf("Usage: %s <n> <.dimacs> [output]\n", argv[0]);
     return 0;
   }
-  unsigned int n = atoi(argv[1]);
+  int k = max(0, atoi(argv[1]));
   ez_graph* g = from_dimacs<ez_graph>(argv[2]);
 
   vector<int> deleted(g->nr_nodes, 0);
@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
     more = false;
     for(int i = 0; i < g->nr_nodes; ++i)
     {
-      if(!deleted[i] && g->nb[i].size() < n) // FIXME <=
+      if(!deleted[i] && static_cast<int>(g->nb[i].size()) < k) // FIXME <=
       {
         more = true;
         deleted[i] = 1;
