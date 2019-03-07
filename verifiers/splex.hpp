@@ -27,6 +27,8 @@ class SPlex: public RegisterVerifier<SPlex> {
     }
 
     bool check_solution(const std::vector<uint>& res) const {
+      if(res.size() == 0)
+        return true;
       std::vector<uint> degrees(res.size());
       for(uint i = 0; i < res.size(); ++i)
         degrees[i] = 0;
