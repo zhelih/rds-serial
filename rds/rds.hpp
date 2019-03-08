@@ -118,14 +118,17 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
     mu[i] = 0;
 
   int i;
+  std::vector<vertex_set> c(g->nr_nodes);
+  for(vertex_set& vs: c)
+      vs.reserve(g->nr_nodes);
+
   for(i = n-1; i >= 0 && !should_exit; --i)
   {
     // form candidate set
     // take vertices from v \in {i+1, n} for which pair (i,v) satisfies \Pi
     // first iteration c is empty, that must set bound to 1
-    std::vector<vertex_set> c(g->nr_nodes);
-    for(auto&& vs: c)
-      vs.reserve(g->nr_nodes);
+    for(vertex_set& vs: c)
+      vs.clear();
     auto& curC = c[0];
 
     for(uint j = i+1; j < n; ++j)
@@ -203,7 +206,7 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
       delete v_;
     } // pragma omp parallel
     }
-    if(i == (int)g->nr_nodes-1 || mu[i] != mu[i+1] || i < (int)g->nr_nodes/2)
+    if(runtime.allout || i == (int)g->nr_nodes-1 || mu[i] != mu[i+1] || i < (int)g->nr_nodes/2)
       fprintf(stderr, "i = %u (%d/%d), mu = %d\n", i, (g->nr_nodes-i), g->nr_nodes, mu[i]);
   }
 

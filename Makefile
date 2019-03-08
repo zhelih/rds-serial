@@ -26,3 +26,4 @@ clean:
 	rm ./RDS
 	rm ./tester
 	rm version.c
+	rm ./peeler

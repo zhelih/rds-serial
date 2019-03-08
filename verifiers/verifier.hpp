@@ -80,8 +80,8 @@ class VerifierManager
 {
   public:
     using Method = std::function<verifier*()>;
-    using RDSMethodUnparametrized = std::function<algorithm_run(std::vector<int>, ordering, bool, bool, unsigned int, const std::string&)>;
-    using RDSMethod = std::function<algorithm_run(ordering, bool, bool, unsigned int, const std::string&)>;
+    using RDSMethodUnparametrized = std::function<algorithm_run(std::vector<int>, ordering, bool, bool, bool, unsigned int, const std::string&)>;
+    using RDSMethod = std::function<algorithm_run(ordering, bool, bool, bool, unsigned int, const std::string&)>;
 
     static VerifierManager *instance()
     {
@@ -113,7 +113,7 @@ class VerifierManager
 
     RDSMethod get_rds(const std::string& shortcut, std::vector<int> verifier_parameters) const {
       using namespace std::placeholders;
-      return std::bind(verifiers_by_shortcut_rds.at(shortcut), verifier_parameters, _1, _2, _3, _4, _5);
+      return std::bind(verifiers_by_shortcut_rds.at(shortcut), verifier_parameters, _1, _2, _3, _4, _5, _6);
     }
 
     size_t count() const {

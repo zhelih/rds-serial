@@ -13,6 +13,7 @@ static const std::string PARAM_HELP    = "-h";
 static const std::string PARAM_LATEX   = "-L";
 static const std::string PARAM_COMPL   = "-comp";
 static const std::string PARAM_THREADS = "-omp";
+static const std::string PARAM_VERBOSE = "--verbose";
 
 
 void show_usage(const char* argv)
@@ -46,6 +47,7 @@ void show_usage(const char* argv)
   std::cout<<"\t"<<PARAM_BATCH<<"\tread a list of dimacs input files (one file per line)."<<std::endl;
   printf("Output:\n");
   std::cout<<"\t"<<PARAM_LATEX<<"\tproduce report in a form of LaTeX table"<<std::endl;
+  std::cout<<"\t"<<PARAM_VERBOSE<<"\tverbose output"<<std::endl;
 }
 
 RDSMethod parse_verifier(const int argc, const char* const argv[]) {
@@ -111,6 +113,16 @@ bool parse_to_latex(const int argc, const char* const argv[]) {
   return false;
 }
 
+bool parse_is_verbose(const int argc, const char* const argv[]) {
+  for (int i = 1; i < argc-1; ++i) {
+    std::string arg(argv[i]);
+    if (arg == PARAM_VERBOSE) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool parse_complement(const int argc, const char* const argv[]) {
   for (int i = 1; i < argc-1; ++i) {
     std::string arg(argv[i]);
@@ -146,6 +158,7 @@ std::function<algorithm_run(std::string)> parse_args(const int argc, const char*
     parse_threads(argc, argv);
     return std::bind(parse_verifier(argc, argv),
                      parse_order(argc, argv), parse_reverse(argc, argv), parse_complement(argc, argv),
+                     parse_is_verbose(argc, argv),
                      parse_time_limit(argc, argv), _1
                     );
   }

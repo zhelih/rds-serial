@@ -20,6 +20,8 @@ struct algorithm_run {
   unsigned int last_i;
 
   std::vector<uint> certificate;
+
+  bool allout = false; // output for all mu[i]. default: only for the last of when m[i] != m[i+1]
 };
 
 struct vertex_set {
@@ -63,9 +65,9 @@ struct vertex_set {
   inline std::vector<uint>::iterator end() { return vertices.end(); }
 };
 
-using RDSMethod = std::function<algorithm_run(ordering, bool, bool, unsigned int, const std::string&)>;
+using RDSMethod = std::function<algorithm_run(ordering, bool, bool, bool, unsigned int, const std::string&)>;
 
-template <typename Verifier> algorithm_run run_rds(std::vector<int> verifier_parameters, ordering order, bool reverse, bool do_complement, unsigned int time_limit, const std::string& graph_file) {
+template <typename Verifier> algorithm_run run_rds(std::vector<int> verifier_parameters, ordering order, bool reverse, bool do_complement, bool allout, unsigned int time_limit, const std::string& graph_file) {
   Verifier *v = new Verifier;
   for (auto& p: verifier_parameters) v->provide_parameter(p);
   algorithm_run result;
@@ -73,6 +75,7 @@ template <typename Verifier> algorithm_run run_rds(std::vector<int> verifier_par
   result.reverse = reverse;
   result.time_limit = time_limit;
   result.complement = do_complement;
+  result.allout = allout;
 
   Graph* g = from_dimacs<Graph>(graph_file.c_str());
 
