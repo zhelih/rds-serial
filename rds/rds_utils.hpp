@@ -28,12 +28,12 @@ struct vertex_set {
   std::vector<uint> vertices;
   uint weight = 0;
 
-  inline void add_vertex(const uint& v, const uint& w) {
+  inline void add_vertex(const uint v, const uint w) {
     vertices.push_back(v);
     weight += w;
   }
 
-  inline void pop_vertex(const uint& w) {
+  inline void pop_vertex(const uint w) {
     vertices.pop_back();
     weight -= w;
   }
@@ -51,7 +51,7 @@ struct vertex_set {
     weight = 0;
   }
 
-  inline void reserve(const size_t& size) {
+  inline void reserve(const size_t size) {
     vertices.reserve(size);
   }
 

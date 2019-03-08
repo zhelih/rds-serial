@@ -31,9 +31,10 @@ class SDefective: public RegisterVerifier<SDefective> {
       nncnt.resize(g->nr_nodes);
       for(uint it = 0; it < g->nr_nodes; ++it)
         nncnt[it].resize(g->nr_nodes);
-      for(uint it = 0; it < g->nr_nodes; ++it)
+/*      for(uint it = 0; it < g->nr_nodes; ++it)
         for(uint it2 = 0; it2 < g->nr_nodes; ++it2)
-          nncnt[it][it2] = 0;
+          nncnt[it][it2] = 0;*/
+      nncnt[0][i] = 0;
       for(uint it = 0; it < c.size(); ++it)
         nncnt[0][c[it]]=!g->is_edge(c[it], i);
     }
