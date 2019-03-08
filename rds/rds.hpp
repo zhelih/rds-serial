@@ -135,6 +135,8 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
     }
   }
 
+  vertex_set p; p.reserve(g->nr_nodes);
+
   for(i = n-1; i >= 0 && !should_exit; --i)
   {
     // form candidate set
@@ -148,7 +150,7 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
       if(v->check_pair(i, j))
         curC.add_vertex(j, g->weight(j));
 
-    vertex_set p;
+    p.clear();
     p.add_vertex(i, g->weight(i));
     // run for level = 0 manually with respect to the thread number
     if(curC.empty())
