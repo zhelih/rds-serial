@@ -217,9 +217,12 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
         }
       }
       mu_i = lb;
-      #pragma omp critical (mu_update)
+      if(mu_i > mu[i])
       {
-        mu[i] = std::max(mu_i, mu[i]);
+        #pragma omp critical (mu_update)
+        {
+          mu[i] = std::max(mu_i, mu[i]);
+        }
       }
 
       v_->free_aux();

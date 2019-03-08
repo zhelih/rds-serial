@@ -49,9 +49,10 @@ class SPlex: public RegisterVerifier<SPlex> {
       nr_sat = 0;
       for(uint it = 0; it < g->nr_nodes; ++it)
         nncnt[it].resize(g->nr_nodes);
-      for(uint it = 0; it < c.size(); ++it)
+/*      for(uint it = 0; it < c.size(); ++it)
         for(uint l = 0; l < g->nr_nodes; ++l)
-          nncnt[l][it] = 0;
+          nncnt[l][it] = 0;*/
+      nncnt[0][i] = 0;
       for(uint v: c)
         nncnt[0][v]=!g->is_edge(v, i);
     }
