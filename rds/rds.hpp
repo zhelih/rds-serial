@@ -122,6 +122,19 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
   for(vertex_set& vs: c)
       vs.reserve(g->nr_nodes);
 
+  // init verifiers for each thread
+  std::vector<Verifier*> verifiers;
+  #pragma omp parallel
+  {
+    #pragma omp single
+    {
+    uint num_threads = omp_get_num_threads();
+    verifiers.resize(num_threads);
+    for(uint i = 0; i < num_threads; ++i)
+      verifiers[i] = v->clone();
+    }
+  }
+
   for(i = n-1; i >= 0 && !should_exit; --i)
   {
     // form candidate set
@@ -151,14 +164,19 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
     should_return = false;
     #pragma omp parallel
     {
-      // clone for separate threads
-      Verifier* v_ = v->clone();
+      uint thread_i = omp_get_thread_num();
+      uint num_threads = omp_get_num_threads();
+
+      if(num_threads > verifiers.size())
+      {
+        printf("Thread number changed? Need %lu got %u\n", verifiers.size(), num_threads);
+        should_exit = true;
+      } else {
+
+      Verifier* v_ = verifiers[thread_i];
       v_->init_aux(i, curC);
       std::vector<vertex_set> c_(c);
       vertex_set p_(p);
-
-      uint thread_i = omp_get_thread_num();
-      uint num_threads = omp_get_num_threads();
 
       uint mu_i = 0;
 
@@ -203,7 +221,9 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
       {
         mu[i] = std::max(mu_i, mu[i]);
       }
-      delete v_;
+
+      v_->free_aux();
+      }
     } // pragma omp parallel
     }
     if(runtime.allout || i == (int)g->nr_nodes-1 || mu[i] != mu[i+1] || i < (int)g->nr_nodes/2)
