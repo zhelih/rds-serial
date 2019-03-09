@@ -34,7 +34,7 @@ class SWide: public RegisterVerifier<SWide> {
       is_end[i] = 1;
     }
 
-    void prepare_aux(const std::vector<uint>& p, uint n, const std::vector<uint>& c)
+    void prepare_aux(const std::vector<uint>& p, uint n, const std::vector<uint>& c, uint c_start)
     {
       uint nr_ends = 0;
       uint v_end[2];
@@ -57,7 +57,7 @@ class SWide: public RegisterVerifier<SWide> {
       }
     }
 
-    void undo_aux(const std::vector<uint>& p, uint n, const std::vector<uint>& c)
+    void undo_aux(const std::vector<uint>& p, uint n, const std::vector<uint>& c, uint c_start)
     {
       uint nr_ends = 0;
       is_end[n] = 0;

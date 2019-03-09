@@ -21,8 +21,8 @@ class verifier
     virtual inline void init_aux(uint i, const std::vector<uint>& c) { }
     // return aux info for P u {i}
     // knowing aux for P as prev_aux
-    virtual inline void prepare_aux(const std::vector<uint>& p, uint i, const std::vector<uint>& c) { }
-    virtual inline void undo_aux(const std::vector<uint>& p, uint i, const std::vector<uint>& c) {}
+    virtual inline void prepare_aux(const std::vector<uint>& p, uint i, const std::vector<uint>& c, uint c_start) { }
+    virtual inline void undo_aux(const std::vector<uint>& p, uint i, const std::vector<uint>& c, uint c_start) {}
     // free aux info
     virtual inline void free_aux() {}
 

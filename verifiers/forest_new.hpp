@@ -73,7 +73,7 @@ class ForestNew: public RegisterVerifier<ForestNew> {
       level = 0;
     }
 
-    void prepare_aux(const std::vector<uint>& P, uint j, const std::vector<uint>& c)
+    void prepare_aux(const std::vector<uint>& P, uint j, const std::vector<uint>& c, uint c_start)
     {
       auto& currentP = p_[level];
       auto& nextP = p_[level+1];
@@ -97,7 +97,7 @@ class ForestNew: public RegisterVerifier<ForestNew> {
       level++;
     }
 
-    void undo_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c)
+    void undo_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c, uint c_start)
     {
       level--;
     }

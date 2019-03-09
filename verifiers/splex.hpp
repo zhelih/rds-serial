@@ -58,37 +58,47 @@ class SPlex: public RegisterVerifier<SPlex> {
         nncnt[0][v]=!g->is_edge(v, i);
     }
 
-    void prepare_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c)
+    void prepare_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c, uint c_start)
     {
       nr_sat = 0;
-      level++;
+      //level++;
       for(uint v: p) {
-        nncnt[level][v] = nncnt[level-1][v];
+        //nncnt[level][v] = nncnt[level-1][v];
         if (!g->is_edge(v, j)) {
-          ++nncnt[level][v];
-          if(nncnt[level][v] == s-1) {
+          ++nncnt[0][v];
+          if(nncnt[0][v] == s-1) {
             sat[nr_sat] = v;
             ++nr_sat;
           }
         }
       }
 
-      for(uint v: c) {
-        nncnt[level][v] = nncnt[level-1][v];
+      for(uint it = c_start; it < c.size(); ++it) {
+        uint v = c[it];
+        //nncnt[0][v] = nncnt[level-1][v];
         if(!g->is_edge(v,j))
-          ++nncnt[level][v];
+          ++nncnt[0][v];
       }
-      nncnt[level][j] = nncnt[level-1][j];
-      if(nncnt[level][j] == s-1)
+      //nncnt[level][j] = nncnt[level-1][j];
+      if(nncnt[0][j] == s-1)
       {
         sat[nr_sat] = j;
         ++nr_sat;
       }
     }
 
-    void undo_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c)
+    void undo_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c, uint c_start)
     {
-      --level;
+      //--level;
+      for(uint v: p) {
+        if(!g->is_edge(v, j))
+          --nncnt[0][v];
+      }
+      for(uint it = c_start; it < c.size(); ++it) {
+        uint v = c[it];
+        if(!g->is_edge(v,j))
+          --nncnt[0][v];
+      }
     }
 
     void free_aux() {

@@ -72,7 +72,7 @@ class IUSD: public RegisterVerifier<IUSD> {
       return result;
     }
 
-    void prepare_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c)
+    void prepare_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c, uint c_start)
     {
       std::pair<std::vector<std::unordered_set<uint>>, std::vector<std::unordered_set<uint>>> parts = split(j);
       sdefectives[++level] = parts.second;
@@ -81,7 +81,7 @@ class IUSD: public RegisterVerifier<IUSD> {
       sdefectives[level].push_back(newsdef);
     }
 
-    void undo_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c)
+    void undo_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c, uint c_start)
     {
       sdefectives[level--].clear();
     }

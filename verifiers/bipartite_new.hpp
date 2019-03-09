@@ -100,7 +100,7 @@ class BipartiteNew: public RegisterVerifier<BipartiteNew> {
       level = 0;
     }
 
-    void prepare_aux(const std::vector<uint>& P, uint j, const std::vector<uint>& c)
+    void prepare_aux(const std::vector<uint>& P, uint j, const std::vector<uint>& c, uint c_start)
     {
       auto& currentP = p_[level];
       auto& currentSP = second_part[level];
@@ -133,7 +133,7 @@ class BipartiteNew: public RegisterVerifier<BipartiteNew> {
       level++;
     }
 
-    void undo_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c)
+    void undo_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c, uint c_start)
     {
       level--;
     }

@@ -39,11 +39,12 @@ class SDefective: public RegisterVerifier<SDefective> {
         nncnt[0][c[it]]=!g->is_edge(c[it], i);
     }
 
-    void prepare_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c)
+    void prepare_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c, uint c_start)
     {
       nnv += nncnt[level][j];
       level++;
-      for(uint v: c) {
+      for(uint it = c_start; it < c.size(); ++it) {
+        uint v = c[it];
         nncnt[level][v] = nncnt[level-1][v];
         if(!g->is_edge(v, j))
           nncnt[level][v]++;
@@ -51,7 +52,7 @@ class SDefective: public RegisterVerifier<SDefective> {
       nncnt[level][j]=nncnt[level-1][j];
     }
 
-    void undo_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c)
+    void undo_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c, uint c_start)
     {
       level--;
       nnv -= nncnt[level][j];

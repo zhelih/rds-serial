@@ -22,7 +22,7 @@ class ChordalNew: public RegisterVerifier<ChordalNew> {
       std::vector<uint> nbh;
       std::copy_if(p.begin(), p.end(), std::back_inserter(notnbh), [&](uint v){return !g->is_edge(n, v);});
       std::copy_if(p.begin(), p.end(), std::back_inserter(nbh), [&](uint v){return g->is_edge(n, v);});
-      
+
       std::deque<uint> bfs;
       std::vector<int> reachable(g->nr_nodes, -1);
       for (uint v: nbh) {

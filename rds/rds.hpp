@@ -56,29 +56,29 @@ template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_se
   }
 
   vertex_set& nextC = c[level+1];
-  for (auto v_it = curC.begin(); v_it != curC.end(); ++v_it) {
+  for (uint v_it = 0; v_it < curC.size(); ++v_it) {
     if(curC.weight + p.weight <= lb) // Prune 1
       return;
-    if(mu[*v_it] + p.weight <= lb) // Prune 2
+    if(mu[curC[v_it]] + p.weight <= lb) // Prune 2
       return;
 
-    uint v_weight = g->weight(*v_it);
+    uint v_weight = g->weight(curC[v_it]);
     curC.weight -= v_weight;
 
 //    NB: exploit that we adding only 1 vertex to p
 //    thus verifier can prepare some info using prev calculations
-    v->prepare_aux(p, *v_it, curC);
+    v->prepare_aux(p, curC[v_it], curC, v_it+1);
     nextC.clear();
-    p.add_vertex(*v_it, v_weight);
-    for(auto u_it = v_it+1; u_it != curC.end(); ++u_it)
-      if(v->check(p, *v_it, *u_it))
-        nextC.add_vertex(*u_it, g->weight(*u_it));
+    p.add_vertex(curC[v_it], v_weight);
+    for(uint u_it = v_it+1; u_it < curC.size(); ++u_it)
+      if(v->check(p, curC[v_it], curC[u_it]))
+        nextC.add_vertex(curC[u_it], g->weight(curC[u_it]));
 
     if (nextC.weight + p.weight > lb) // continue if <=
       find_max(c, p, mu, v, g, res, level+1);
 
     p.pop_vertex(v_weight);
-    v->undo_aux(p, *v_it, curC);
+    v->undo_aux(p, curC[v_it], curC, v_it+1);
   }
   return;
 }
@@ -203,7 +203,7 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
           mu_i = lb;
           break;
         } else {
-          v_->prepare_aux(p_, i_, curC_);
+          v_->prepare_aux(p_, i_, curC_, c_i);
           p_.add_vertex(i_, g->weight(i_));
           auto& nextC_ = c_[1];
           nextC_.clear();
@@ -215,7 +215,7 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
           }
           find_max(c_, p_, mu, v_, g, runtime.certificate, 1);
           p_.pop_vertex(g->weight(i_));
-          v_->undo_aux(p_, i_, curC_);
+          v_->undo_aux(p_, i_, curC_, c_i);
         }
       }
       mu_i = lb;
