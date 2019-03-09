@@ -4,8 +4,8 @@
 
 class SDefective: public RegisterVerifier<SDefective> {
   private:
-    uint s, level, nnv;
-    std::vector<std::vector<uint>> nncnt;
+    uint s, nnv;
+    std::vector<uint> nncnt;
 
   public:
     inline bool check_pair(uint i, uint j) const {
@@ -13,7 +13,7 @@ class SDefective: public RegisterVerifier<SDefective> {
     }
 
     inline bool check(const std::vector<uint>& p, uint i, uint n) const {
-      return nnv + nncnt[level][n] <= s;
+      return nnv + nncnt[n] <= s;
     }
 
     bool check_solution(const std::vector<uint>& res) const {
@@ -26,40 +26,34 @@ class SDefective: public RegisterVerifier<SDefective> {
     }
 
     void init_aux(uint i, const std::vector<uint>& c) {
-      level = 0;
       nnv = 0;
       nncnt.resize(g->nr_nodes);
-      for(uint it = 0; it < g->nr_nodes; ++it)
-        nncnt[it].resize(g->nr_nodes);
-/*      for(uint it = 0; it < g->nr_nodes; ++it)
-        for(uint it2 = 0; it2 < g->nr_nodes; ++it2)
-          nncnt[it][it2] = 0;*/
-      nncnt[0][i] = 0;
+      nncnt[i] = 0;
       for(uint it = 0; it < c.size(); ++it)
-        nncnt[0][c[it]]=!g->is_edge(c[it], i);
+        nncnt[c[it]]=!g->is_edge(c[it], i);
     }
 
     void prepare_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c, uint c_start)
     {
-      nnv += nncnt[level][j];
-      level++;
+      nnv += nncnt[j];
       for(uint it = c_start; it < c.size(); ++it) {
         uint v = c[it];
-        nncnt[level][v] = nncnt[level-1][v];
         if(!g->is_edge(v, j))
-          nncnt[level][v]++;
+          nncnt[v]++;
       }
-      nncnt[level][j]=nncnt[level-1][j];
     }
 
     void undo_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c, uint c_start)
     {
-      level--;
-      nnv -= nncnt[level][j];
+      for(uint it = c_start; it < c.size(); ++it) {
+        uint v = c[it];
+        if(!g->is_edge(v, j))
+          nncnt[v]--;
+      }
+      nnv -= nncnt[j];
     }
 
     void free_aux() {
-      level = 0;
     }
 
     SDefective() {
