@@ -203,7 +203,7 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
           mu_i = lb;
           break;
         } else {
-          v_->prepare_aux(p_, i_, curC_, c_i);
+          v_->prepare_aux(p_, i_, curC_, c_i+1);
           p_.add_vertex(i_, g->weight(i_));
           auto& nextC_ = c_[1];
           nextC_.clear();
@@ -215,7 +215,7 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
           }
           find_max(c_, p_, mu, v_, g, runtime.certificate, 1);
           p_.pop_vertex(g->weight(i_));
-          v_->undo_aux(p_, i_, curC_, c_i);
+          v_->undo_aux(p_, i_, curC_, c_i+1);
         }
       }
       mu_i = lb;

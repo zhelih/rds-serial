@@ -5,7 +5,7 @@
 
 class SPlex: public RegisterVerifier<SPlex> {
   private:
-    uint s, level, nr_sat;
+    uint s, nr_sat;
     std::vector<uint> sat;
     std::vector<uint> nncnt;
 
@@ -43,7 +43,6 @@ class SPlex: public RegisterVerifier<SPlex> {
     }
 
     void init_aux(uint i, const std::vector<uint>& c) {
-      level = 0;
       nr_sat = 0;
       nncnt.resize(g->nr_nodes);
       sat.resize(g->nr_nodes);
@@ -92,7 +91,6 @@ class SPlex: public RegisterVerifier<SPlex> {
     }
 
     void free_aux() {
-      level = 0;
       nr_sat = 0;
     }
 
