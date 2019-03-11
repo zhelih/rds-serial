@@ -74,13 +74,13 @@ template <typename Verifier> void find_max(std::vector<vertex_set>& c, vertex_se
       if(v->check(p, curC[v_it], curC[u_it]))
         nextC.add_vertex(curC[u_it], g->weight(curC[u_it]));
 
-    bool shall_continue = nextC.weight + p.weight > lb;
-    if (shall_continue) // continue if <=
+    if (nextC.weight + p.weight > lb) // continue if <=
       find_max(c, p, mu, v, g, res, level+1);
 
     p.pop_vertex(v_weight);
     v->undo_aux(p, curC[v_it], curC, v_it+1);
-    if(!shall_continue)
+
+    if(should_return)
       return;
   }
   return;
