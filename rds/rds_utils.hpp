@@ -4,6 +4,50 @@
 #include <iostream>
 #include "../graph/graph_matrix.h"
 #include "../graph/graph_utils.hpp"
+#include "../vector.hpp"
+
+struct vertex_set {
+  uintvector vertices;
+  uint weight;
+
+  vertex_set() : weight(0) {}
+  vertex_set(int n) : vertices(n), weight(0) {}
+  vertex_set(const vertex_set& v) : vertices(v.vertices), weight(v.weight) {}
+
+  vertex_set* clone() {
+    vertex_set* res = new vertex_set();
+    res->vertices = vertices;
+    res->weight = weight;
+    return res;
+  }
+
+  inline void add_vertex(const uint v, const uint w) {
+    vertices.push_back(v);
+    weight += w;
+  }
+
+  inline void pop_vertex(const uint w) {
+    vertices.pop_back();
+    weight -= w;
+  }
+
+  inline int size() const {
+    return vertices.size();
+  }
+
+  inline bool empty() const {
+    return vertices.empty();
+  }
+
+  inline void clear() {
+    vertices.clear();
+    weight = 0;
+  }
+
+  inline void reserve(const size_t size) {
+    vertices.alloc(size);
+  }
+};
 
 struct algorithm_run {
   std::string graphname;
@@ -22,47 +66,6 @@ struct algorithm_run {
   std::vector<uint> certificate;
 
   bool allout = false; // output for all mu[i]. default: only for the last of when m[i] != m[i+1]
-};
-
-struct vertex_set {
-  std::vector<uint> vertices;
-  uint weight = 0;
-
-  inline void add_vertex(const uint v, const uint w) {
-    vertices.push_back(v);
-    weight += w;
-  }
-
-  inline void pop_vertex(const uint w) {
-    vertices.pop_back();
-    weight -= w;
-  }
-
-  inline size_t size() const {
-    return vertices.size();
-  }
-
-  inline bool empty() const {
-    return vertices.empty();
-  }
-
-  inline void clear() {
-    vertices.resize(0);
-    weight = 0;
-  }
-
-  inline void reserve(const size_t size) {
-    vertices.reserve(size);
-  }
-
-  operator std::vector<uint>&() { return vertices; }
-
-  inline const uint& operator[](const size_t& idx) const { return vertices[idx]; }
-  inline uint& operator[](const size_t& idx) { return vertices[idx]; }
-  const decltype(vertices)::value_type& back() const { return vertices.back(); }
-
-  inline std::vector<uint>::iterator begin() { return vertices.begin(); }
-  inline std::vector<uint>::iterator end() { return vertices.end(); }
 };
 
 using RDSMethod = std::function<algorithm_run(ordering, bool, bool, bool, unsigned int, const std::string&)>;

@@ -2,6 +2,7 @@
 #define _UTILS_HPP
 #include <vector>
 #include "verifiers/verifiers.h"
+#include "rds/rds_utils.hpp"
 #include <cstdio>
 #include <iterator>
 

@@ -2,12 +2,13 @@
 #define _SPLEX_H
 #include "verifier.hpp"
 #include <algorithm>
+#include "../vector.hpp"
 
 class SPlex: public RegisterVerifier<SPlex> {
   private:
     uint s, nr_sat;
-    std::vector<uint> sat;
-    std::vector<uint> nncnt;
+    uintvector sat;
+    uintvector nncnt;
 
   public:
     inline bool check_pair(uint i, uint j) const {
@@ -17,7 +18,7 @@ class SPlex: public RegisterVerifier<SPlex> {
         return true;
     }
 
-    inline bool check(const std::vector<uint>& p, uint _, uint n) const {
+    inline bool check(const uintvector& p, uint _, uint n) const {
       if(nncnt[n] >= s) // degree check
         return false;
       for(uint i = 0; i < nr_sat; ++i) // SAT connectivity check
@@ -34,28 +35,35 @@ class SPlex: public RegisterVerifier<SPlex> {
         degrees[i] = 0;
       for(uint i = 0; i < res.size(); ++i){
         uint v = res[i];
-        for(uint u: res)
+        for(uint ui = 0; ui < res.size(); ++ui)
+        {
+          uint u = res[ui];
           if (v != u && g->is_edge(v, u))
             ++degrees[i];
+        }
       }
       uint m_degree = *std::min_element(degrees.begin(), degrees.end());
       return m_degree >= (res.size() - s);
     }
 
-    void init_aux(uint i, const std::vector<uint>& c) {
+    void init_aux(uint i, const uintvector& c) {
       nr_sat = 0;
       nncnt.resize(g->nr_nodes);
       sat.resize(g->nr_nodes);
 
       nncnt[i] = 0;
-      for(uint v: c)
+      for(int vi = 0; vi < c.size(); ++vi)
+      {
+        uint v = c[vi];
         nncnt[v]=!g->is_edge(v, i);
+      }
     }
 
-    void prepare_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c, uint c_start)
+    void prepare_aux(const uintvector& p, uint j, const uintvector& c, uint c_start)
     {
       nr_sat = 0;
-      for(uint v: p) {
+      for(int vi = 0; vi < p.size(); ++vi) {
+        uint v = p[vi];
         if (!g->is_edge(v, j)) {
           ++nncnt[v];
           if(nncnt[v] == s-1) {
@@ -65,7 +73,7 @@ class SPlex: public RegisterVerifier<SPlex> {
         }
       }
 
-      for(uint it = c_start; it < c.size(); ++it) {
+      for(int it = c_start; it < c.size(); ++it) {
         uint v = c[it];
         if(!g->is_edge(v,j))
           ++nncnt[v];
@@ -77,13 +85,14 @@ class SPlex: public RegisterVerifier<SPlex> {
       }
     }
 
-    void undo_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c, uint c_start)
+    void undo_aux(const uintvector& p, uint j, const uintvector& c, uint c_start)
     {
-      for(uint v: p) {
+      for(int vi = 0; vi < p.size(); ++vi) {
+        uint v = p[vi];
         if(!g->is_edge(v, j))
           --nncnt[v];
       }
-      for(uint it = c_start; it < c.size(); ++it) {
+      for(int it = c_start; it < c.size(); ++it) {
         uint v = c[it];
         if(!g->is_edge(v,j))
           --nncnt[v];
