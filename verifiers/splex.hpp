@@ -55,7 +55,8 @@ class SPlex: public RegisterVerifier<SPlex> {
     void prepare_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c, uint c_start)
     {
       nr_sat = 0;
-      for(uint v: p) {
+      for(uint vi = 0; vi < p.size(); ++vi) {
+        uint v = p[vi];
         if (!g->is_edge(v, j)) {
           ++nncnt[v];
           if(nncnt[v] == s-1) {
@@ -79,7 +80,8 @@ class SPlex: public RegisterVerifier<SPlex> {
 
     void undo_aux(const std::vector<uint>& p, uint j, const std::vector<uint>& c, uint c_start)
     {
-      for(uint v: p) {
+      for(uint vi = 0; vi < p.size(); ++vi) {
+        uint v = p[vi];
         if(!g->is_edge(v, j))
           --nncnt[v];
       }
