@@ -22,6 +22,7 @@ peeler: peeler.cpp graph/graph.cpp graph/graph_utils.hpp
 version.c: .git/HEAD .git/index
 	echo "const char *gitversion = \"$(shell git describe --tags --always)\";" > $@
 
+.PHONY: clean
 clean:
 	rm ./RDS
 	rm ./tester
