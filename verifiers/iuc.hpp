@@ -19,6 +19,8 @@ class IUC: public RegisterVerifier<IUC> {
       return true;
     }
 
+    NO_AUX
+
     bool check_solution(const std::vector<uint>& res) const {
       for(uint i = 0; i < res.size(); ++i)
         for(uint j = i+1; j < res.size(); ++j)

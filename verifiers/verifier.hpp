@@ -8,6 +8,14 @@
 #include "../graph/graph_switcher.h"
 #include "../rds/rds_utils.hpp"
 
+#define NO_AUX \
+    inline void init_aux(uint, const std::vector<uint>&) const {} \
+    inline void prepare_aux(const std::vector<uint>&, uint, const std::vector<uint>&, uint) const {} \
+    inline void undo_aux(const std::vector<uint>&, uint, const std::vector<uint>&, uint) const {} \
+    inline void free_aux() const {}
+
+
+
 class verifier
 {
   public:
