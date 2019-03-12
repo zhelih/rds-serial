@@ -12,7 +12,7 @@ private:
   void reorder_custom(const std::vector<uint>& order) final override;
 
 public:
-  graph_matrix(uint n): graph(n) { adj = new uint*[n]; for(uint i = 0; i < n; ++i) adj[i] = new uint[n]; }
+  graph_matrix(uint n): graph(n) { adj = new uint*[n]; for(uint i = 0; i < n; ++i) adj[i] = new uint[n]; for(uint i = 0; i < n; ++i) for(uint j = 0; j < n; ++j) adj[i][j] = 0; }
   ~graph_matrix() { for(uint i = 0; i < nr_nodes; ++i) delete [] adj[i]; delete [] adj; }
   explicit graph_matrix(const graph_matrix& gm) : graph(gm) { }
 
