@@ -180,13 +180,13 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
 
       Verifier* v_ = verifiers[thread_i];
       v_->init_aux(i, curC);
-      std::vector<vertex_set> c_(c);
+      std::vector<vertex_set> c_(c); // TODO copy only the first level
       vertex_set p_(p);
 
       uint mu_i = 0;
 
       auto& curC_ = c_[0];
-      for(uint c_i = thread_i; c_i < curC_.size() && !should_exit; c_i += num_threads) // split by threads
+      for(uint c_i = thread_i; c_i < curC_.size() && !should_exit && !should_return; c_i += num_threads) // split by threads
       {
         // adjust weight_c
         // we remove nodes [0; c_i), adjust weight accordingly
@@ -216,7 +216,8 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
             if(v_->check(p_, i_, u)) //TODO only swap check?
               nextC_.add_vertex(u, g->weight(u));
           }
-          find_max(c_, p_, mu, v_, g, runtime.certificate, 1);
+          if(nextC_.weight + p_.weight > lb)
+            find_max(c_, p_, mu, v_, g, runtime.certificate, 1);
           p_.pop_vertex(g->weight(i_));
           v_->undo_aux(p_, i_, curC_, c_i+1);
         }
