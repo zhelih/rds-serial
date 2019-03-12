@@ -210,10 +210,10 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
           p_.add_vertex(i_, g->weight(i_));
           auto& nextC_ = c_[1];
           nextC_.clear();
-          for(uint it2 = c_i; it2 < curC_.size(); ++it2)
+          for(uint it2 = c_i+1; it2 < curC_.size(); ++it2)
           {
             uint u = curC_[it2];
-            if(u != i_ && v_->check(p_, i_, u)) //TODO only swap check?
+            if(v_->check(p_, i_, u)) //TODO only swap check?
               nextC_.add_vertex(u, g->weight(u));
           }
           find_max(c_, p_, mu, v_, g, runtime.certificate, 1);
