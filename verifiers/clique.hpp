@@ -12,6 +12,11 @@ class Clique: public RegisterVerifier<Clique> {
       return g->is_edge(n, i);
     }
 
+    inline void init_aux(uint, const std::vector<uint>&) const {}
+    inline void prepare_aux(const std::vector<uint>&, uint, const std::vector<uint>&, uint) const {}
+    inline void undo_aux(const std::vector<uint>&, uint, const std::vector<uint>&, uint) const {}
+    inline void free_aux() const {}
+
     inline bool check_solution(const std::vector<uint>& res) const {
       for (uint v: res) {
         for (uint u: res) {
