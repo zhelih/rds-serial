@@ -127,6 +127,8 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
 
   // init verifiers for each thread
   std::vector<Verifier*> verifiers;
+  std::vector<vertex_set> ps;
+  std::vector<std::vector<vertex_set>> cs;
   #pragma omp parallel
   {
     #pragma omp single
@@ -135,6 +137,15 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
     verifiers.resize(num_threads);
     for(uint i = 0; i < num_threads; ++i)
       verifiers[i] = v->clone();
+    ps.resize(num_threads);
+    for(uint i = 0; i < num_threads; ++i)
+      ps[i].reserve(g->nr_nodes);
+    cs.resize(num_threads);
+    for(uint i = 0; i < num_threads; ++i)
+      cs[i].resize(g->nr_nodes);
+    for(uint i = 0; i < num_threads; ++i)
+      for(uint j = 0; j < g->nr_nodes; ++j)
+        cs[i][j].reserve(g->nr_nodes);
     }
   }
 
@@ -180,8 +191,11 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
 
       Verifier* v_ = verifiers[thread_i];
       v_->init_aux(i, curC);
-      std::vector<vertex_set> c_(c); // TODO copy only the first level
-      vertex_set p_(p);
+      vertex_set& p_ = ps[thread_i];
+      p_.clear(); p_.assign(p);
+
+      std::vector<vertex_set>& c_ = cs[thread_i];
+      c_[0].clear(); c_[0].assign(c[0]);
 
       uint mu_i = 0;
 

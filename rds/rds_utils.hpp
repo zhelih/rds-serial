@@ -55,6 +55,11 @@ struct vertex_set {
     vertices.reserve(size);
   }
 
+  inline void assign(const vertex_set& vs) {
+    vertices.assign(vs.vertices.begin(), vs.vertices.end());
+    weight = vs.weight;
+  }
+
   operator std::vector<uint>&() { return vertices; }
 
   inline const uint& operator[](const size_t& idx) const { return vertices[idx]; }
