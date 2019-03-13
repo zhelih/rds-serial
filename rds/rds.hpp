@@ -185,7 +185,7 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
 
       uint mu_i = 0;
 
-      auto& curC_ = c_[0];
+      vertex_set& curC_ = c_[0];
       for(uint c_i = thread_i; c_i < curC_.size() && !should_exit && !should_return; c_i += num_threads) // split by threads
       {
         // adjust weight_c
@@ -208,7 +208,7 @@ template <typename Verifier> uint rds(Verifier* v, Graph* g, algorithm_run& runt
         } else {
           v_->prepare_aux(p_, i_, curC_, c_i+1);
           p_.add_vertex(i_, g->weight(i_));
-          auto& nextC_ = c_[1];
+          vertex_set& nextC_ = c_[1];
           nextC_.clear();
           for(uint it2 = c_i+1; it2 < curC_.size(); ++it2)
           {
