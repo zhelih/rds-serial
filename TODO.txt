@@ -1,0 +1,2 @@
+change verificator init to static method instead of constructor
+option read dimacs from 1

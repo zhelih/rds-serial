@@ -8,10 +8,11 @@ typedef unsigned int uint;
 // Add your custom verifiers here
 // They will appear in app in the same order
 #include "clique.hpp"
-#include "stable.hpp"
-#include "iuc.hpp"
-#include "sdefective.hpp"
-#include "splex.hpp"
+//#include "stable.hpp"
+//#include "iuc.hpp"
+//#include "sdefective.hpp"
+//#include "splex.hpp"
+#include "districting.hpp"
 /*#include "forest.hpp"
 #include "forest_new.hpp"
 #include "bipartite.hpp"

@@ -59,7 +59,7 @@ public:
     return this->nr_nodes;
   }
 
-  inline neighbourhood_iterator nbh_begin(const uint v) {
+  inline neighbourhood_iterator nbh_begin(const uint v) const {
     for (uint u = 0; u < this->nr_nodes; ++u) {
       if (adj[v][u])
         return neighbourhood_iterator(this, v, u);
@@ -67,7 +67,7 @@ public:
     return this->nbh_end(v);
   }
 
-  inline neighbourhood_iterator nbh_end(const uint v) {
+  inline neighbourhood_iterator nbh_end(const uint v) const {
     return neighbourhood_iterator(this, v, this->nr_nodes);
   }
 };

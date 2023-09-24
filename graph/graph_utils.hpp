@@ -6,6 +6,8 @@
 #include <string>
 #include "graph.h"
 
+//#define DIMACS_FROM_1
+
 template <typename T> T* from_dimacs(const char* graph_file) {
   std::ifstream source(graph_file);
   std::string line, _;
@@ -30,8 +32,13 @@ template <typename T> T* from_dimacs(const char* graph_file) {
       }
       else {
         linestream >> U >> V;
+#ifdef DIMACS_FROM_1
         if(!result->is_edge(U - 1, V - 1))
           result->add_edge(U - 1, V - 1);
+#else
+        if(!result->is_edge(U, V))
+          result->add_edge(U, V);
+#endif
       }
     }
     else {
