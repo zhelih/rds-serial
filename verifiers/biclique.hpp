@@ -57,6 +57,8 @@ class Biclique: public RegisterVerifier<Biclique> {
     Biclique* clone() const {
         return new Biclique(*this);
     }
+
+    NO_AUX;
 };
 
 #endif

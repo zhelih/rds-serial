@@ -84,6 +84,7 @@ class ChordalNew: public RegisterVerifier<ChordalNew> {
     ChordalNew* clone() const {
         return new ChordalNew(*this);
     }
+    NO_AUX;
 };
 
 #endif

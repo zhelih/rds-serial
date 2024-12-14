@@ -138,6 +138,8 @@ class BipartiteNew: public RegisterVerifier<BipartiteNew> {
       level--;
     }
 
+    inline void free_aux() const {}
+
     BipartiteNew() {
       name = "Bipartite new";
       description = "Well, it's a bipartite graph";

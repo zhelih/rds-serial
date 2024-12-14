@@ -12,9 +12,9 @@ typedef unsigned int uint;
 #include "iuc.hpp"
 #include "sdefective.hpp"
 #include "splex.hpp"
-/*#include "forest.hpp"
+//#include "forest.hpp"
 #include "forest_new.hpp"
-#include "bipartite.hpp"
+//#include "bipartite.hpp"
 #include "bipartite_new.hpp"
 #include "swide.hpp"
 #include "chordal.hpp"
@@ -22,4 +22,4 @@ typedef unsigned int uint;
 #include "biclique.hpp"
 #include "iusd.hpp"
 #include "iusp.hpp"
-*/#endif
+#endif
