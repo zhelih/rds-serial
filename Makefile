@@ -19,6 +19,9 @@ tester: tester.cpp
 peeler: peeler.cpp graph/graph.cpp graph/graph_utils.hpp
 	$(CXX) peeler.cpp -Wall -Wextra -O2 -o peeler -std=c++11
 
+gen_uniform_dimacs: gen_uniform_dimacs.cpp
+	$(CXX) gen_uniform_dimacs.cpp -Wall -Wextra -std=c++11 -o gen_uniform_dimacs
+
 version.c: .git/HEAD .git/index
 	echo "const char *gitversion = \"$(shell git describe --tags --always)\";" > $@
 
