@@ -16,5 +16,4 @@ subgraph by adding a new vertex.
 
 See https://wp.lykhovyd.com/rds/ for more details.
 
-[![Build
-Status](https://travis-ci.org/zhelih/rds-serial.svg?branch=master)](https://travis-ci.org/zhelih/rds-serial)
+[![Build](https://github.com/zhelih/rds-serial/actions/workflows/build.yml/badge.svg)](https://github.com/zhelih/rds-serial/actions/workflows/build.yml)
