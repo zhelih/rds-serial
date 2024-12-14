@@ -53,6 +53,8 @@ class dep1: public RegisterVerifier<dep1> {
     dep1* clone() const {
         return new dep1(*this);
     }
+
+    NO_AUX;
 };
 
 #endif

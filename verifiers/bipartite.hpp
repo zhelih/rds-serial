@@ -57,6 +57,7 @@ class Bipartite: public RegisterVerifier<Bipartite> {
     Bipartite* clone() const {
         return new Bipartite(*this);
     }
+    NO_AUX;
 };
 
 #endif

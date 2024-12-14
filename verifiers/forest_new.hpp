@@ -102,6 +102,8 @@ class ForestNew: public RegisterVerifier<ForestNew> {
       level--;
     }
 
+    inline void free_aux() const {}
+
     ForestNew() {
       name = "Forest new";
       description = "Well, it's a forest";

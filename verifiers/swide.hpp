@@ -72,6 +72,8 @@ class SWide: public RegisterVerifier<SWide> {
       }
     }
 
+    inline void free_aux() const {}
+
     SWide() {
       name = "s-Wide graph";
       description = "Well, it's an s-Wide graph";
